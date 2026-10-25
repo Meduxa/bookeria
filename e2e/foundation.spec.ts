@@ -53,3 +53,20 @@ test("no horizontal scroll at phone width", async ({ page }, info) => {
     expect(overflow, path).toBeLessThanOrEqual(0);
   }
 });
+
+test("an action on a page left open after signing out goes to sign-in, not an error", async ({ context }) => {
+  const page = await context.newPage();
+  await signIn(page, "salon.owner@demo.test");
+  await page.goto("/ka/settings/team");
+
+  // Same as signing out in another tab: the session cookie disappears while
+  // this page stays open.
+  await context.clearCookies();
+
+  const errors: string[] = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  await page.getByLabel("ელფოსტა").fill("stale@example.test");
+  await page.getByRole("button", { name: "მოწვევის გაგზავნა" }).click();
+  await page.waitForURL(/\/ka\/login/);
+  expect(errors).toEqual([]);
+});

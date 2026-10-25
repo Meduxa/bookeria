@@ -7,6 +7,7 @@ import { z } from "zod";
 import { getEmailProvider } from "@/integrations/email";
 import { fail, ok, type ActionResult } from "@/lib/action-result";
 import { APP_NAME } from "@/lib/app";
+import { requireUser } from "@/lib/auth";
 import { publicEnv } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
 import { canManage, getActiveTenant, rememberActiveTenant } from "@/lib/tenant";
@@ -15,6 +16,7 @@ import { inviteSchema, type InviteInput } from "./schema";
 export async function inviteMember(
   input: InviteInput,
 ): Promise<ActionResult<{ link: string; emailed: boolean }>> {
+  await requireUser(await getLocale());
   const parsed = inviteSchema.safeParse(input);
   if (!parsed.success) return fail("invalidInput");
 
@@ -49,6 +51,7 @@ export async function inviteMember(
 }
 
 export async function revokeInvite(invitationId: string): Promise<ActionResult> {
+  await requireUser(await getLocale());
   const id = z.uuid().safeParse(invitationId);
   if (!id.success) return fail("invalidInput");
 
@@ -62,6 +65,8 @@ export async function revokeInvite(invitationId: string): Promise<ActionResult> 
 
 export async function acceptInvite(token: string): Promise<ActionResult> {
   if (!/^[0-9a-f]{64}$/.test(token)) return fail("inviteInvalid");
+  const locale = await getLocale();
+  await requireUser(locale, `/${locale}/invite/${token}`);
 
   const supabase = await createClient();
   const { data: tenantId, error } = await supabase.rpc("accept_invitation", { p_token: token });
@@ -72,5 +77,5 @@ export async function acceptInvite(token: string): Promise<ActionResult> {
   }
 
   await rememberActiveTenant(tenantId);
-  redirect(`/${await getLocale()}/dashboard`);
+  redirect(`/${locale}/dashboard`);
 }

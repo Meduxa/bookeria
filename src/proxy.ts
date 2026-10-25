@@ -37,10 +37,13 @@ export async function proxy(request: NextRequest) {
   );
   const { data } = await supabase.auth.getClaims();
 
-  // Optimistic redirect only; every page and action checks access again on the server.
+  // Optimistic redirect for page visits only. Server actions are POSTs to the
+  // page URL; redirecting them returns a login page where the client expects
+  // an action result. Actions check the session themselves (requireUser).
+  const isPageVisit = request.method === "GET" || request.method === "HEAD";
   const [, locale, ...rest] = request.nextUrl.pathname.split("/");
   const path = `/${rest.join("/")}`;
-  if (!data?.claims && PROTECTED.some((re) => re.test(path))) {
+  if (isPageVisit && !data?.claims && PROTECTED.some((re) => re.test(path))) {
     const url = request.nextUrl.clone();
     url.pathname = `/${locale}/login`;
     url.search = `?next=${encodeURIComponent(request.nextUrl.pathname)}`;
