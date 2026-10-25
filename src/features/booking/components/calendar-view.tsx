@@ -48,6 +48,7 @@ export function CalendarScreen({
   tenantId,
   catalog,
   isManager,
+  isDental,
   ownStaffId,
 }: {
   data: CalendarData;
@@ -58,6 +59,7 @@ export function CalendarScreen({
   tenantId: string;
   catalog: CatalogEntry[];
   isManager: boolean;
+  isDental: boolean;
   ownStaffId: string | null;
 }) {
   const t = useTranslations();
@@ -441,6 +443,7 @@ export function CalendarScreen({
         timeZone={tz}
         canEdit={!!booking && canEdit(booking)}
         isManager={isManager}
+        isDental={isDental}
         onClose={() => {
           setOpenBooking(null);
           router.refresh();

@@ -3,6 +3,7 @@ import { ClientsView } from "@/features/clients/components/clients-view";
 import { listClients } from "@/features/clients/queries";
 import { createClient } from "@/lib/supabase/server";
 import { canManage, getActiveTenant } from "@/lib/tenant";
+import { DEFAULT_TZ } from "@/lib/time";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/clients">) {
   const t = await getTranslations({ locale: (await params).locale, namespace: "clients" });
@@ -18,6 +19,7 @@ export default async function ClientsPage({ params, searchParams }: PageProps<"/
   const page = Math.max(0, Math.min(10_000, Number(sp.page) || 0));
 
   const supabase = await createClient();
+  const { data: tz } = await supabase.from("tenants").select("timezone").eq("id", tenant.tenantId).single();
   const [{ clients, total }, { data: staff }] = await Promise.all([
     listClients(tenant.tenantId, q, page),
     supabase
@@ -38,6 +40,7 @@ export default async function ClientsPage({ params, searchParams }: PageProps<"/
       canManage={canManage(tenant.role)}
       isOwner={tenant.role === "owner"}
       isDental={tenant.type === "dental"}
+      timeZone={tz?.timezone ?? DEFAULT_TZ}
     />
   );
 }

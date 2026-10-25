@@ -44,15 +44,25 @@ Design foundation done 2026-10-26 from screenshots + videos (no Figma file yet).
 - [ ] Date/time picker components (with the calendar, Phase 3)
 
 ## Phase 3 — Calendar and bookings (≈ 2 weeks) — SPEC 4.5–4.7
-- [ ] Availability engine (booking-engine skill) with unit tests
-- [ ] Exclusion constraints against double booking (staff + resource)
-- [ ] Calendar: day (by staff / by resource), week, agenda (mobile), month counts
-- [ ] Create / edit / move (drag & drop) / resize / cancel bookings; multi-service visits
-- [ ] Statuses + status history; walk-ins; recurring bookings; waitlist
-- [ ] Realtime updates between admins
+Split into 3a and 3b with a report in between (Levan, 2026-10-26). Staff may create and move only their own bookings; admin bookings start as confirmed.
+
+### 3a ✅ Done 2026-10-27
+- [x] Availability engine (booking-engine skill) with unit tests (17; #14 concurrency runs against the database)
+- [x] Exclusion constraints against double booking (staff + resource), concurrency test
+- [x] Calendar: day (by staff), week (one person), list (phone default), month counts — own grid, decision 005
+- [x] Create / move (drag & drop) / resize / reassign / cancel bookings; multi-service visits back to back; walk-ins
+- [x] Statuses + status history (incl. undo of cancel/no-show, no-show counter)
+- [x] Realtime updates between admins
+- [x] Staff view "My day": now / next / today / upcoming / past, actions, own numbers
+- [x] Client card: visit history; dental treatment notes (doctors + owner only, every read audited)
+- [ ] Day view by chair/room for dental — chairs are assigned automatically; a chair-column view follows in 3b
+
+### 3b
+- [ ] Recurring bookings (every N weeks, X times, conflict list before saving)
+- [ ] Waitlist with suggestions when a slot frees up
 - [ ] Import existing bookings from CSV/Excel (column mapping, preview, conflict report, no SMS by default)
-- [ ] Staff view: today / upcoming / past, actions, own stats
 - [ ] Checkout: payment methods, discounts, daily cash summary
+- [ ] Dental: day view by chair/room
 
 ## Phase 4 — Public online booking page (≈ 1 week) — SPEC 4.8
 - [ ] `/book/[slug]` flow, mobile-first, ka default

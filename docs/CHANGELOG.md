@@ -2,6 +2,17 @@
 
 All notable changes per phase. Newest on top.
 
+## Phase 3a — Calendar and bookings, core (2026-10-27)
+
+- **Bookings in the database**: bookings, one line per service with price and duration copied at booking time, status history, dental treatment notes. All changes go through checked database functions; a staff member may create and move only their own bookings. Double booking is impossible: the database refuses overlapping times for a person or a chair, including two clicks at the same moment (tested).
+- **Availability engine**: free times from opening hours, staff hours, date changes, time off, existing bookings with their breaks, chairs, booking rules and the business time zone; "anyone free" picks the least busy person. 17 tests.
+- **Calendar**: day (staff as columns), week (one person), list (phone default) and month views; shaded non-working time, hatched time off, red current-time line; Georgian dates ("26 ოქტომბერი, ორშაბათი") from our own month names.
+- **Booking**: click an empty slot → find or add the client (allergy warning, no-show count) → services → person or anyone free → real free times → book. Managers can book outside hours after a warning.
+- **Changing bookings**: drag to move (time, person, day), drag the bottom edge to change length; reschedule form on phones; status buttons (confirm, arrived, start, complete, no-show, cancel with reason, undo); notes; history. Changes by other admins appear live.
+- **My day** for masters and doctors; **visit history** on the client card; **treatment notes** for dental clinics (doctors and owner only, every read logged).
+- Demo data now includes bookings from 3 days ago to 6 days ahead.
+- Fixed during the phase: deleting a business with bookings could have failed (foreign-key rule), a moved booking jumped back until the refresh, time zone hard-coded in two places, Georgian no-show wording.
+
 ## Phase 1 — Services, staff, clients + design foundation (2026-10-26)
 
 - **Design**: light and dark theme from Levan's references (green main colour, grouped sidebar, status pills, number cards, details panel sliding in from the right, filter tabs with counts); colour contrast checked; Inter + Noto Sans Georgian; "More" page on phones.

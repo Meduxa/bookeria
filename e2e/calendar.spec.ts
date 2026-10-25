@@ -49,7 +49,7 @@ test("day view: Georgian title, staff columns, booking opens by click and keyboa
 test("create a booking from an empty slot, then mark the client arrived", async ({ page }, info) => {
   test.skip(info.project.name !== "desktop");
   await signIn(page, "salon.owner@demo.test");
-  const date = weekdayAhead(8); // beyond the seeded bookings
+  const date = weekdayAhead(8 + Math.floor(Math.random() * 60)); // beyond the seeded bookings, fresh each run
   await page.goto(`/ka/calendar?view=day&date=${date}`);
   await page.waitForLoadState("networkidle");
 
@@ -93,4 +93,52 @@ test("phone: calendar opens as a list and never scrolls sideways", async ({ page
   await expect(page.getByRole("tab", { name: "სია" })).toHaveAttribute("aria-selected", "true");
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
   expect(overflow).toBeLessThanOrEqual(0);
+});
+
+test("staff 'My day': own bookings and numbers", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop");
+  await signIn(page, "salon.staff@demo.test");
+  await page.goto("/ka/my-day");
+  await expect(page.getByRole("heading", { name: "ჩემი დღე" })).toBeVisible();
+  await expect(page.getByRole("main").getByText(/^ანა გელაშვილი ·/)).toBeVisible();
+  await expect(page.getByRole("heading", { name: "მომავალი" })).toBeVisible();
+});
+
+test("client card shows visit history", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop");
+  await signIn(page, "salon.owner@demo.test");
+  await page.goto("/ka/clients");
+  await page.waitForLoadState("networkidle");
+  // the demo owner is also called Nino Beridze: look only in the client list
+  await page
+    .getByRole("main")
+    .getByRole("button", { name: /^ნინო ბერიძე/ })
+    .first()
+    .click();
+  const panel = page.getByRole("dialog");
+  await expect(panel.getByRole("heading", { name: "ვიზიტები" })).toBeVisible();
+  await expect(panel.getByText(/₾/).first()).toBeVisible();
+});
+
+test("dental notes: the doctor reads and writes, the clinic admin cannot", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop");
+  await signIn(page, "dental.doctor@demo.test");
+  await page.goto("/ka/my-day");
+  await page.locator("main ul button").first().click();
+  const panel = page.getByRole("dialog");
+  await panel.getByRole("button", { name: "ჩანაწერების ნახვა" }).click();
+  const note = `კბილი 36 — შემოწმება ${Date.now()}`;
+  await panel.getByRole("textbox", { name: "ჩანაწერის დამატება" }).fill(note);
+  await panel.getByRole("button", { name: "ჩანაწერის დამატება" }).click();
+  await expect(panel.getByText(note)).toBeVisible();
+
+  await page.context().clearCookies();
+  await signIn(page, "dental.admin@demo.test");
+  await page.goto("/ka/clients");
+  await page.waitForLoadState("networkidle");
+  await page.locator("main ul button").first().click();
+  await page.getByRole("dialog").getByRole("button", { name: "ჩანაწერების ნახვა" }).click();
+  await expect(
+    page.getByRole("dialog").getByText("მკურნალობის ჩანაწერებს ხედავენ მხოლოდ ექიმები"),
+  ).toBeVisible();
 });

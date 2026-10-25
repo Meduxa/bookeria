@@ -703,5 +703,14 @@
       "week": "This week",
       "completed": "Completed (30 days)"
     }
+  },
+  "dental": {
+    "title": "Treatment notes",
+    "hint": "Health data: only doctors and the owner can see these, and every view is recorded.",
+    "show": "Show treatment notes",
+    "empty": "No notes yet.",
+    "add": "Add note",
+    "placeholder": "e.g. tooth 36 — caries, filling planned",
+    "notAllowed": "Only doctors and the owner can see treatment notes."
   }
 }

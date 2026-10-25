@@ -77,6 +77,7 @@ export default async function CalendarPage({ params, searchParams }: PageProps<"
       tenantId={tenant.tenantId}
       catalog={catalog}
       isManager={isManager}
+      isDental={tenant.type === "dental"}
       ownStaffId={ownStaffId ?? null}
     />
   );

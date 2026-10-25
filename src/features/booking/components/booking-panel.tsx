@@ -19,6 +19,7 @@ import { useDates } from "@/lib/use-dates";
 import { bookingHistory, moveBooking, setBookingNote, setBookingStatus } from "../actions";
 import type { Conflict } from "../engine/availability";
 import type { CalBooking, CalStaff } from "../queries";
+import { DentalNotes } from "./dental-notes";
 
 export const STATUS_TONE: Record<string, PillTone> = {
   pending: "warning",
@@ -61,6 +62,7 @@ export function BookingPanel({
   timeZone,
   canEdit,
   isManager,
+  isDental,
   onClose,
 }: {
   booking: CalBooking | null;
@@ -68,6 +70,7 @@ export function BookingPanel({
   timeZone: string;
   canEdit: boolean;
   isManager: boolean;
+  isDental: boolean;
   onClose: () => void;
 }) {
   const t = useTranslations();
@@ -319,6 +322,10 @@ export function BookingPanel({
           </section>
         )}
         <FieldError code={error} />
+
+        {isDental && booking.client && (
+          <DentalNotes clientId={booking.client.id} bookingId={booking.id} timeZone={timeZone} />
+        )}
 
         {history.length > 0 && (
           <section className="flex flex-col gap-2">

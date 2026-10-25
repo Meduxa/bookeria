@@ -12,6 +12,8 @@ import { Input } from "@/components/ui/input";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import type { ClientRow } from "../queries";
 import { PAGE_SIZE } from "../schema";
+import { ClientVisits } from "@/features/booking/components/client-visits";
+import { DentalNotes } from "@/features/booking/components/dental-notes";
 import { ClientForm } from "./client-form";
 import { ClientRights, ConsentHistory, MergeClient } from "./client-extras";
 
@@ -26,6 +28,7 @@ export function ClientsView({
   canManage,
   isOwner,
   isDental,
+  timeZone,
 }: {
   clients: ClientRow[];
   total: number;
@@ -35,6 +38,7 @@ export function ClientsView({
   canManage: boolean;
   isOwner: boolean;
   isDental: boolean;
+  timeZone: string;
 }) {
   const t = useTranslations();
   const format = useFormatter();
@@ -219,6 +223,8 @@ export function ClientsView({
                 router.refresh();
               }}
             />
+            {open && <ClientVisits clientId={open.id} />}
+            {open && isDental && <DentalNotes clientId={open.id} bookingId={null} timeZone={timeZone} />}
             {open && canManage && (
               <>
                 <ConsentHistory

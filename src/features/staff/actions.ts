@@ -85,7 +85,7 @@ export async function deleteStaff(id: string): Promise<ActionResult> {
     .delete()
     .eq("id", id)
     .eq("tenant_id", ctx.tenant.tenantId);
-  if (error) return fail(dbErrorCode(error));
+  if (error) return fail(error.code === "23503" ? "staffHasBookings" : dbErrorCode(error));
   await ctx.supabase.rpc("log_audit", {
     p_tenant: ctx.tenant.tenantId,
     p_action: "staff.deleted",

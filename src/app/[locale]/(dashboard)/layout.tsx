@@ -6,6 +6,7 @@ import { LanguageSwitcher } from "@/components/language-switcher";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { APP_NAME } from "@/lib/app";
 import { requireUser } from "@/lib/auth";
+import { createClient } from "@/lib/supabase/server";
 import { canManage, getActiveTenant, getMyTenants } from "@/lib/tenant";
 
 export default async function DashboardLayout({ children, params }: LayoutProps<"/[locale]">) {
@@ -15,6 +16,9 @@ export default async function DashboardLayout({ children, params }: LayoutProps<
   const user = await requireUser(locale);
   const [active, tenants] = await Promise.all([getActiveTenant(), getMyTenants()]);
   if (!active) redirect(`/${locale}/onboarding`);
+  const { data: ownStaffId } = await (
+    await createClient()
+  ).rpc("current_staff_id", { p_tenant: active.tenantId });
 
   const menu = (
     <AccountMenu
@@ -33,7 +37,7 @@ export default async function DashboardLayout({ children, params }: LayoutProps<
           </span>
           <span className="text-lg font-semibold">{APP_NAME}</span>
         </div>
-        <SidebarNav type={active.type} canManage={canManage(active.role)} />
+        <SidebarNav type={active.type} canManage={canManage(active.role)} hasProfile={!!ownStaffId} />
         <div className="mt-auto flex flex-col gap-1 border-t pt-3">
           <ThemeToggle />
           <LanguageSwitcher />
@@ -51,7 +55,7 @@ export default async function DashboardLayout({ children, params }: LayoutProps<
         </main>
       </div>
 
-      <BottomNav type={active.type} />
+      <BottomNav type={active.type} myDayFirst={!!ownStaffId && !canManage(active.role)} />
     </div>
   );
 }

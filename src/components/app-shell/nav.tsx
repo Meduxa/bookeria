@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  CalendarClock,
   CalendarDays,
   LayoutDashboard,
   Menu,
@@ -17,12 +18,13 @@ import { cn } from "@/lib/utils";
 
 type BusinessType = "salon" | "dental";
 
-function groups(type: BusinessType, canManage: boolean) {
+function groups(type: BusinessType, canManage: boolean, hasProfile: boolean) {
   return [
     {
       key: "main",
       items: [
         { href: "/dashboard", key: "dashboard", icon: LayoutDashboard },
+        ...(hasProfile ? [{ href: "/my-day", key: "myDay", icon: CalendarClock }] : []),
         { href: "/calendar", key: "calendar", icon: CalendarDays },
       ],
     },
@@ -49,12 +51,20 @@ function useIsActive() {
   return (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function SidebarNav({ type, canManage }: { type: BusinessType; canManage: boolean }) {
+export function SidebarNav({
+  type,
+  canManage,
+  hasProfile,
+}: {
+  type: BusinessType;
+  canManage: boolean;
+  hasProfile: boolean;
+}) {
   const t = useTranslations("nav");
   const isActive = useIsActive();
   return (
     <nav aria-label={t("main")} className="flex flex-col gap-5">
-      {groups(type, canManage).map((group) => (
+      {groups(type, canManage, hasProfile).map((group) => (
         <div key={group.key} className="flex flex-col gap-0.5">
           <p className="px-3 pb-1 text-xs font-medium text-muted-foreground">{t(`groups.${group.key}`)}</p>
           {group.items.map(({ href, key, icon: Icon }) => (
@@ -79,11 +89,14 @@ export function SidebarNav({ type, canManage }: { type: BusinessType; canManage:
 }
 
 // Phone: max 5 items; "More" leads to the remaining sections.
-export function BottomNav({ type }: { type: BusinessType }) {
+// Staff with a profile start from "My day" instead of the dashboard.
+export function BottomNav({ type, myDayFirst }: { type: BusinessType; myDayFirst: boolean }) {
   const t = useTranslations("nav");
   const isActive = useIsActive();
   const items = [
-    { href: "/dashboard", key: "dashboard", icon: LayoutDashboard },
+    myDayFirst
+      ? ({ href: "/my-day", key: "myDay", icon: CalendarClock } as const)
+      : ({ href: "/dashboard", key: "dashboard", icon: LayoutDashboard } as const),
     { href: "/calendar", key: "calendar", icon: CalendarDays },
     { href: "/clients", key: type === "dental" ? "patients" : "clients", icon: Users },
     { href: "/services", key: "services", icon: type === "dental" ? Stethoscope : Scissors },
