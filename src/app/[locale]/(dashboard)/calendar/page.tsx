@@ -3,6 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { CalendarScreen, type CalendarView } from "@/features/booking/components/calendar-view";
 import type { CatalogEntry } from "@/features/booking/components/new-booking-panel";
 import { getCalendar } from "@/features/booking/queries";
+import { listWaitlist } from "@/features/booking/waitlist-actions";
 import { getCatalog } from "@/features/services/queries";
 import { addDays, monthGrid, weekDates } from "@/lib/dates";
 import { localized } from "@/lib/i18n-text";
@@ -46,11 +47,12 @@ export default async function CalendarPage({ params, searchParams }: PageProps<"
           ? [date, date]
           : [date, addDays(date, 6)];
 
-  const [data, { categories, services }, links] = await Promise.all([
+  const [data, { categories, services }, links, waitlist] = await Promise.all([
     // staff see their own column only
     getCalendar(tenant.tenantId, from, to, { onlyStaffId: isManager ? undefined : (ownStaffId ?? "none") }),
     getCatalog(tenant.tenantId),
     supabase.from("staff_services").select("staff_id, service_id").eq("tenant_id", tenant.tenantId),
+    listWaitlist(),
   ]);
 
   const catName = new Map(categories.map((c) => [c.id, localized(c.name, locale)]));
@@ -79,6 +81,7 @@ export default async function CalendarPage({ params, searchParams }: PageProps<"
       isManager={isManager}
       isDental={tenant.type === "dental"}
       ownStaffId={ownStaffId ?? null}
+      waitlist={waitlist}
     />
   );
 }

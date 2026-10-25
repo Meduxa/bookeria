@@ -17,6 +17,7 @@ import { localized, type I18nText } from "@/lib/i18n-text";
 import { useFormat, type PriceShape } from "@/lib/use-format";
 import { cn } from "@/lib/utils";
 import { createBooking, createRecurring, findClients, findSlots, previewRecurring } from "../actions";
+import { addToWaitlist } from "../waitlist-actions";
 import { useDates } from "@/lib/use-dates";
 import type { Conflict } from "../engine/availability";
 import type { CalStaff } from "../queries";
@@ -43,6 +44,8 @@ export function NewBookingPanel({
   timeZone,
   isManager,
   ownStaffId,
+  preset,
+  onCreated,
 }: {
   open: boolean;
   onClose: () => void;
@@ -52,6 +55,8 @@ export function NewBookingPanel({
   timeZone: string;
   isManager: boolean;
   ownStaffId: string | null;
+  preset?: { client: ClientHit; serviceIds: string[] };
+  onCreated?: (bookingId: string) => void;
 }) {
   const t = useTranslations();
   const locale = useLocale();
@@ -59,12 +64,12 @@ export function NewBookingPanel({
   const [pending, startTransition] = useTransition();
   const [q, setQ] = useState("");
   const [hits, setHits] = useState<ClientHit[]>([]);
-  const [client, setClient] = useState<ClientHit | null>(null);
+  const [client, setClient] = useState<ClientHit | null>(preset?.client ?? null);
   const [newClient, setNewClient] = useState<{ firstName: string; lastName: string; phone: string } | null>(
     null,
   );
   const [walkIn, setWalkIn] = useState(false);
-  const [picked, setPicked] = useState<string[]>([]);
+  const [picked, setPicked] = useState<string[]>(preset?.serviceIds ?? []);
   const [staffId, setStaffId] = useState<string>(isManager ? (initial.staffId ?? ANY) : (ownStaffId ?? ""));
   const [date, setDate] = useState(initial.date);
   const [slots, setSlots] = useState<{ start: string; staffId: string; staffName: string }[] | null>(null);
@@ -156,6 +161,7 @@ export function NewBookingPanel({
         return setError(r.error);
       }
       toast.success(t("booking.created"));
+      onCreated?.(r.data.id);
       onClose();
     });
 
@@ -366,7 +372,38 @@ export function NewBookingPanel({
               {slots === null ? (
                 <span className="text-sm text-muted-foreground">…</span>
               ) : slots.length === 0 ? (
-                <p className="text-sm text-muted-foreground">{t("booking.noFreeTimes")}</p>
+                <div className="flex flex-col items-start gap-2">
+                  <p className="text-sm text-muted-foreground">{t("booking.noFreeTimes")}</p>
+                  {client && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-9"
+                      disabled={pending}
+                      onClick={() =>
+                        startTransition(async () => {
+                          const until = new Date(`${date}T12:00:00Z`);
+                          until.setUTCDate(until.getUTCDate() + 7);
+                          const r = await addToWaitlist({
+                            clientId: client.id,
+                            serviceId: picked[0],
+                            staffId: staffId === ANY ? null : staffId,
+                            dateFrom: date,
+                            dateTo: until.toISOString().slice(0, 10),
+                            timeFrom: null,
+                            timeTo: null,
+                            note,
+                          });
+                          if (!r.ok) return setError(r.error);
+                          toast.success(t("waitlist.added"));
+                          onClose();
+                        })
+                      }
+                    >
+                      {t("waitlist.add")}
+                    </Button>
+                  )}
+                </div>
               ) : (
                 <div
                   role="radiogroup"

@@ -64,6 +64,7 @@ export function BookingPanel({
   isManager,
   isDental,
   onClose,
+  onCancelled,
 }: {
   booking: CalBooking | null;
   staff: CalStaff[];
@@ -72,6 +73,7 @@ export function BookingPanel({
   isManager: boolean;
   isDental: boolean;
   onClose: () => void;
+  onCancelled?: (bookingId: string) => void;
 }) {
   const t = useTranslations();
   const dates = useDates();
@@ -109,6 +111,7 @@ export function BookingPanel({
       const r = await setBookingStatus(booking.id, next as "confirmed", reason);
       if (!r.ok) return setError(r.error);
       toast.success(t(`booking.status.${next as "confirmed"}`));
+      if (DESTRUCTIVE.includes(next)) onCancelled?.(booking.id);
       onClose();
     });
 

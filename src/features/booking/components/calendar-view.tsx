@@ -19,6 +19,8 @@ import type { CalBooking, CalendarData } from "../queries";
 import { BookingPanel, STATUS_TONE } from "./booking-panel";
 import { NewBookingPanel, type CatalogEntry } from "./new-booking-panel";
 import { TimeGrid, type GridColumn } from "./time-grid";
+import { setWaitlistStatus, waitlistMatches, type WaitlistEntry } from "../waitlist-actions";
+import { WaitlistPanel } from "./waitlist-panel";
 
 export type CalendarView = "day" | "week" | "list" | "month";
 const VIEWS: CalendarView[] = ["day", "week", "list", "month"];
@@ -50,6 +52,7 @@ export function CalendarScreen({
   isManager,
   isDental,
   ownStaffId,
+  waitlist,
 }: {
   data: CalendarData;
   date: string;
@@ -61,6 +64,7 @@ export function CalendarScreen({
   isManager: boolean;
   isDental: boolean;
   ownStaffId: string | null;
+  waitlist: WaitlistEntry[];
 }) {
   const t = useTranslations();
   const dates = useDates();
@@ -73,7 +77,10 @@ export function CalendarScreen({
     date: string;
     time: string | null;
     staffId: string | null;
+    fromWaitlist?: WaitlistEntry;
   } | null>(null);
+  const [waitOpen, setWaitOpen] = useState(false);
+  const [waitHighlight, setWaitHighlight] = useState<string[]>([]);
   const tz = data.timeZone;
   // Optimistic moves: a dropped booking stays where it was dropped until the
   // refreshed data arrives (or snaps back if the move failed).
@@ -254,6 +261,16 @@ export function CalendarScreen({
             </button>
           ))}
         </div>
+        <Button
+          variant="outline"
+          className="h-11 md:h-9"
+          onClick={() => {
+            setWaitHighlight([]);
+            setWaitOpen(true);
+          }}
+        >
+          {t("waitlist.button", { count: waitlist.length })}
+        </Button>
         <Button
           className="h-11 md:h-9"
           onClick={() => setCreating({ date, time: null, staffId: isManager ? null : ownStaffId })}
@@ -448,6 +465,35 @@ export function CalendarScreen({
           setOpenBooking(null);
           router.refresh();
         }}
+        onCancelled={async (id) => {
+          const matches = await waitlistMatches(id);
+          if (matches.length)
+            toast(t("waitlist.matches", { count: matches.length }), {
+              action: {
+                label: t("waitlist.show"),
+                onClick: () => {
+                  setWaitHighlight(matches);
+                  setWaitOpen(true);
+                },
+              },
+              duration: 15_000,
+            });
+        }}
+      />
+      <WaitlistPanel
+        open={waitOpen}
+        onOpenChange={setWaitOpen}
+        entries={waitlist}
+        highlight={waitHighlight}
+        onBook={(w) => {
+          setWaitOpen(false);
+          setCreating({
+            date: w.dateFrom < today ? today : w.dateFrom,
+            time: null,
+            staffId: w.staffId,
+            fromWaitlist: w,
+          });
+        }}
       />
       {creating && (
         <NewBookingPanel
@@ -462,6 +508,24 @@ export function CalendarScreen({
           timeZone={tz}
           isManager={isManager}
           ownStaffId={ownStaffId}
+          preset={
+            creating.fromWaitlist
+              ? {
+                  client: {
+                    id: creating.fromWaitlist.client.id,
+                    first_name: creating.fromWaitlist.client.name,
+                    last_name: null,
+                    phone_e164: creating.fromWaitlist.client.phone,
+                    important_note: creating.fromWaitlist.client.importantNote,
+                    no_show_count: creating.fromWaitlist.client.noShows,
+                  },
+                  serviceIds: [creating.fromWaitlist.serviceId],
+                }
+              : undefined
+          }
+          onCreated={(id) => {
+            if (creating.fromWaitlist) void setWaitlistStatus(creating.fromWaitlist.id, "booked", id);
+          }}
         />
       )}
     </div>

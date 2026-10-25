@@ -721,5 +721,19 @@
     "add": "Add note",
     "placeholder": "e.g. tooth 36 — caries, filling planned",
     "notAllowed": "Only doctors and the owner can see treatment notes."
+  },
+  "waitlist": {
+    "title": "Waitlist",
+    "hint": "Clients waiting for a time that is full. Book them when a time frees up.",
+    "button": "Waitlist ({count})",
+    "empty": "Nobody is waiting.",
+    "book": "Book",
+    "remove": "Remove",
+    "add": "Add to waitlist",
+    "added": "Added to the waitlist",
+    "matches": "{count, plural, one {# client is} other {# clients are}} waiting for this time",
+    "show": "Show",
+    "anyTime": "any time",
+    "until": "Until"
   }
 }
