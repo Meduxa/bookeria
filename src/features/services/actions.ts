@@ -140,13 +140,11 @@ export async function saveCategory(id: string | null, input: CategoryInput): Pro
       .eq("id", id)
       .eq("tenant_id", tenant.tenantId));
   } else {
-    ({ error } = await supabase
-      .from("service_categories")
-      .insert({
-        tenant_id: tenant.tenantId,
-        name_i18n,
-        sort_order: await nextSortOrder(ctx, "service_categories"),
-      }));
+    ({ error } = await supabase.from("service_categories").insert({
+      tenant_id: tenant.tenantId,
+      name_i18n,
+      sort_order: await nextSortOrder(ctx, "service_categories"),
+    }));
   }
   if (error) return fail(dbErrorCode(error));
   done(ctx.locale);

@@ -179,7 +179,14 @@
     "priceMaxInvalid": "Must be higher than the price",
     "minutesInvalid": "Enter a number of minutes",
     "duplicate": "This already exists",
-    "notFound": "Not found — it may have been deleted"
+    "notFound": "Not found — it may have been deleted",
+    "phoneInvalid": "Enter a phone like 555 12 34 56",
+    "percentInvalid": "From 0 to 100",
+    "scheduleInvalid": "Check the hours: an interval ends before it starts or two overlap",
+    "dateInvalid": "Pick a date",
+    "timeInvalid": "Check the times",
+    "endBeforeStart": "The end must be after the start",
+    "uploadFailed": "The photo could not be uploaded"
   },
   "email": {
     "invite": {
@@ -287,6 +294,113 @@
       "badDuration": "Duration not understood",
       "nameTooLong": "Name too long",
       "durationMissing": "Needs a duration"
+    }
+  },
+  "weekdays": {
+    "short": {
+      "1": "Mon",
+      "2": "Tue",
+      "3": "Wed",
+      "4": "Thu",
+      "5": "Fri",
+      "6": "Sat",
+      "7": "Sun"
+    },
+    "long": {
+      "1": "Monday",
+      "2": "Tuesday",
+      "3": "Wednesday",
+      "4": "Thursday",
+      "5": "Friday",
+      "6": "Saturday",
+      "7": "Sunday"
+    }
+  },
+  "staff": {
+    "title": "Staff",
+    "subtitle": "Masters and doctors: what they do, when they work, when they are away.",
+    "new": "Add staff member",
+    "emptyTitle": "No staff yet",
+    "emptyBody": "Add the people who serve clients. They don’t need a login.",
+    "inactive": "Inactive",
+    "notOnline": "Not online",
+    "noSchedule": "No working hours yet",
+    "servicesCount": "{count, plural, =0 {no services} one {# service} other {# services}}",
+    "tabs": {
+      "profile": "Profile",
+      "services": "Services",
+      "schedule": "Schedule",
+      "timeOff": "Time off"
+    },
+    "fields": {
+      "displayName": "Name",
+      "position": "Position",
+      "positionPlaceholder": "e.g. Senior stylist",
+      "positionType": "Role",
+      "color": "Colour in calendar",
+      "phone": "Phone",
+      "email": "Email",
+      "bio": "About (shown on the booking page)",
+      "bookableOnline": "Bookable online",
+      "bookableOnlineHint": "Clients can choose this person on your booking page.",
+      "active": "Active",
+      "activeHint": "Inactive staff keep their history but get no new bookings.",
+      "commission": "Commission, %",
+      "commissionHint": "Used in reports later. 0 if not applicable.",
+      "photo": "Photo",
+      "uploadPhoto": "Upload photo",
+      "removePhoto": "Remove photo",
+      "photoHint": "JPG, PNG or WebP, up to 2 MB."
+    },
+    "positionTypes": {
+      "master": "Master",
+      "doctor": "Doctor",
+      "assistant": "Assistant",
+      "other": "Other"
+    },
+    "login": {
+      "title": "Login",
+      "hint": "Link this profile to a team member’s login, so they see their own calendar.",
+      "none": "No login"
+    },
+    "deleteConfirm": "Delete {name}? Their schedule and service list are deleted too.",
+    "services": {
+      "hint": "Tick what this person does. Leave price and time empty to use the service’s own.",
+      "ownPrice": "Own price, ₾",
+      "ownDuration": "Own time, min",
+      "emptyCatalog": "Add services first.",
+      "selected": "{count} selected"
+    },
+    "schedule": {
+      "hint": "Weekly hours. Add a second interval for a lunch break.",
+      "dayOff": "Day off",
+      "addInterval": "Add interval",
+      "copyToWeekdays": "Copy Monday to Tue–Fri"
+    },
+    "overrides": {
+      "title": "Changes for a date",
+      "hint": "One-off days: a shorter day, an extra day, or a day off.",
+      "date": "Date",
+      "dayOff": "Day off",
+      "working": "Works",
+      "add": "Add",
+      "empty": "No upcoming changes."
+    },
+    "timeOff": {
+      "title": "Time off",
+      "hint": "Vacation, sick days, long breaks. No bookings in this time.",
+      "from": "From",
+      "to": "To",
+      "reason": "Reason",
+      "note": "Note",
+      "add": "Add time off",
+      "empty": "No upcoming time off."
+    },
+    "reasons": {
+      "vacation": "Vacation",
+      "sick": "Sick",
+      "break": "Break",
+      "other": "Other"
     }
   }
 }

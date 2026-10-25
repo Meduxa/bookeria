@@ -1185,6 +1185,10 @@ export type Database = {
         Args: { p_locale: string; p_rows: Json; p_tenant: string }
         Returns: number
       }
+      link_staff_login: {
+        Args: { p_membership: string; p_staff: string }
+        Returns: undefined
+      }
       log_audit: {
         Args: {
           p_action: string
@@ -1200,6 +1204,14 @@ export type Database = {
         Returns: undefined
       }
       revoke_invitation: { Args: { p_invitation: string }; Returns: undefined }
+      set_staff_schedule: {
+        Args: { p_rows: Json; p_staff: string }
+        Returns: undefined
+      }
+      set_staff_services: {
+        Args: { p_rows: Json; p_staff: string }
+        Returns: undefined
+      }
       shares_tenant_with: { Args: { p_user: string }; Returns: boolean }
       user_tenant_ids: { Args: never; Returns: string[] }
       valid_i18n: { Args: { p: Json; p_required?: boolean }; Returns: boolean }
