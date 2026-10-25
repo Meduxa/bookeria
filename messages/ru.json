@@ -11,7 +11,8 @@
     "business": "Бизнес",
     "switchBusiness": "Сменить бизнес",
     "account": "Аккаунт",
-    "comingSoon": "Скоро"
+    "comingSoon": "Скоро",
+    "darkMode": "Тёмная тема"
   },
   "languages": {
     "ka": "ქართული",
@@ -26,7 +27,14 @@
     "services": "Услуги",
     "team": "Команда",
     "more": "Ещё",
-    "main": "Основная навигация"
+    "main": "Основная навигация",
+    "staff": "Персонал",
+    "settings": "Настройки",
+    "groups": {
+      "main": "Обзор",
+      "business": "Бизнес",
+      "settings": "Настройки"
+    }
   },
   "auth": {
     "email": "Эл. почта",

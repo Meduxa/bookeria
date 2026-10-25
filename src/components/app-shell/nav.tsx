@@ -1,19 +1,46 @@
 "use client";
 
-import { CalendarDays, LayoutDashboard, Menu, Scissors, Stethoscope, Users, UsersRound } from "lucide-react";
+import {
+  CalendarDays,
+  LayoutDashboard,
+  Menu,
+  Scissors,
+  Settings,
+  Stethoscope,
+  UserRound,
+  Users,
+  UsersRound,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
 type BusinessType = "salon" | "dental";
 
-function items(type: BusinessType) {
+function groups(type: BusinessType, canManage: boolean) {
   return [
-    { href: "/dashboard", key: "dashboard", icon: LayoutDashboard, mobile: true },
-    { href: "/calendar", key: "calendar", icon: CalendarDays, mobile: true },
-    { href: "/clients", key: type === "dental" ? "patients" : "clients", icon: Users, mobile: true },
-    { href: "/services", key: "services", icon: type === "dental" ? Stethoscope : Scissors, mobile: true },
-    { href: "/settings/team", key: "team", icon: UsersRound, mobile: false },
+    {
+      key: "main",
+      items: [
+        { href: "/dashboard", key: "dashboard", icon: LayoutDashboard },
+        { href: "/calendar", key: "calendar", icon: CalendarDays },
+      ],
+    },
+    {
+      key: "business",
+      items: [
+        { href: "/clients", key: type === "dental" ? "patients" : "clients", icon: Users },
+        { href: "/services", key: "services", icon: type === "dental" ? Stethoscope : Scissors },
+        { href: "/staff", key: "staff", icon: UserRound },
+      ],
+    },
+    {
+      key: "settings",
+      items: [
+        { href: "/settings/team", key: "team", icon: UsersRound },
+        ...(canManage ? [{ href: "/settings/business", key: "settings", icon: Settings }] : []),
+      ],
+    },
   ] as const;
 }
 
@@ -22,58 +49,98 @@ function useIsActive() {
   return (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function SidebarNav({ type }: { type: BusinessType }) {
+export function SidebarNav({ type, canManage }: { type: BusinessType; canManage: boolean }) {
   const t = useTranslations("nav");
   const isActive = useIsActive();
   return (
-    <nav aria-label={t("main")} className="flex flex-col gap-1">
-      {items(type).map(({ href, key, icon: Icon }) => (
-        <Link
-          key={href}
-          href={href}
-          aria-current={isActive(href) ? "page" : undefined}
-          className={cn(
-            "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50",
-            isActive(href) && "bg-muted text-foreground",
-          )}
-        >
-          <Icon className="size-4" aria-hidden />
-          {t(key)}
-        </Link>
+    <nav aria-label={t("main")} className="flex flex-col gap-5">
+      {groups(type, canManage).map((group) => (
+        <div key={group.key} className="flex flex-col gap-0.5">
+          <p className="px-3 pb-1 text-xs font-medium text-muted-foreground">{t(`groups.${group.key}`)}</p>
+          {group.items.map(({ href, key, icon: Icon }) => (
+            <Link
+              key={href}
+              href={href}
+              aria-current={isActive(href) ? "page" : undefined}
+              className={cn(
+                "flex min-h-9 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-foreground/80 outline-none hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50",
+                isActive(href) &&
+                  "bg-accent text-accent-foreground hover:bg-accent hover:text-accent-foreground",
+              )}
+            >
+              <Icon className="size-4" aria-hidden />
+              {t(key)}
+            </Link>
+          ))}
+        </div>
       ))}
     </nav>
   );
 }
 
-// Phone: max 5 items, last one ("More") opens the rest.
+// Phone: max 5 items; "More" leads to the remaining sections.
 export function BottomNav({ type }: { type: BusinessType }) {
   const t = useTranslations("nav");
   const isActive = useIsActive();
-  const main = items(type).filter((i) => i.mobile);
-  const all = [...main, { href: "/settings/team", key: "more", icon: Menu }] as const;
+  const items = [
+    { href: "/dashboard", key: "dashboard", icon: LayoutDashboard },
+    { href: "/calendar", key: "calendar", icon: CalendarDays },
+    { href: "/clients", key: type === "dental" ? "patients" : "clients", icon: Users },
+    { href: "/services", key: "services", icon: type === "dental" ? Stethoscope : Scissors },
+    { href: "/more", key: "more", icon: Menu },
+  ] as const;
+  const moreActive = ["/more", "/staff", "/settings"].some((p) => isActive(p));
 
   return (
     <nav
       aria-label={t("main")}
-      className="fixed inset-x-0 bottom-0 z-40 border-t bg-background pb-[env(safe-area-inset-bottom)] md:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 border-t bg-card pb-[env(safe-area-inset-bottom)] md:hidden"
     >
       <ul className="grid grid-cols-5">
-        {all.map(({ href, key, icon: Icon }) => (
-          <li key={key}>
-            <Link
-              href={href}
-              aria-current={isActive(href) ? "page" : undefined}
-              className={cn(
-                "flex min-h-14 flex-col items-center justify-center gap-1 px-1 text-[0.7rem] leading-tight text-muted-foreground outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
-                isActive(href) && "font-medium text-foreground",
-              )}
-            >
-              <Icon className="size-5" aria-hidden />
-              <span className="line-clamp-1 text-center">{t(key)}</span>
-            </Link>
-          </li>
-        ))}
+        {items.map(({ href, key, icon: Icon }) => {
+          const active = href === "/more" ? moreActive : isActive(href);
+          return (
+            <li key={key}>
+              <Link
+                href={href}
+                aria-current={active ? "page" : undefined}
+                className={cn(
+                  "flex min-h-14 flex-col items-center justify-center gap-1 px-1 text-[0.7rem] leading-tight text-muted-foreground outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+                  active && "font-medium text-primary",
+                )}
+              >
+                <Icon className="size-5" aria-hidden />
+                <span className="line-clamp-1 text-center">{t(key)}</span>
+              </Link>
+            </li>
+          );
+        })}
       </ul>
     </nav>
+  );
+}
+
+// The "More" page on phones lists what doesn't fit in the bottom bar.
+export function MoreNavList({ canManage }: { canManage: boolean }) {
+  const t = useTranslations("nav");
+  const items = [
+    { href: "/staff", key: "staff", icon: UserRound },
+    { href: "/settings/team", key: "team", icon: UsersRound },
+    ...(canManage ? [{ href: "/settings/business", key: "settings", icon: Settings }] : []),
+  ] as const;
+  return (
+    <ul className="flex flex-col divide-y rounded-xl border bg-card">
+      {items.map(({ href, key, icon: Icon }) => (
+        <li key={href}>
+          <Link
+            href={href}
+            className="flex min-h-12 items-center gap-3 px-4 text-sm font-medium outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+          >
+            <Icon className="size-4 text-muted-foreground" aria-hidden />
+            {t(key)}
+          </Link>
+        </li>
+      ))}
+    </ul>
   );
 }

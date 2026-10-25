@@ -11,7 +11,8 @@
     "business": "Business",
     "switchBusiness": "Switch business",
     "account": "Account",
-    "comingSoon": "Coming soon"
+    "comingSoon": "Coming soon",
+    "darkMode": "Dark mode"
   },
   "languages": {
     "ka": "ქართული",
@@ -26,7 +27,14 @@
     "services": "Services",
     "team": "Team",
     "more": "More",
-    "main": "Main navigation"
+    "main": "Main navigation",
+    "staff": "Staff",
+    "settings": "Settings",
+    "groups": {
+      "main": "Overview",
+      "business": "Business",
+      "settings": "Settings"
+    }
   },
   "auth": {
     "email": "Email",

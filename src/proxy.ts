@@ -13,6 +13,8 @@ const PROTECTED = [
   /^\/calendar/,
   /^\/clients/,
   /^\/services/,
+  /^\/staff/,
+  /^\/more/,
 ];
 
 export async function proxy(request: NextRequest) {

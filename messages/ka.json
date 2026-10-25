@@ -11,7 +11,8 @@
     "business": "ბიზნესი",
     "switchBusiness": "ბიზნესის შეცვლა",
     "account": "ანგარიში",
-    "comingSoon": "მალე"
+    "comingSoon": "მალე",
+    "darkMode": "მუქი რეჟიმი"
   },
   "languages": {
     "ka": "ქართული",
@@ -26,7 +27,14 @@
     "services": "სერვისები",
     "team": "გუნდი",
     "more": "მეტი",
-    "main": "მთავარი ნავიგაცია"
+    "main": "მთავარი ნავიგაცია",
+    "staff": "პერსონალი",
+    "settings": "პარამეტრები",
+    "groups": {
+      "main": "მიმოხილვა",
+      "business": "ბიზნესი",
+      "settings": "პარამეტრები"
+    }
   },
   "auth": {
     "email": "ელფოსტა",
