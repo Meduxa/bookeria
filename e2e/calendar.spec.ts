@@ -74,7 +74,12 @@ test("create a booking from an empty slot, then mark the client arrived", async 
   await page.getByRole("dialog").getByRole("button", { name: "მოვიდა" }).click();
   await expect(page.getByRole("dialog")).toBeHidden(); // saved
   await page.goto(`/ka/calendar?view=list&date=${date}`);
-  await expect(page.getByRole("button", { name: /ნინო ბერიძე/ }).getByText("მოვიდა")).toBeVisible();
+  await expect(
+    page
+      .getByRole("button", { name: /ნინო ბერიძე/ })
+      .filter({ hasText: time })
+      .getByText("მოვიდა"),
+  ).toBeVisible();
 });
 
 test("staff see only their own column", async ({ page }, info) => {

@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, Plus, TriangleAlert, UserRound } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, TriangleAlert, Upload, UserRound } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { toast } from "sonner";
@@ -290,6 +290,14 @@ export function CalendarScreen({
         >
           {t("waitlist.button", { count: waitlist.length })}
         </Button>
+        {isManager && (
+          <Button variant="outline" asChild className="h-11 md:h-9">
+            <Link href="/calendar/import">
+              <Upload aria-hidden />
+              {t("bookingImport.open")}
+            </Link>
+          </Button>
+        )}
         <Button
           className="h-11 md:h-9"
           onClick={() => setCreating({ date, time: null, staffId: isManager ? null : ownStaffId })}

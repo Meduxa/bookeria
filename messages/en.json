@@ -789,5 +789,44 @@
   "settingsRevenue": {
     "label": "Administrators see revenue",
     "hint": "Off: only the owner sees money and the cash summary."
+  },
+  "bookingImport": {
+    "title": "Import bookings",
+    "subtitle": "Move bookings from your old system or paper diary (typed into Excel). The first row must be the column names.",
+    "open": "Import bookings",
+    "hint": "Columns like date, time, client, phone, service, staff, price, status are recognised in Georgian, English and Russian. You can fix the matching on the next step.",
+    "columns": "Which column is what",
+    "fields": {
+      "date": "Date",
+      "time": "Time",
+      "datetime": "Date and time (one column)",
+      "client": "Client",
+      "phone": "Phone",
+      "service": "Service",
+      "staff": "Staff member",
+      "price": "Price",
+      "duration": "Duration, min",
+      "status": "Status"
+    },
+    "noSms": "Imported bookings never send SMS. Clients are matched by phone or created.",
+    "summary": "{ok} ready · {problems} with problems (they are left out)",
+    "importButton": "{count, plural, one {Import # booking} other {Import # bookings}}",
+    "done": "{imported} bookings imported",
+    "line": "Row {line}",
+    "skip": {
+      "overlap": "the person is already busy at that time",
+      "invalid": "could not be saved"
+    },
+    "issues": {
+      "noDate": "No date",
+      "badDate": "Date not understood",
+      "badTime": "Time not understood",
+      "unknownService": "Unknown service",
+      "unknownStaff": "Unknown staff member",
+      "badPhone": "Phone not valid",
+      "badPrice": "Price not understood"
+    },
+    "paste": "Paste the table (copied from Excel)",
+    "read": "Read the table"
   }
 }

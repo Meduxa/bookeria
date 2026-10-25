@@ -3,6 +3,10 @@ import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   testDir: "e2e",
   fullyParallel: true,
+  // One dev server (compiles on first use) talking to the Frankfurt dev DB:
+  // server actions can take a few seconds under parallel load.
+  workers: process.env.CI ? undefined : 3,
+  expect: { timeout: 15_000 },
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI ? "github" : "list",
   use: {

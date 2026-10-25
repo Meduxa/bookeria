@@ -21,11 +21,22 @@ async function signIn(page: Page, email: string) {
 test("checkout with a split payment shows up in the cash summary", async ({ page }, info) => {
   test.skip(info.project.name !== "desktop");
   await signIn(page, "salon.owner@demo.test");
-  await page.goto(`/ka/calendar?view=day&date=${weekdayAhead(1)}`);
+  // day 3+, so the calendar tests (day 1) still find unpaid, confirmed bookings
+  await page.goto(`/ka/calendar?view=day&date=${weekdayAhead(3)}`);
   await page.waitForLoadState("networkidle");
-  await page.locator('[role="button"][aria-label*="–"]').first().click();
+  // the first booking that is still unpaid (earlier runs paid some)
+  const blocks = page.locator('[role="button"][aria-label*="–"]');
   const panel = page.getByRole("dialog");
-  await panel.getByRole("button", { name: "ანგარიშსწორება" }).click();
+  const pay = panel.getByRole("button", { name: "ანგარიშსწორება" });
+  for (let i = 0; ; i++) {
+    expect(i).toBeLessThan(await blocks.count());
+    await blocks.nth(i).click();
+    await expect(panel.getByRole("heading", { name: "სერვისები" })).toBeVisible();
+    if (await pay.isVisible()) break;
+    await page.keyboard.press("Escape");
+    await expect(panel).toBeHidden();
+  }
+  await pay.click();
   await expect(page.getByRole("dialog")).toContainText("გადასახდელი");
   await page.getByRole("dialog").getByRole("button", { name: "გაყოფილი გადახდა" }).click();
   // first line pays 10 ₾ cash, the second (card) the rest
@@ -76,4 +87,44 @@ test("dental: day view by chair", async ({ page }, info) => {
   await expect(page.getByText("სავარძელი 1")).toBeVisible();
   await expect(page.getByText("სავარძელი 2")).toBeVisible();
   await expect(page.locator('[role="button"][aria-label*="–"]').first()).toBeVisible();
+});
+
+test("import bookings: columns guessed, bad rows left out, good rows saved", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop");
+  await signIn(page, "salon.owner@demo.test");
+  await page.goto("/ka/calendar");
+  await page.getByRole("link", { name: "ჯავშნების იმპორტი" }).click();
+  await page.waitForURL("**/ka/calendar/import");
+  await page.waitForLoadState("networkidle");
+  // a random far-future day so reruns never collide with earlier imports
+  const day = String(1 + Math.floor(Math.random() * 28)).padStart(2, "0");
+  const month = String(1 + Math.floor(Math.random() * 12)).padStart(2, "0");
+  const year = 2030 + Math.floor(Math.random() * 20);
+  const table = [
+    "თარიღი\tდრო\tკლიენტი\tტელეფონი\tსერვისი\tსპეციალისტი\tფასი",
+    `${day}.${month}.${year}\t10:00\tნინო ბერიძე\t555 10 00 00\tქალის თმის შეჭრა\tანა გელაშვილი\t55`,
+    `${day}.${month}.${year}\t12:00\tვიღაც სხვა\t599 11 22 34\tარარსებული სერვისი\tანა გელაშვილი\t10`,
+  ].join("\n"); // the good row matches a demo client by phone, so no new client is created
+  await page.getByLabel("ჩასვით ცხრილი (Excel-იდან დაკოპირებული)").fill(table);
+  await page.getByRole("button", { name: "ცხრილის წაკითხვა" }).click();
+  await expect(page.getByText("უცნობი სერვისი")).toBeVisible();
+  await page.getByRole("button", { name: "1 ჯავშნის იმპორტი" }).click();
+  await expect(page.getByRole("heading", { name: "შემოტანილია 1 ჯავშანი" })).toBeVisible();
+});
+
+test("phone: booking import page never scrolls sideways", async ({ page }, info) => {
+  test.skip(info.project.name !== "mobile");
+  await signIn(page, "salon.admin@demo.test");
+  await page.goto("/ka/calendar/import");
+  await expect(page.getByRole("heading", { name: "ჯავშნების იმპორტი" })).toBeVisible();
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+  expect(overflow).toBeLessThanOrEqual(0);
+});
+
+test("staff cannot open booking import", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop");
+  await signIn(page, "salon.staff@demo.test");
+  await page.goto("/ka/calendar/import");
+  await page.waitForURL("**/ka/calendar");
+  await expect(page.getByRole("link", { name: "ჯავშნების იმპორტი" })).toHaveCount(0);
 });
