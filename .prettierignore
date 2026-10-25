@@ -1,0 +1,13 @@
+.next
+node_modules
+package-lock.json
+supabase/.temp
+src/components/ui
+src/lib/supabase/database.types.ts
+playwright-report
+test-results
+docs
+design
+.claude
+CLAUDE.md
+START-HERE-PROMPT.md

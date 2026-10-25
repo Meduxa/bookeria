@@ -1,0 +1,161 @@
+{
+  "meta": {
+    "description": "Online booking, calendar and clients for salons and dental clinics"
+  },
+  "common": {
+    "loading": "Loading…",
+    "retry": "Try again",
+    "cancel": "Cancel",
+    "signOut": "Sign out",
+    "language": "Language",
+    "business": "Business",
+    "switchBusiness": "Switch business",
+    "account": "Account",
+    "comingSoon": "Coming soon"
+  },
+  "languages": {
+    "ka": "ქართული",
+    "en": "English",
+    "ru": "Русский"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "calendar": "Calendar",
+    "clients": "Clients",
+    "patients": "Patients",
+    "services": "Services",
+    "team": "Team",
+    "more": "More",
+    "main": "Main navigation"
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Password",
+    "login": {
+      "title": "Sign in",
+      "subtitle": "Welcome back. Sign in to manage your bookings.",
+      "submit": "Sign in",
+      "noAccount": "No account yet?",
+      "signupLink": "Create one"
+    },
+    "signup": {
+      "title": "Create your account",
+      "subtitle": "14 days free, no card needed.",
+      "fullName": "Your name",
+      "passwordHint": "At least 8 characters",
+      "submit": "Create account",
+      "haveAccount": "Already have an account?",
+      "loginLink": "Sign in",
+      "checkEmailTitle": "Check your email",
+      "checkEmailBody": "We sent a confirmation link to {email}. Open it to continue."
+    }
+  },
+  "onboarding": {
+    "title": "Set up your business",
+    "subtitle": "You can change these details later in settings.",
+    "name": "Business name",
+    "namePlaceholder": "e.g. Salon Nino",
+    "type": "Type of business",
+    "slug": "Booking page address",
+    "slugHint": "Your clients will book at {url}",
+    "submit": "Create business"
+  },
+  "businessType": {
+    "salon": "Beauty salon",
+    "salonHint": "Hair, nails, brows, cosmetology, barbershop, spa",
+    "dental": "Dental clinic",
+    "dentalHint": "Doctors, chairs, longer visits, stricter privacy"
+  },
+  "roles": {
+    "owner": "Owner",
+    "admin": "Administrator",
+    "staff": "Staff member"
+  },
+  "dashboard": {
+    "welcome": "Hello, {name}",
+    "welcomeNoName": "Hello",
+    "subtitle": "This is {business}'s dashboard. Here is what to do first.",
+    "checklistTitle": "Getting started",
+    "checklist": {
+      "services": "Add your services and prices",
+      "staff": "Add your team",
+      "hours": "Set working hours",
+      "link": "Share your booking link",
+      "sms": "Send your first SMS"
+    },
+    "inviteTeam": "Invite your team"
+  },
+  "placeholder": {
+    "title": "{section} is on the way",
+    "body": "This part of the app is built in a later phase."
+  },
+  "team": {
+    "title": "Team",
+    "subtitle": "People who can sign in to {business}.",
+    "inviteTitle": "Invite someone",
+    "inviteSubmit": "Send invitation",
+    "linkReady": "Invitation created. Share this link with {email}:",
+    "emailNote": "In development, emails are not really sent: copy the link above.",
+    "copy": "Copy link",
+    "copied": "Copied",
+    "membersTitle": "Members",
+    "invitesTitle": "Pending invitations",
+    "invitesEmpty": "No pending invitations.",
+    "revoke": "Revoke",
+    "revokeConfirm": "Revoke the invitation for {email}? The link will stop working.",
+    "revoked": "Invitation revoked",
+    "expires": "Expires {date}",
+    "you": "you",
+    "noName": "No name yet",
+    "staffNotice": "Only the owner and administrators can invite people.",
+    "role": "Role",
+    "link": "Invitation link"
+  },
+  "invite": {
+    "title": "You're invited",
+    "body": "{business} invited {email} to join as {role}.",
+    "accept": "Accept and continue",
+    "signedInAs": "Signed in as {email}.",
+    "wrongAccount": "This invitation is for {email}. Sign out and sign in with that email.",
+    "signIn": "Sign in to accept",
+    "signUp": "Create an account",
+    "status": {
+      "expired": "This invitation has expired. Ask for a new one.",
+      "revoked": "This invitation was cancelled.",
+      "accepted": "This invitation was already used.",
+      "notFound": "This invitation link is not valid."
+    }
+  },
+  "errors": {
+    "required": "Required",
+    "email": "Enter a valid email",
+    "nameMin": "At least 2 characters",
+    "tooLong": "Too long",
+    "passwordMin": "At least 8 characters",
+    "invalidInput": "Please check the form",
+    "invalidCredentials": "Wrong email or password",
+    "emailNotConfirmed": "Confirm your email first. Check your inbox.",
+    "emailTaken": "An account with this email already exists",
+    "passwordWeak": "Choose a stronger password",
+    "slugInvalid": "3–50 characters: latin letters, digits and dashes",
+    "slugTaken": "This address is taken. Try another.",
+    "notSignedIn": "Please sign in again",
+    "notAllowed": "You don't have permission to do this",
+    "alreadyMember": "This person is already on the team",
+    "tooManyBusinesses": "You've reached the limit of businesses",
+    "inviteInvalid": "This invitation is not valid any more",
+    "inviteWrongEmail": "This invitation is for a different email",
+    "generic": "Something went wrong. Please try again.",
+    "pageTitle": "Something went wrong",
+    "pageBody": "The page could not be loaded. Please try again.",
+    "notFoundTitle": "Page not found",
+    "notFoundBody": "The page you are looking for does not exist.",
+    "backHome": "Back to start"
+  },
+  "email": {
+    "invite": {
+      "subject": "{business} invited you to {app}",
+      "body": "Hello!\n\n{business} invited you to join their team on {app}.\n\nAccept the invitation: {link}\n\nThe link is valid for 7 days. If you didn't expect this email, you can ignore it."
+    }
+  }
+}
