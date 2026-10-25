@@ -50,7 +50,8 @@
       "business": "Business",
       "settings": "Settings"
     },
-    "myDay": "My day"
+    "myDay": "My day",
+    "cash": "Cash"
   },
   "auth": {
     "email": "Email",
@@ -192,7 +193,9 @@
     "slotTaken": "This time was just taken — please choose another.",
     "invalidTransition": "This status change is not possible.",
     "cannotPerform": "This person does not do this service.",
-    "staffHasBookings": "This person has bookings. Make them inactive instead."
+    "staffHasBookings": "This person has bookings. Make them inactive instead.",
+    "discountTooBig": "The discount is larger than the bill",
+    "cannotPay": "This booking cannot be paid (cancelled or pending)"
   },
   "email": {
     "invite": {
@@ -735,5 +738,53 @@
     "show": "Show",
     "anyTime": "any time",
     "until": "Until"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "open": "Checkout",
+    "extra": "Extra items",
+    "extraName": "Item",
+    "addExtra": "Add item",
+    "discount": "Discount",
+    "tip": "Tip",
+    "tipFor": "Tip for",
+    "subtotal": "Subtotal",
+    "paidBefore": "Paid before",
+    "due": "To pay",
+    "payment": "Payment",
+    "method": "Method",
+    "amount": "Amount",
+    "split": "Split payment",
+    "mismatch": "Paying {paying}, due {due}. The rest stays unpaid.",
+    "pay": "Take {amount}",
+    "paid": "Paid",
+    "paidOf": "Paid {paid} of {total}",
+    "unpaid": "Unpaid",
+    "methods": {
+      "cash": "Cash",
+      "card": "Card terminal",
+      "transfer": "Bank transfer",
+      "gift_card": "Gift card",
+      "online": "Online"
+    }
+  },
+  "cash": {
+    "title": "Cash summary",
+    "subtitle": "Money taken on a day, by method and by person — for closing the day.",
+    "date": "Day",
+    "total": "Taken",
+    "tips": "Tips",
+    "byMethod": "By payment method",
+    "byStaff": "By person (services done)",
+    "payments": "Payments",
+    "empty": "No payments this day.",
+    "unpaidTitle": "Unpaid bookings (last 30 days)",
+    "unpaidEmpty": "Nothing unpaid.",
+    "hidden": "The owner has hidden revenue from administrators.",
+    "count": "{count, plural, one {# payment} other {# payments}}"
+  },
+  "settingsRevenue": {
+    "label": "Administrators see revenue",
+    "hint": "Off: only the owner sees money and the cash summary."
   }
 }

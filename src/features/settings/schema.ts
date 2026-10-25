@@ -34,6 +34,7 @@ export const rulesSchema = z.object({
   onlineRequiresApproval: z.boolean(),
   staffSeesAllClients: z.boolean(),
   staffSeesAllBookings: z.boolean(),
+  adminsSeeRevenue: z.boolean(),
 });
 export type RulesInput = z.input<typeof rulesSchema>;
 

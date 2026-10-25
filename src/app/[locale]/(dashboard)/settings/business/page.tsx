@@ -63,6 +63,7 @@ export default async function BusinessSettingsPage({ params }: PageProps<"/[loca
           onlineRequiresApproval: s.online_requires_approval,
           staffSeesAllClients: s.staff_sees_all_clients,
           staffSeesAllBookings: s.staff_sees_all_bookings,
+          adminsSeeRevenue: s.admins_see_revenue,
         },
         hours,
         closures: closures.data ?? [],

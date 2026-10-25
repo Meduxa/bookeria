@@ -19,6 +19,7 @@ import { useDates } from "@/lib/use-dates";
 import { bookingHistory, cancelFollowing, moveBooking, setBookingNote, setBookingStatus } from "../actions";
 import type { Conflict } from "../engine/availability";
 import type { CalBooking, CalStaff } from "../queries";
+import { CheckoutPanel } from "./checkout-panel";
 import { DentalNotes } from "./dental-notes";
 
 export const STATUS_TONE: Record<string, PillTone> = {
@@ -83,6 +84,7 @@ export function BookingPanel({
   const [move, setMove] = useState({ date: "", time: "", staffId: "" });
   const [conflicts, setConflicts] = useState<Conflict[]>([]);
   const [error, setError] = useState<string>();
+  const [paying, setPaying] = useState(false);
   const [history, setHistory] = useState<Awaited<ReturnType<typeof bookingHistory>>>([]);
 
   useEffect(() => {
@@ -95,6 +97,7 @@ export function BookingPanel({
   }, [booking]);
 
   if (!booking) return null;
+  if (paying) return <CheckoutPanel booking={booking} staff={staff} onClose={onClose} />;
 
   const first = booking.items[0];
   const staffName = staff.find((s) => s.id === first?.staffId)?.name ?? "";
@@ -190,6 +193,26 @@ export function BookingPanel({
               <span className="tabular-nums">{formatMoney(booking.totalMinor)}</span>
             </li>
           </ul>
+          {booking.paidMinor > 0 && (
+            <StatusPill
+              tone={booking.paidMinor >= booking.totalMinor ? "success" : "warning"}
+              className="self-start"
+            >
+              {booking.paidMinor >= booking.totalMinor
+                ? t("checkout.paid")
+                : t("checkout.paidOf", {
+                    paid: formatMoney(booking.paidMinor),
+                    total: formatMoney(booking.totalMinor),
+                  })}
+            </StatusPill>
+          )}
+          {canEdit &&
+            ["confirmed", "arrived", "in_progress", "completed"].includes(booking.status) &&
+            booking.paidMinor < booking.totalMinor && (
+              <Button className="h-11 self-start md:h-9" onClick={() => setPaying(true)}>
+                {t("checkout.open")}
+              </Button>
+            )}
         </section>
 
         {canEdit && NEXT[booking.status].length > 0 && (

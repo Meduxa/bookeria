@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Banknote,
   CalendarClock,
   CalendarDays,
   LayoutDashboard,
@@ -34,6 +35,7 @@ function groups(type: BusinessType, canManage: boolean, hasProfile: boolean) {
         { href: "/clients", key: type === "dental" ? "patients" : "clients", icon: Users },
         { href: "/services", key: "services", icon: type === "dental" ? Stethoscope : Scissors },
         { href: "/staff", key: "staff", icon: UserRound },
+        ...(canManage ? [{ href: "/cash", key: "cash", icon: Banknote }] : []),
       ],
     },
     {
@@ -138,6 +140,7 @@ export function MoreNavList({ canManage }: { canManage: boolean }) {
   const t = useTranslations("nav");
   const items = [
     { href: "/staff", key: "staff", icon: UserRound },
+    ...(canManage ? [{ href: "/cash", key: "cash", icon: Banknote }] : []),
     { href: "/settings/team", key: "team", icon: UsersRound },
     ...(canManage ? [{ href: "/settings/business", key: "settings", icon: Settings }] : []),
   ] as const;

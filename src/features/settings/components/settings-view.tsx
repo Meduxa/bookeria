@@ -247,6 +247,14 @@ export function SettingsView({ data }: { data: SettingsData }) {
             <Switch checked={rules[k]} onCheckedChange={(v) => setRules({ ...rules, [k]: v })} />
           </SwitchRow>
         ))}
+        {data.isOwner && (
+          <SwitchRow label={t("settingsRevenue.label")} hint={t("settingsRevenue.hint")}>
+            <Switch
+              checked={!!rules.adminsSeeRevenue}
+              onCheckedChange={(v) => setRules({ ...rules, adminsSeeRevenue: v })}
+            />
+          </SwitchRow>
+        )}
         <FieldError code={rulesSave.error} />
         <Button
           className="h-11 self-start md:h-9"

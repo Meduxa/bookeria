@@ -26,6 +26,7 @@ export type CalBooking = {
   end: string;
   note: string | null;
   totalMinor: number;
+  paidMinor: number;
   client: {
     id: string;
     name: string;
@@ -80,7 +81,7 @@ export async function getCalendar(
     supabase
       .from("bookings")
       .select(
-        "id, status, source, recurrence_id, starts_at, ends_at, internal_note, total_minor, clients(id, first_name, last_name, phone_e164, important_note, no_show_count), booking_items(id, staff_id, resource_id, service_id, name_snapshot, price_minor_snapshot, price_type_snapshot, duration_min_snapshot, starts_at, ends_at, sort_order)",
+        "id, status, source, recurrence_id, starts_at, ends_at, internal_note, total_minor, paid_minor, clients(id, first_name, last_name, phone_e164, important_note, no_show_count), booking_items(id, staff_id, resource_id, service_id, name_snapshot, price_minor_snapshot, price_type_snapshot, duration_min_snapshot, starts_at, ends_at, sort_order)",
       )
       .eq("tenant_id", tenantId)
       .lt("starts_at", new Date(toIso).toISOString())
@@ -132,6 +133,7 @@ export async function getCalendar(
       end: b.ends_at,
       note: b.internal_note,
       totalMinor: b.total_minor,
+      paidMinor: b.paid_minor,
       client: c
         ? {
             id: c.id,

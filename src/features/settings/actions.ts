@@ -79,6 +79,8 @@ export async function saveRules(input: RulesInput): Promise<ActionResult> {
       online_requires_approval: v.onlineRequiresApproval,
       staff_sees_all_clients: v.staffSeesAllClients,
       staff_sees_all_bookings: v.staffSeesAllBookings,
+      // only the owner decides whether admins see money
+      ...(ctx.tenant.role === "owner" ? { admins_see_revenue: v.adminsSeeRevenue } : {}),
     })
     .eq("tenant_id", ctx.tenant.tenantId);
   if (error) return fail(dbErrorCode(error));
