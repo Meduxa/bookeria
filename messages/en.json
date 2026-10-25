@@ -186,7 +186,8 @@
     "dateInvalid": "Pick a date",
     "timeInvalid": "Check the times",
     "endBeforeStart": "The end must be after the start",
-    "uploadFailed": "The photo could not be uploaded"
+    "uploadFailed": "The photo could not be uploaded",
+    "phoneTaken": "A client with this phone already exists"
   },
   "email": {
     "invite": {
@@ -449,6 +450,110 @@
         "room": "Room",
         "equipment": "Equipment"
       }
+    }
+  },
+  "clients": {
+    "title": "Clients",
+    "titleDental": "Patients",
+    "subtitle": "Contact details, important notes and marketing consent.",
+    "new": "New client",
+    "import": "Import clients",
+    "searchPlaceholder": "Search by name, phone or email",
+    "total": "{count, plural, one {# client} other {# clients}}",
+    "emptyTitle": "No clients yet",
+    "emptyBody": "Clients are added when they book, or add and import them here.",
+    "noMatch": "Nobody found. Check the spelling or search by phone.",
+    "colName": "Name",
+    "colPhone": "Phone",
+    "colConsent": "Marketing",
+    "colAdded": "Added",
+    "sms": "SMS",
+    "email": "Email",
+    "blocked": "No online booking",
+    "prev": "Previous",
+    "next": "Next",
+    "fields": {
+      "firstName": "First name",
+      "lastName": "Last name",
+      "phone": "Phone",
+      "email": "Email",
+      "birthday": "Birthday",
+      "gender": "Gender",
+      "source": "Where they came from",
+      "tags": "Tags",
+      "tagsHint": "Separate with commas, e.g. VIP, regular",
+      "notes": "Notes",
+      "importantNote": "Important note",
+      "importantNoteHint": "Allergies and the like. Shown as a warning on every booking.",
+      "preferredStaff": "Preferred staff member",
+      "blockedOnline": "Block online booking",
+      "blockedOnlineHint": "For repeated no-shows: they can only book by phone."
+    },
+    "genders": {
+      "female": "Female",
+      "male": "Male",
+      "other": "Other"
+    },
+    "sources": {
+      "walk_in": "Walk-in",
+      "phone": "Phone",
+      "instagram": "Instagram",
+      "facebook": "Facebook",
+      "referral": "Referral",
+      "online": "Booking page",
+      "import": "Import",
+      "other": "Other"
+    },
+    "consent": {
+      "title": "Marketing consent",
+      "hint": "Reminders about bookings are always sent. Promotions only with consent — tick only if the client agreed.",
+      "sms": "Promotions by SMS",
+      "email": "Promotions by email",
+      "history": "History",
+      "historyEmpty": "No changes recorded.",
+      "granted": "agreed",
+      "withdrawn": "withdrew",
+      "sources": {
+        "admin": "by staff",
+        "booking_page": "on booking page",
+        "import": "imported",
+        "unsubscribe": "unsubscribed",
+        "client_request": "on request"
+      }
+    },
+    "rights": {
+      "title": "Client data",
+      "hint": "On the client’s request: give them their data, or delete it.",
+      "export": "Download data (JSON)",
+      "anonymize": "Delete personal data",
+      "anonymizeConfirm": "Remove {name}’s name, phone, email, notes and consents for good? Visit history stays, without personal data. This cannot be undone.",
+      "anonymized": "Personal data removed",
+      "ownerOnly": "Only the owner can export or delete client data."
+    },
+    "merge": {
+      "title": "Merge duplicate",
+      "hint": "Find the duplicate card. Its details, notes and consents move into this card, then it is removed.",
+      "search": "Search the duplicate",
+      "confirm": "Merge {other} into {name}? This cannot be undone.",
+      "done": "Cards merged"
+    }
+  },
+  "clientImport": {
+    "title": "Import clients",
+    "subtitle": "Paste from Excel or Google Sheets, or upload a file. The first row must be the column names.",
+    "columnsHint": "Recognised columns: name (or first + last name), phone, email, birthday, notes, SMS consent, email consent.",
+    "notRecognised": "Could not find the name and phone (or email) columns. Check the first row.",
+    "summary": "{ok} new · {existing} already in your list · {errors} with errors",
+    "existing": "Already in your list",
+    "consentNote": "Consent columns are imported as given. Import them only if clients really agreed.",
+    "importButton": "{count, plural, one {Import # client} other {Import # clients}}",
+    "success": "{inserted} added, {skipped} skipped",
+    "issues": {
+      "noName": "No name",
+      "badPhone": "Phone not valid",
+      "badEmail": "Email not valid (left out)",
+      "badBirthday": "Birthday not understood (left out)",
+      "duplicateInFile": "Same phone twice in file"
     }
   }
 }

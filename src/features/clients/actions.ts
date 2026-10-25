@@ -1,0 +1,178 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { z } from "zod";
+import { dbErrorCode, managerContext } from "@/lib/action-context";
+import { fail, ok, type ActionResult } from "@/lib/action-result";
+import { getConsentHistory } from "./queries";
+import { clientSchema, importClientsSchema, type ClientInput } from "./schema";
+
+const uuid = z.uuid();
+
+export async function saveClient(
+  id: string | null,
+  input: ClientInput,
+): Promise<ActionResult<{ id: string }>> {
+  const ctx = await managerContext();
+  if (!ctx || (id && !uuid.safeParse(id).success)) return fail("notAllowed");
+  const parsed = clientSchema.safeParse(input);
+  if (!parsed.success) return fail("invalidInput");
+  const v = parsed.data;
+  const { supabase, tenant } = ctx;
+
+  const row = {
+    first_name: v.firstName,
+    last_name: v.lastName,
+    phone_e164: v.phone,
+    email: v.email,
+    birthday: v.birthday,
+    gender: v.gender,
+    source: v.source,
+    tags: [...new Set(v.tags)],
+    notes: v.notes,
+    important_note: v.importantNote,
+    preferred_staff_id: v.preferredStaffId,
+    blocked_online: v.blockedOnline,
+  };
+  const { data, error } = id
+    ? await supabase
+        .from("clients")
+        .update(row)
+        .eq("id", id)
+        .eq("tenant_id", tenant.tenantId)
+        .select("id")
+        .single()
+    : await supabase
+        .from("clients")
+        .insert({
+          ...row,
+          tenant_id: tenant.tenantId,
+          created_by: (await supabase.auth.getUser()).data.user?.id,
+        })
+        .select("id")
+        .single();
+  if (error)
+    return fail(
+      error.code === "23505" ? "phoneTaken" : dbErrorCode(error),
+      error.code === "23505" ? "phone" : undefined,
+    );
+
+  // Marketing consent: store an event only when the state actually changes,
+  // so the history shows who changed it and when.
+  const { data: state } = await supabase
+    .from("client_consent_state")
+    .select("channel, granted")
+    .eq("client_id", data.id);
+  const userId = (await supabase.auth.getUser()).data.user!.id;
+  for (const [channel, wanted] of [
+    ["sms", v.consentSms],
+    ["email", v.consentEmail],
+  ] as const) {
+    const current = state?.find((s) => s.channel === channel)?.granted ?? false;
+    if (current !== wanted) {
+      const { error: cErr } = await supabase.from("client_consents").insert({
+        tenant_id: tenant.tenantId,
+        client_id: data.id,
+        channel,
+        granted: wanted,
+        source: "admin",
+        recorded_by: userId,
+      });
+      if (cErr) return fail(dbErrorCode(cErr));
+    }
+  }
+
+  revalidatePath(`/${ctx.locale}/clients`);
+  return ok({ id: data.id });
+}
+
+export async function consentHistory(clientId: string) {
+  const ctx = await managerContext();
+  if (!ctx || !uuid.safeParse(clientId).success) return [];
+  return getConsentHistory(clientId);
+}
+
+// Data subject request: everything stored about one client, as JSON. Owner only (RPC checks).
+export async function exportClient(clientId: string): Promise<ActionResult<{ json: string }>> {
+  const ctx = await managerContext();
+  if (!ctx || !uuid.safeParse(clientId).success) return fail("notAllowed");
+  const { data, error } = await ctx.supabase.rpc("export_client", { p_client: clientId });
+  if (error) return fail(dbErrorCode(error));
+  return ok({ json: JSON.stringify(data, null, 2) });
+}
+
+export async function anonymizeClient(clientId: string): Promise<ActionResult> {
+  const ctx = await managerContext();
+  if (!ctx || !uuid.safeParse(clientId).success) return fail("notAllowed");
+  const { error } = await ctx.supabase.rpc("anonymize_client", { p_client: clientId });
+  if (error) return fail(dbErrorCode(error));
+  revalidatePath(`/${ctx.locale}/clients`);
+  return ok(undefined);
+}
+
+export async function mergeClients(keepId: string, removeId: string): Promise<ActionResult> {
+  const ctx = await managerContext();
+  if (!ctx || !uuid.safeParse(keepId).success || !uuid.safeParse(removeId).success) return fail("notAllowed");
+  const { error } = await ctx.supabase.rpc("merge_clients", { p_keep: keepId, p_remove: removeId });
+  if (error) return fail(dbErrorCode(error));
+  revalidatePath(`/${ctx.locale}/clients`);
+  return ok(undefined);
+}
+
+// For the merge picker: other clients matching a search.
+export async function searchClients(q: string, excludeId: string) {
+  const ctx = await managerContext();
+  const term = q
+    .trim()
+    .replace(/[%,()*\\]/g, " ")
+    .trim();
+  if (!ctx || term.length < 2) return [];
+  const digits = term.replace(/\D/g, "");
+  const parts = [`first_name.ilike.%${term}%`, `last_name.ilike.%${term}%`];
+  if (digits.length >= 3) parts.push(`phone_e164.like.%${digits}%`);
+  const { data } = await ctx.supabase
+    .from("clients")
+    .select("id, first_name, last_name, phone_e164")
+    .eq("tenant_id", ctx.tenant.tenantId)
+    .is("anonymized_at", null)
+    .neq("id", excludeId)
+    .or(parts.join(","))
+    .limit(8);
+  return data ?? [];
+}
+
+// Which of these phones already belong to a client (import preview).
+export async function existingPhones(phones: string[]): Promise<string[]> {
+  const ctx = await managerContext();
+  const list = z
+    .array(z.string().regex(/^\+[1-9][0-9]{7,14}$/))
+    .max(5000)
+    .safeParse(phones);
+  if (!ctx || !list.success || list.data.length === 0) return [];
+  const found: string[] = [];
+  for (let i = 0; i < list.data.length; i += 200) {
+    const { data } = await ctx.supabase
+      .from("clients")
+      .select("phone_e164")
+      .eq("tenant_id", ctx.tenant.tenantId)
+      .in("phone_e164", list.data.slice(i, i + 200));
+    found.push(...(data ?? []).map((c) => c.phone_e164!));
+  }
+  return found;
+}
+
+export async function importClients(
+  rows: unknown,
+): Promise<ActionResult<{ inserted: number; skipped: number }>> {
+  const ctx = await managerContext();
+  if (!ctx) return fail("notAllowed");
+  const parsed = importClientsSchema.safeParse(rows);
+  if (!parsed.success) return fail("invalidInput");
+  const { data, error } = await ctx.supabase.rpc("import_clients", {
+    p_tenant: ctx.tenant.tenantId,
+    p_rows: parsed.data,
+  });
+  if (error) return fail(dbErrorCode(error));
+  revalidatePath(`/${ctx.locale}/clients`);
+  return ok(data as { inserted: number; skipped: number });
+}

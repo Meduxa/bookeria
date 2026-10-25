@@ -2,7 +2,6 @@
 
 import { FileUp } from "lucide-react";
 import { useTranslations } from "next-intl";
-import Papa from "papaparse";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { FieldError } from "@/components/field-error";
@@ -14,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useRouter } from "@/i18n/navigation";
+import { fileToTable, textToTable } from "@/lib/spreadsheet";
 import { useFormat } from "@/lib/use-format";
 import { importServices } from "../actions";
 import { parsePriceTable, type ParsedServiceRow } from "../import/parse";
@@ -22,22 +22,6 @@ type Row = ParsedServiceRow & { include: boolean; duration: string };
 
 const BLOCKING = ["noName", "noPrice", "badPrice", "nameTooLong"] as const;
 const blocked = (r: ParsedServiceRow) => r.issues.some((i) => (BLOCKING as readonly string[]).includes(i));
-
-// Pasted text from a web page or a spreadsheet is tab-separated; CSV files use commas or semicolons.
-function textToTable(text: string): string[][] {
-  const delimiter = text.includes("\t") ? "\t" : "";
-  return Papa.parse<string[]>(text.trim(), { delimiter, skipEmptyLines: true }).data;
-}
-
-async function fileToTable(file: File): Promise<string[][]> {
-  if (/\.xlsx$/i.test(file.name)) {
-    // first sheet only; loaded on demand so the page stays light
-    const { readSheet } = await import("read-excel-file/browser");
-    const rows = await readSheet(file);
-    return rows.map((r) => r.map((c) => (c === null || c === undefined ? "" : String(c))));
-  }
-  return textToTable(await file.text());
-}
 
 export function ImportWizard() {
   const t = useTranslations();
