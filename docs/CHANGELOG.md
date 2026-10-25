@@ -2,6 +2,17 @@
 
 All notable changes per phase. Newest on top.
 
+## Phase 3b — Calendar and bookings, the rest (2026-10-26)
+
+- **Recurring bookings**: "repeat every N weeks, X times" in the new-booking panel; the list of dates shows clashes before saving, clashing dates can be skipped, the series is saved in one go. "Cancel this and all following" on any booking of a series.
+- **Waitlist**: when nothing is free, add the client with wished dates, times and person. The list sits in the calendar; when a booking is cancelled the matching waitlist entries are suggested and can be booked in one click.
+- **Checkout**: extra items, discount (amount or %), split payment (cash, card, transfer, gift card), tip per person; paid / partly paid shown on bookings. **Cash page**: daily totals by method and by person, payments list, unpaid visits of the last 30 days. Owner switch decides whether administrators see revenue; staff see only their own.
+- **Dental chair view**: day view by chair/room as well as by doctor.
+- **Booking import**: paste from Excel or upload .xlsx/.csv; columns are recognised in Georgian, English and Russian and can be corrected; every row is previewed with its problems (unknown service, unknown person, bad date/time/phone/price); good rows import, rows that overlap an existing booking are reported back by line. Clients are matched by phone or created. No SMS is ever sent for imported bookings. Managers only.
+- **Security**: 5 new tables with forced RLS, 8 new isolation tests (161 in total).
+- **Speed**: a day with 15 staff and 150 bookings loads in about 340 ms from Georgia (test included).
+- Tests: end-to-end tests no longer depend on run order or on fresh demo data; local runs use 3 browsers at a time.
+
 ## Phase 3a — Calendar and bookings, core (2026-10-27)
 
 - **Bookings in the database**: bookings, one line per service with price and duration copied at booking time, status history, dental treatment notes. All changes go through checked database functions; a staff member may create and move only their own bookings. Double booking is impossible: the database refuses overlapping times for a person or a chair, including two clicks at the same moment (tested).
