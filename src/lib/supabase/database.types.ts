@@ -58,6 +58,250 @@ export type Database = {
           },
         ]
       }
+      booking_items: {
+        Row: {
+          active: boolean
+          blocked_until: string
+          booking_id: string
+          buffer_min_snapshot: number
+          created_at: string
+          duration_min_snapshot: number
+          ends_at: string
+          id: string
+          name_snapshot: string
+          price_minor_snapshot: number
+          price_type_snapshot: string
+          resource_id: string | null
+          service_id: string | null
+          sort_order: number
+          staff_id: string
+          starts_at: string
+          tenant_id: string
+          updated_at: string
+          variant_id: string | null
+        }
+        Insert: {
+          active?: boolean
+          blocked_until: string
+          booking_id: string
+          buffer_min_snapshot?: number
+          created_at?: string
+          duration_min_snapshot: number
+          ends_at: string
+          id?: string
+          name_snapshot: string
+          price_minor_snapshot: number
+          price_type_snapshot: string
+          resource_id?: string | null
+          service_id?: string | null
+          sort_order?: number
+          staff_id: string
+          starts_at: string
+          tenant_id: string
+          updated_at?: string
+          variant_id?: string | null
+        }
+        Update: {
+          active?: boolean
+          blocked_until?: string
+          booking_id?: string
+          buffer_min_snapshot?: number
+          created_at?: string
+          duration_min_snapshot?: number
+          ends_at?: string
+          id?: string
+          name_snapshot?: string
+          price_minor_snapshot?: number
+          price_type_snapshot?: string
+          resource_id?: string | null
+          service_id?: string | null
+          sort_order?: number
+          staff_id?: string
+          starts_at?: string
+          tenant_id?: string
+          updated_at?: string
+          variant_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_items_booking_id_tenant_id_fkey"
+            columns: ["booking_id", "tenant_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id", "tenant_id"]
+          },
+          {
+            foreignKeyName: "booking_items_resource_id_tenant_id_fkey"
+            columns: ["resource_id", "tenant_id"]
+            isOneToOne: false
+            referencedRelation: "resources"
+            referencedColumns: ["id", "tenant_id"]
+          },
+          {
+            foreignKeyName: "booking_items_service_id_tenant_id_fkey"
+            columns: ["service_id", "tenant_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id", "tenant_id"]
+          },
+          {
+            foreignKeyName: "booking_items_staff_id_tenant_id_fkey"
+            columns: ["staff_id", "tenant_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id", "tenant_id"]
+          },
+          {
+            foreignKeyName: "booking_items_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      booking_status_history: {
+        Row: {
+          booking_id: string
+          changed_at: string
+          changed_by: string | null
+          from_status: string | null
+          id: string
+          meta: Json
+          reason: string | null
+          tenant_id: string
+          to_status: string
+        }
+        Insert: {
+          booking_id: string
+          changed_at?: string
+          changed_by?: string | null
+          from_status?: string | null
+          id?: string
+          meta?: Json
+          reason?: string | null
+          tenant_id: string
+          to_status: string
+        }
+        Update: {
+          booking_id?: string
+          changed_at?: string
+          changed_by?: string | null
+          from_status?: string | null
+          id?: string
+          meta?: Json
+          reason?: string | null
+          tenant_id?: string
+          to_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_status_history_booking_id_tenant_id_fkey"
+            columns: ["booking_id", "tenant_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id", "tenant_id"]
+          },
+          {
+            foreignKeyName: "booking_status_history_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bookings: {
+        Row: {
+          cancel_reason: string | null
+          client_comment: string | null
+          client_id: string | null
+          created_at: string
+          created_by: string | null
+          currency: string
+          deposit_status: string
+          discount_minor: number
+          ends_at: string
+          id: string
+          internal_note: string | null
+          location_id: string | null
+          paid_minor: number
+          recurrence_id: string | null
+          source: string
+          starts_at: string
+          status: string
+          tenant_id: string
+          total_minor: number
+          updated_at: string
+        }
+        Insert: {
+          cancel_reason?: string | null
+          client_comment?: string | null
+          client_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          deposit_status?: string
+          discount_minor?: number
+          ends_at: string
+          id?: string
+          internal_note?: string | null
+          location_id?: string | null
+          paid_minor?: number
+          recurrence_id?: string | null
+          source?: string
+          starts_at: string
+          status?: string
+          tenant_id: string
+          total_minor?: number
+          updated_at?: string
+        }
+        Update: {
+          cancel_reason?: string | null
+          client_comment?: string | null
+          client_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          deposit_status?: string
+          discount_minor?: number
+          ends_at?: string
+          id?: string
+          internal_note?: string | null
+          location_id?: string | null
+          paid_minor?: number
+          recurrence_id?: string | null
+          source?: string
+          starts_at?: string
+          status?: string
+          tenant_id?: string
+          total_minor?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_client_id_tenant_id_fkey"
+            columns: ["client_id", "tenant_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id", "tenant_id"]
+          },
+          {
+            foreignKeyName: "bookings_location_id_tenant_id_fkey"
+            columns: ["location_id", "tenant_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id", "tenant_id"]
+          },
+          {
+            foreignKeyName: "bookings_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_consents: {
         Row: {
           at: string
@@ -228,6 +472,58 @@ export type Database = {
           },
           {
             foreignKeyName: "closures_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dental_notes: {
+        Row: {
+          author_id: string | null
+          body: string
+          booking_id: string | null
+          client_id: string
+          created_at: string
+          id: string
+          tenant_id: string
+        }
+        Insert: {
+          author_id?: string | null
+          body: string
+          booking_id?: string | null
+          client_id: string
+          created_at?: string
+          id?: string
+          tenant_id: string
+        }
+        Update: {
+          author_id?: string | null
+          body?: string
+          booking_id?: string | null
+          client_id?: string
+          created_at?: string
+          id?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dental_notes_booking_id_tenant_id_fkey"
+            columns: ["booking_id", "tenant_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id", "tenant_id"]
+          },
+          {
+            foreignKeyName: "dental_notes_client_id_tenant_id_fkey"
+            columns: ["client_id", "tenant_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id", "tenant_id"]
+          },
+          {
+            foreignKeyName: "dental_notes_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
@@ -1142,12 +1438,33 @@ export type Database = {
     }
     Functions: {
       accept_invitation: { Args: { p_token: string }; Returns: string }
+      add_dental_note: {
+        Args: { p_body: string; p_booking: string; p_client: string }
+        Returns: string
+      }
       anonymize_client: { Args: { p_client: string }; Returns: undefined }
+      can_see_booking: {
+        Args: { p_booking: string; p_tenant: string }
+        Returns: boolean
+      }
       can_see_client: {
         Args: { p_preferred_staff: string; p_tenant: string }
         Returns: boolean
       }
+      can_use_dental_notes: { Args: { p_tenant: string }; Returns: boolean }
       can_write_tenant_folder: { Args: { p_name: string }; Returns: boolean }
+      create_booking: {
+        Args: {
+          p_client: string
+          p_items: Json
+          p_locale?: string
+          p_note?: string
+          p_source?: string
+          p_status?: string
+          p_tenant: string
+        }
+        Returns: string
+      }
       create_invitation: {
         Args: { p_email: string; p_role: string; p_tenant: string }
         Returns: string
@@ -1185,6 +1502,23 @@ export type Database = {
         Args: { p_locale: string; p_rows: Json; p_tenant: string }
         Returns: number
       }
+      item_snapshot: {
+        Args: {
+          p_locale: string
+          p_service: string
+          p_staff: string
+          p_tenant: string
+          p_variant: string
+        }
+        Returns: {
+          buffer_min: number
+          duration_min: number
+          name: string
+          price_minor: number
+          price_type: string
+          resource_type: string
+        }[]
+      }
       link_staff_login: {
         Args: { p_membership: string; p_staff: string }
         Returns: undefined
@@ -1199,11 +1533,37 @@ export type Database = {
         }
         Returns: undefined
       }
+      may_book_for: {
+        Args: { p_staff: string[]; p_tenant: string }
+        Returns: boolean
+      }
       merge_clients: {
         Args: { p_keep: string; p_remove: string }
         Returns: undefined
       }
+      move_booking: {
+        Args: { p_booking: string; p_items: Json }
+        Returns: undefined
+      }
+      read_dental_notes: {
+        Args: { p_client: string }
+        Returns: {
+          author_name: string
+          body: string
+          booking_id: string
+          created_at: string
+          id: string
+        }[]
+      }
       revoke_invitation: { Args: { p_invitation: string }; Returns: undefined }
+      set_booking_note: {
+        Args: { p_booking: string; p_note: string }
+        Returns: undefined
+      }
+      set_booking_status: {
+        Args: { p_booking: string; p_reason?: string; p_status: string }
+        Returns: undefined
+      }
       set_location_hours: {
         Args: { p_location: string; p_rows: Json }
         Returns: undefined
@@ -1217,6 +1577,10 @@ export type Database = {
         Returns: undefined
       }
       shares_tenant_with: { Args: { p_user: string }; Returns: boolean }
+      staff_has_client: {
+        Args: { p_client: string; p_tenant: string }
+        Returns: boolean
+      }
       user_tenant_ids: { Args: never; Returns: string[] }
       valid_i18n: { Args: { p: Json; p_required?: boolean }; Returns: boolean }
       valid_staff_color: { Args: { p: string }; Returns: boolean }
