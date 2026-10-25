@@ -14,9 +14,9 @@
     "test:watch": "vitest --project unit",
     "test:rls": "vitest run --project rls",
     "test:e2e": "playwright test",
-    "db:push": "supabase db push",
+    "db:push": "supabase db push --linked",
     "db:types": "supabase gen types typescript --linked --schema public > src/lib/supabase/database.types.ts",
-    "db:seed": "node --env-file=.env.local scripts/seed.ts",
+    "db:seed": "node --env-file=.env.local scripts/seed.mts",
     "check": "npm run typecheck && npm run lint && npm run test"
   },
   "dependencies": {

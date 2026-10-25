@@ -6,6 +6,17 @@ import { createClient } from "@/lib/supabase/server";
 export const ACTIVE_TENANT_COOKIE = "bk_tenant";
 
 export type Role = "owner" | "admin" | "staff";
+export type BusinessType = "salon" | "dental";
+
+// The DB enforces these values with check constraints; this narrows the text
+// columns for TypeScript and fails loudly if the two ever drift apart.
+function oneOf<T extends string>(allowed: readonly T[], value: string, what: string): T {
+  if ((allowed as readonly string[]).includes(value)) return value as T;
+  throw new Error(`Unexpected ${what}: ${value}`);
+}
+export const asRole = (v: string) => oneOf<Role>(["owner", "admin", "staff"], v, "role");
+export const asInviteRole = (v: string) => oneOf<"admin" | "staff">(["admin", "staff"], v, "invite role");
+export const asBusinessType = (v: string) => oneOf<BusinessType>(["salon", "dental"], v, "business type");
 
 export type TenantMembership = {
   tenantId: string;
@@ -29,10 +40,13 @@ export const getMyTenants = cache(async (): Promise<TenantMembership[]> => {
     .order("created_at");
   if (error) throw new Error("Could not load businesses");
 
-  return (data ?? []).map((m) => {
-    const t = m.tenants as unknown as { name: string; type: "salon" | "dental"; slug: string };
-    return { tenantId: m.tenant_id, role: m.role, name: t.name, type: t.type, slug: t.slug };
-  });
+  return (data ?? []).map((m) => ({
+    tenantId: m.tenant_id,
+    role: asRole(m.role),
+    name: m.tenants.name,
+    type: asBusinessType(m.tenants.type),
+    slug: m.tenants.slug,
+  }));
 });
 
 // The cookie only says which business the user last chose. It is re-checked

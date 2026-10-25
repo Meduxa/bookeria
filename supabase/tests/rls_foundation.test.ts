@@ -328,3 +328,16 @@ describe("anonymous visitors", () => {
     expect(error).not.toBeNull();
   });
 });
+
+describe("deleting a business", () => {
+  it("removes the business with its members, invitations and audit log", async () => {
+    const C = await createTenant("c", "salon");
+    const db = admin();
+    const { error } = await db.from("tenants").delete().eq("id", C.id);
+    expect(error).toBeNull();
+    for (const table of ["memberships", "invitations", "audit_log"] as const) {
+      const { data } = await db.from(table).select("tenant_id").eq("tenant_id", C.id);
+      expect(data, table).toEqual([]);
+    }
+  });
+});

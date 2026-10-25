@@ -1,6 +1,6 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
-import type { Role } from "@/lib/tenant";
+import { asInviteRole, asRole, type Role } from "@/lib/tenant";
 
 export type TeamMember = { id: string; userId: string; fullName: string; role: Role; status: string };
 export type PendingInvite = { id: string; email: string; role: "admin" | "staff"; expiresAt: string };
@@ -36,13 +36,13 @@ export async function getTeam(tenantId: string) {
       id: m.id,
       userId: m.user_id,
       fullName: names.get(m.user_id) ?? "",
-      role: m.role,
+      role: asRole(m.role),
       status: m.status,
     })),
     invites: invites.data.map((i): PendingInvite => ({
       id: i.id,
       email: i.email,
-      role: i.role,
+      role: asInviteRole(i.role),
       expiresAt: i.expires_at,
     })),
   };

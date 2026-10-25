@@ -81,16 +81,30 @@ export async function createTenant(label: string, type: "salon" | "dental"): Pro
   return { id, slug, owner, adminUser, staff, openInviteToken };
 }
 
+// Removes this run's data, plus anything an earlier crashed run left behind.
+// Throws on any failure so a cleanup problem can never go unnoticed again.
+const TEST_PREFIX = /^t[0-9a-f]{8}-/;
+
 export async function cleanup() {
   const db = admin();
-  await db.from("tenants").delete().like("slug", `${runTag}-%`);
+  const { data: tenants, error } = await db.from("tenants").select("id, slug");
+  if (error) throw new Error(`cleanup list tenants: ${error.message}`);
+  const testTenantIds = tenants.filter((t) => TEST_PREFIX.test(t.slug)).map((t) => t.id);
+  if (testTenantIds.length) {
+    const { error: delError } = await db.from("tenants").delete().in("id", testTenantIds);
+    if (delError) throw new Error(`cleanup delete tenants: ${delError.message}`);
+  }
+
+  const testUsers: string[] = [];
   for (let page = 1; ; page++) {
-    const { data } = await db.auth.admin.listUsers({ page, perPage: 200 });
-    const users = data?.users ?? [];
-    for (const u of users) {
-      if (u.email?.startsWith(`${runTag}-`)) await db.auth.admin.deleteUser(u.id);
-    }
-    if (users.length < 200) break;
+    const { data, error: listError } = await db.auth.admin.listUsers({ page, perPage: 200 });
+    if (listError) throw new Error(`cleanup list users: ${listError.message}`);
+    testUsers.push(...data.users.filter((u) => TEST_PREFIX.test(u.email ?? "")).map((u) => u.id));
+    if (data.users.length < 200) break;
+  }
+  for (const id of testUsers) {
+    const { error: userError } = await db.auth.admin.deleteUser(id);
+    if (userError) throw new Error(`cleanup delete user: ${userError.message}`);
   }
 }
 
