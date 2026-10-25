@@ -13,10 +13,11 @@ describe("money", () => {
     for (const bad of ["", "-5", "5.555", "abc", "5.", "1e3"]) expect(parseMoneyToMinor(bad)).toBeNull();
   });
 
-  it("formats GEL", () => {
-    const text = formatMoney(5500);
-    expect(text).toContain("55");
-    expect(text).toMatch(/₾|GEL/);
+  it("formats GEL as people write it, whatever the browser's locale data", () => {
+    expect(formatMoney(5500)).toBe("55 ₾");
+    expect(formatMoney(5550)).toBe("55,50 ₾");
+    expect(formatMoney(5500, "en-US")).toBe("55 ₾");
+    expect(formatMoney(5550, "en-US")).toBe("55.50 ₾");
   });
 
   it("refuses fractional tetri", () => {

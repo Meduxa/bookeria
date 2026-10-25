@@ -12,7 +12,22 @@
     "switchBusiness": "Switch business",
     "account": "Account",
     "comingSoon": "Coming soon",
-    "darkMode": "Dark mode"
+    "darkMode": "Dark mode",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "close": "Close",
+    "saved": "Saved",
+    "deleted": "Deleted",
+    "optional": "optional",
+    "none": "None",
+    "back": "Back",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "all": "All",
+    "confirm": "Are you sure?"
   },
   "languages": {
     "ka": "ქართული",
@@ -158,12 +173,120 @@
     "pageBody": "The page could not be loaded. Please try again.",
     "notFoundTitle": "Page not found",
     "notFoundBody": "The page you are looking for does not exist.",
-    "backHome": "Back to start"
+    "backHome": "Back to start",
+    "nameRequired": "Enter a name in at least one language",
+    "priceInvalid": "Enter a price like 55 or 55,50",
+    "priceMaxInvalid": "Must be higher than the price",
+    "minutesInvalid": "Enter a number of minutes",
+    "duplicate": "This already exists",
+    "notFound": "Not found — it may have been deleted"
   },
   "email": {
     "invite": {
       "subject": "{business} invited you to {app}",
       "body": "Hello!\n\n{business} invited you to join their team on {app}.\n\nAccept the invitation: {link}\n\nThe link is valid for 7 days. If you didn't expect this email, you can ignore it."
+    }
+  },
+  "format": {
+    "priceFrom": "from {price}",
+    "priceRange": "{min}–{max}",
+    "minutes": "{m} min",
+    "hours": "{h} h",
+    "hoursMinutes": "{h} h {m} min"
+  },
+  "services": {
+    "title": "Services",
+    "subtitle": "Your price list: what clients can book, how long it takes and what it costs.",
+    "new": "New service",
+    "edit": "Edit service",
+    "import": "Import price list",
+    "categories": "Categories",
+    "emptyTitle": "No services yet",
+    "emptyBody": "Add services one by one, or import your existing price list in a minute.",
+    "noMatch": "No services match your search.",
+    "uncategorized": "No category",
+    "searchPlaceholder": "Search services",
+    "colName": "Service",
+    "colDuration": "Duration",
+    "colPrice": "Price",
+    "colStatus": "Status",
+    "online": "Online",
+    "notOnline": "Not online",
+    "hidden": "Hidden",
+    "staffCount": "{count, plural, =0 {nobody assigned} one {# person} other {# people}}",
+    "fields": {
+      "name": "Name",
+      "nameHint": "Fill in at least one language. Clients see their own language, or Georgian.",
+      "description": "Description",
+      "category": "Category",
+      "noCategory": "No category",
+      "priceType": "Price type",
+      "price": "Price, ₾",
+      "priceMax": "Up to, ₾",
+      "duration": "Duration, min",
+      "buffer": "Break after, min",
+      "bufferHint": "Time to clean up before the next client. Not shown to clients.",
+      "bookableOnline": "Bookable online",
+      "bookableOnlineHint": "Shown on your public booking page.",
+      "active": "Active",
+      "activeHint": "Hidden services stay in history but cannot be booked.",
+      "color": "Colour in calendar",
+      "resourceType": "Needs a",
+      "resourceNone": "Nothing special"
+    },
+    "priceTypes": {
+      "fixed": "Fixed",
+      "from": "From",
+      "range": "Range"
+    },
+    "resourceTypes": {
+      "chair": "Chair",
+      "room": "Room",
+      "equipment": "Equipment"
+    },
+    "variants": "Variants",
+    "variantsHint": "e.g. short / medium / long hair — each with its own price and time.",
+    "addons": "Add-ons",
+    "addonsHint": "Extras clients can add, e.g. + hair mask.",
+    "addVariant": "Add variant",
+    "addAddon": "Add add-on",
+    "saveFirst": "Save the service first, then add variants and add-ons.",
+    "deleteConfirm": "Delete “{name}”? Bookings made earlier keep their price."
+  },
+  "categories": {
+    "title": "Categories",
+    "hint": "The order here is the order on your booking page.",
+    "add": "Add category",
+    "empty": "No categories yet.",
+    "deleteConfirm": "Delete category “{name}”? Its services stay, without a category."
+  },
+  "import": {
+    "title": "Import price list",
+    "subtitle": "Copy your price list from your website, Excel or Google Sheets and paste it below — or upload a file.",
+    "paste": "Paste your price list",
+    "pastePlaceholder": "Category\nWomen’s haircut\t35\nBlow-dry\t25-დან",
+    "upload": "Upload a file (.xlsx or .csv)",
+    "or": "or",
+    "read": "Read price list",
+    "formatsHint": "Prices like 35, 25-დან, 250–300 and category rows are recognised.",
+    "previewTitle": "Check before importing",
+    "summary": "{ok} ready · {needDuration} need a duration · {errors} with errors",
+    "defaultDuration": "Duration for rows without one, min",
+    "applyDuration": "Apply to all",
+    "colInclude": "Import",
+    "colCategory": "Category",
+    "colIssue": "Problem",
+    "importButton": "{count, plural, one {Import # service} other {Import # services}}",
+    "success": "{count, plural, one {# service imported} other {# services imported}}",
+    "startOver": "Start over",
+    "nothingToImport": "Nothing to import — fix or include at least one row.",
+    "issues": {
+      "noName": "No name",
+      "noPrice": "No price",
+      "badPrice": "Price not understood",
+      "badDuration": "Duration not understood",
+      "nameTooLong": "Name too long",
+      "durationMissing": "Needs a duration"
     }
   }
 }
