@@ -82,6 +82,7 @@ export default async function CalendarPage({ params, searchParams }: PageProps<"
       isDental={tenant.type === "dental"}
       ownStaffId={ownStaffId ?? null}
       waitlist={waitlist}
+      dayBy={sp.by === "chair" ? "chair" : "staff"}
     />
   );
 }

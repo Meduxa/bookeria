@@ -1,7 +1,9 @@
 import "server-only";
 import { addDays } from "@/lib/dates";
 import { createClient } from "@/lib/supabase/server";
-import { workingRanges } from "./engine/availability";
+import { workingRanges, type HM } from "./engine/availability";
+import { fromZonedTime } from "date-fns-tz";
+import { dateParts } from "@/lib/dates";
 import { loadEngineData } from "./load-data";
 
 export type CalItem = {
@@ -55,6 +57,9 @@ export type CalendarData = {
   // per "staffId|date": working ranges and time off as [startMs, endMs]
   working: Record<string, [number, number][]>;
   timeOff: Record<string, [number, number][]>;
+  // chairs/rooms (dental) and the business opening hours per date, for the chair view
+  resources: { id: string; name: string; type: string }[];
+  opening: Record<string, [number, number][]>;
 };
 
 const toMin = (t: string) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3, 5));
@@ -111,6 +116,22 @@ export async function getCalendar(
   }
 
   // Grid hours: from the earliest opening to the latest closing (8–20 if none).
+  const opening: CalendarData["opening"] = {};
+  for (let d = from; d <= to; d = addDays(d, 1)) {
+    const list: HM[] = engine.closures.includes(d) ? [] : (engine.openingHours[dateParts(d).weekday] ?? []);
+    opening[d] = list.map((h) => [
+      fromZonedTime(`${d}T${h.start}`, engine.timeZone).getTime(),
+      fromZonedTime(`${d}T${h.end}`, engine.timeZone).getTime(),
+    ]);
+  }
+  const { data: resourceRows } = await supabase
+    .from("resources")
+    .select("id, name, type")
+    .eq("tenant_id", tenantId)
+    .eq("active", true)
+    .order("sort_order")
+    .order("name");
+
   const all = Object.values(engine.openingHours).flat();
   const dayStartMin = all.length ? Math.min(...all.map((h) => toMin(h.start))) : 8 * 60;
   const dayEndMin = all.length ? Math.max(...all.map((h) => toMin(h.end))) : 20 * 60;
@@ -169,5 +190,7 @@ export async function getCalendar(
     bookings,
     working,
     timeOff,
+    resources: resourceRows ?? [],
+    opening,
   };
 }

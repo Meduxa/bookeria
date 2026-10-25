@@ -66,3 +66,14 @@ test("recurring: three weekly visits in one go", async ({ page }, info) => {
   await panel.getByRole("button", { name: "დაჯავშნა", exact: true }).click();
   await expect(page.getByText("შეიქმნა 3 ჯავშანი")).toBeVisible();
 });
+
+test("dental: day view by chair", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop");
+  await signIn(page, "dental.owner@demo.test");
+  await page.goto(`/ka/calendar?view=day&date=${weekdayAhead(1)}`);
+  await page.getByRole("tab", { name: "სავარძლებით" }).click();
+  await expect(page).toHaveURL(/by=chair/);
+  await expect(page.getByText("სავარძელი 1")).toBeVisible();
+  await expect(page.getByText("სავარძელი 2")).toBeVisible();
+  await expect(page.locator('[role="button"][aria-label*="–"]').first()).toBeVisible();
+});

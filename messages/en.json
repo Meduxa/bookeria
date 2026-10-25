@@ -617,7 +617,10 @@
     "bookings": "{count, plural, =0 {no bookings} one {# booking} other {# bookings}}",
     "closed": "Closed",
     "dragHint": "Drag to move, drag the bottom edge to change length.",
-    "walkIn": "Walk-in"
+    "walkIn": "Walk-in",
+    "byStaff": "By staff",
+    "byChair": "By chair",
+    "noChairs": "Add chairs or rooms in Settings to see this view."
   },
   "booking": {
     "status": {

@@ -23,6 +23,7 @@ import { setWaitlistStatus, waitlistMatches, type WaitlistEntry } from "../waitl
 import { WaitlistPanel } from "./waitlist-panel";
 
 export type CalendarView = "day" | "week" | "list" | "month";
+export type DayBy = "staff" | "chair";
 const VIEWS: CalendarView[] = ["day", "week", "list", "month"];
 const HIDDEN_IN_GRID = ["cancelled_by_client", "cancelled_by_business"];
 
@@ -53,6 +54,7 @@ export function CalendarScreen({
   isDental,
   ownStaffId,
   waitlist,
+  dayBy,
 }: {
   data: CalendarData;
   date: string;
@@ -65,6 +67,7 @@ export function CalendarScreen({
   isDental: boolean;
   ownStaffId: string | null;
   waitlist: WaitlistEntry[];
+  dayBy: DayBy;
 }) {
   const t = useTranslations();
   const dates = useDates();
@@ -91,11 +94,12 @@ export function CalendarScreen({
     setMoved({});
   }
 
-  const go = (patch: Partial<{ date: string; view: CalendarView; staff: string }>) => {
+  const go = (patch: Partial<{ date: string; view: CalendarView; staff: string; by: DayBy }>) => {
     const p = new URLSearchParams({
       date,
       ...(viewParam && { view: viewParam }),
       ...(weekStaffId && { staff: weekStaffId }),
+      ...(dayBy === "chair" && { by: "chair" }),
       ...patch,
     });
     router.push(`${pathname}?${p}`);
@@ -248,6 +252,21 @@ export function CalendarScreen({
             <ChevronRight aria-hidden />
           </Button>
         </div>
+        {isDental && view === "day" && (
+          <div role="tablist" aria-label={t("calendar.byChair")} className="flex rounded-lg bg-muted p-1">
+            {(["staff", "chair"] as const).map((b) => (
+              <button
+                key={b}
+                role="tab"
+                aria-selected={dayBy === b}
+                onClick={() => go({ by: b })}
+                className="min-h-9 rounded-md px-3 text-sm text-muted-foreground outline-none focus-visible:ring-3 focus-visible:ring-ring/50 aria-selected:bg-card aria-selected:font-medium aria-selected:text-foreground aria-selected:shadow-sm"
+              >
+                {t(b === "staff" ? "calendar.byStaff" : "calendar.byChair")}
+              </button>
+            ))}
+          </div>
+        )}
         <div role="tablist" aria-label={t("calendar.title")} className="flex rounded-lg bg-muted p-1">
           {VIEWS.map((v) => (
             <button
@@ -295,6 +314,49 @@ export function CalendarScreen({
             }
           />
         </div>
+      ) : view === "day" && isDental && dayBy === "chair" ? (
+        data.resources.length === 0 ? (
+          <p className="rounded-xl border bg-card p-6 text-center text-sm text-muted-foreground">
+            {t("calendar.noChairs")}
+          </p>
+        ) : (
+          <TimeGrid
+            columns={data.resources.map((r) => ({
+              key: r.id,
+              staffId: "",
+              date,
+              header: <span className="text-sm font-medium">{r.name}</span>,
+            }))}
+            blocks={data.bookings
+              .filter((b) => !HIDDEN_IN_GRID.includes(b.status))
+              .flatMap((b) => {
+                const it = b.items.find((i) => i.resourceId);
+                if (!it || localDate(it.start, tz) !== date) return [];
+                const end = new Date(b.items.at(-1)!.end).getTime();
+                return [
+                  {
+                    booking: b,
+                    columnKey: it.resourceId!,
+                    start: new Date(it.start).getTime(),
+                    end,
+                    color: staffColor(it.staffId),
+                  },
+                ];
+              })}
+            timeZone={tz}
+            dayStartMin={data.dayStartMin}
+            dayEndMin={data.dayEndMin}
+            stepMin={data.slotStepMin}
+            working={(c) => data.opening[c.date] ?? []}
+            timeOff={() => []}
+            canDrag={() => false}
+            onEmptyClick={(c, start) =>
+              setCreating({ date: c.date, time: localTime(start.toISOString(), tz), staffId: null })
+            }
+            onBlockClick={setOpenBooking}
+            onMove={handleMove}
+          />
+        )
       ) : view === "day" ? (
         grid(
           data.staff.map((s) => ({
