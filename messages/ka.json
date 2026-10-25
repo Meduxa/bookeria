@@ -595,7 +595,9 @@
     },
     "day": "{day} {month}, {weekday}",
     "dayShort": "{day} {month}",
-    "monthYear": "{month} {year}"
+    "monthYear": "{month} {year}",
+    "full": "{day} {month} {year}",
+    "at": "{date}, {time}"
   },
   "calendar": {
     "title": "კალენდარი",

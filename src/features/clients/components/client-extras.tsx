@@ -1,7 +1,8 @@
 "use client";
 
 import { Download, GitMerge, UserX } from "lucide-react";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
+import { fullDateTime } from "@/lib/date-format";
 import { useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/confirm-dialog";
@@ -14,7 +15,7 @@ type History = Awaited<ReturnType<typeof consentHistory>>;
 
 export function ConsentHistory({ clientId }: { clientId: string }) {
   const t = useTranslations("clients.consent");
-  const format = useFormatter();
+  const tAll = useTranslations();
   const [items, setItems] = useState<History | null>(null);
   useEffect(() => {
     let live = true;
@@ -39,8 +40,7 @@ export function ConsentHistory({ clientId }: { clientId: string }) {
                 {h.channel === "sms" ? "SMS" : "Email"} · {t(h.granted ? "granted" : "withdrawn")}
               </StatusPill>
               <span className="text-muted-foreground">
-                {t(`sources.${h.source as "admin"}`)} ·{" "}
-                {format.dateTime(new Date(h.at), { dateStyle: "medium", timeStyle: "short" })}
+                {t(`sources.${h.source as "admin"}`)} · {fullDateTime(tAll, h.at)}
               </span>
             </li>
           ))}

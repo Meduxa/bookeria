@@ -1,7 +1,8 @@
 "use client";
 
 import { FileSpreadsheet, Plus, Search, TriangleAlert, Users } from "lucide-react";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
+import { fullDate, ymdIn } from "@/lib/date-format";
 import { useEffect, useState } from "react";
 import { DetailPanel } from "@/components/detail-panel";
 import { EmptyState } from "@/components/empty-state";
@@ -41,7 +42,6 @@ export function ClientsView({
   timeZone: string;
 }) {
   const t = useTranslations();
-  const format = useFormatter();
   const router = useRouter();
   const pathname = usePathname();
   const [query, setQuery] = useState(q);
@@ -171,7 +171,7 @@ export function ClientsView({
                         {c.blockedOnline && <StatusPill tone="danger">{t("clients.blocked")}</StatusPill>}
                       </span>
                       <span className="text-xs text-muted-foreground">
-                        {format.dateTime(new Date(c.createdAt), { dateStyle: "medium" })}
+                        {fullDate(t, ymdIn(c.createdAt, timeZone))}
                       </span>
                     </button>
                   </li>

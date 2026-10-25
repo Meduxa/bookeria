@@ -1,7 +1,8 @@
 "use client";
 
 import { Plus, Trash2 } from "lucide-react";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
+import { fullDate } from "@/lib/date-format";
 import { useState, useTransition, type ReactNode } from "react";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/confirm-dialog";
@@ -64,7 +65,6 @@ function useSave() {
 
 export function SettingsView({ data }: { data: SettingsData }) {
   const t = useTranslations();
-  const format = useFormatter();
   const [biz, setBiz] = useState(data.business);
   const [rules, setRules] = useState(data.rules);
   const [closure, setClosure] = useState({ date: "", reason: "" });
@@ -196,7 +196,7 @@ export function SettingsView({ data }: { data: SettingsData }) {
             {data.closures.map((c) => (
               <li key={c.id} className="flex min-h-11 items-center gap-3 px-3 py-1">
                 <span className="flex-1 text-sm">
-                  {format.dateTime(new Date(`${c.date}T12:00:00`), { dateStyle: "full" })}
+                  {fullDate(t, c.date)}
                   {c.reason && <span className="text-muted-foreground"> · {c.reason}</span>}
                 </span>
                 <ConfirmDialog

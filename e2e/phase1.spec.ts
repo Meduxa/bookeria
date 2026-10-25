@@ -43,8 +43,10 @@ test("clients: count, search by phone, important note warning", async ({ page })
   await expect(page.getByText("30 კლიენტი")).toBeVisible();
   await page.getByRole("searchbox").fill("555100000");
   await expect(page.getByText("1 კლიენტი")).toBeVisible();
-  await page.getByRole("searchbox").fill("");
-  await page.getByRole("button", { name: /თამარ/ }).first().click();
+  // the demo client with an allergy note (there are two Tamars, found by phone)
+  await page.getByRole("searchbox").fill("555109411");
+  await expect(page.getByText("1 კლიენტი")).toBeVisible();
+  await page.getByRole("button", { name: /თამარ/ }).click();
   await expect(page.getByRole("note")).toContainText("ალერგია");
 });
 

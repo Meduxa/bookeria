@@ -78,7 +78,8 @@ test("create a booking from an empty slot, then mark the client arrived", async 
     page
       .getByRole("button", { name: /ნინო ბერიძე/ })
       .filter({ hasText: time })
-      .getByText("მოვიდა"),
+      .getByText("მოვიდა")
+      .first(), // the list shows the whole week; earlier runs may have used another day of it
   ).toBeVisible();
 });
 

@@ -3,8 +3,9 @@ import { setRequestLocale } from "next-intl/server";
 import { AccountMenu } from "@/components/app-shell/account-menu";
 import { BottomNav, SidebarNav } from "@/components/app-shell/nav";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { BrandLogo } from "@/components/brand-logo";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { APP_NAME } from "@/lib/app";
+import { Link } from "@/i18n/navigation";
 import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { canManage, getActiveTenant, getMyTenants } from "@/lib/tenant";
@@ -31,12 +32,12 @@ export default async function DashboardLayout({ children, params }: LayoutProps<
   return (
     <div className="flex flex-1">
       <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col gap-6 border-r bg-sidebar p-3 md:flex">
-        <div className="flex items-center gap-2 px-3 pt-2">
-          <span className="flex size-7 items-center justify-center rounded-lg bg-primary text-sm font-bold text-primary-foreground">
-            {APP_NAME[0]}
-          </span>
-          <span className="text-lg font-semibold">{APP_NAME}</span>
-        </div>
+        <Link
+          href="/dashboard"
+          className="self-start rounded-lg px-3 pt-2 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+        >
+          <BrandLogo className="h-9" />
+        </Link>
         <SidebarNav type={active.type} canManage={canManage(active.role)} hasProfile={!!ownStaffId} />
         <div className="mt-auto flex flex-col gap-1 border-t pt-3">
           <ThemeToggle />
@@ -47,6 +48,12 @@ export default async function DashboardLayout({ children, params }: LayoutProps<
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-30 flex items-center gap-2 border-b bg-card px-4 py-2 md:hidden">
+          <Link
+            href="/dashboard"
+            className="shrink-0 rounded-lg focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+          >
+            <BrandLogo variant="mark" className="h-8" />
+          </Link>
           <div className="min-w-0 flex-1">{menu}</div>
           <LanguageSwitcher />
         </header>

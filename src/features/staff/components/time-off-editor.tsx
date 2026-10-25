@@ -1,7 +1,8 @@
 "use client";
 
 import { Trash2 } from "lucide-react";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
+import { fullDate, fullDateTime } from "@/lib/date-format";
 import { useState, useTransition } from "react";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { FieldError } from "@/components/field-error";
@@ -35,7 +36,6 @@ function DeleteButton({ onConfirm, label }: { onConfirm: () => void; label: stri
 
 export function OverridesEditor({ staffId, items }: { staffId: string; items: StaffDetail["overrides"] }) {
   const t = useTranslations();
-  const format = useFormatter();
   const [date, setDate] = useState(today());
   const [dayOff, setDayOff] = useState(true);
   const [start, setStart] = useState("10:00");
@@ -106,9 +106,7 @@ export function OverridesEditor({ staffId, items }: { staffId: string; items: St
         <ul className="flex flex-col divide-y rounded-lg border">
           {items.map((o) => (
             <li key={o.id} className="flex min-h-11 items-center gap-3 px-3 py-1">
-              <span className="flex-1 text-sm">
-                {format.dateTime(new Date(`${o.date}T12:00:00`), { dateStyle: "full" })}
-              </span>
+              <span className="flex-1 text-sm">{fullDate(t, o.date)}</span>
               {o.dayOff ? (
                 <StatusPill tone="neutral">{t("staff.overrides.dayOff")}</StatusPill>
               ) : (
@@ -138,7 +136,6 @@ export function TimeOffEditor({
   timeZone: string;
 }) {
   const t = useTranslations();
-  const format = useFormatter();
   const [startDate, setStartDate] = useState(today());
   const [startTime, setStartTime] = useState("00:00");
   const [endDate, setEndDate] = useState(today());
@@ -153,8 +150,7 @@ export function TimeOffEditor({
       const r = await fn();
       if (!r.ok) setError(r.error);
     });
-  const when = (iso: string) =>
-    format.dateTime(new Date(iso), { dateStyle: "medium", timeStyle: "short", timeZone });
+  const when = (iso: string) => fullDateTime(t, iso, timeZone);
 
   return (
     <Card className="gap-4 p-4">

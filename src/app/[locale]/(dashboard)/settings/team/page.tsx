@@ -1,5 +1,6 @@
 import { MailPlus } from "lucide-react";
-import { getFormatter, getTranslations, setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { fullDate, ymdIn } from "@/lib/date-format";
 import { EmptyState } from "@/components/empty-state";
 import { PageHeader } from "@/components/page-header";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -22,7 +23,7 @@ export default async function TeamPage({ params }: PageProps<"/[locale]/settings
   const [user, tenant] = await Promise.all([requireUser(locale), getActiveTenant()]);
   if (!tenant) return null;
 
-  const [t, format, team] = await Promise.all([getTranslations(), getFormatter(), getTeam(tenant.tenantId)]);
+  const [t, team] = await Promise.all([getTranslations(), getTeam(tenant.tenantId)]);
   const manager = canManage(tenant.role);
 
   return (
@@ -82,7 +83,7 @@ export default async function TeamPage({ params }: PageProps<"/[locale]/settings
                       <span className="text-xs text-muted-foreground">
                         {t(`roles.${inv.role}`)} ·{" "}
                         {t("team.expires", {
-                          date: format.dateTime(new Date(inv.expiresAt), { dateStyle: "medium" }),
+                          date: fullDate(t, ymdIn(inv.expiresAt)),
                         })}
                       </span>
                     </span>

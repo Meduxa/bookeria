@@ -33,6 +33,7 @@ export async function listClients(tenantId: string, q: string, page: number) {
     .eq("tenant_id", tenantId)
     .is("anonymized_at", null)
     .order("created_at", { ascending: false })
+    .order("id") // imports insert many clients at the same instant: keep pages stable
     .range(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE - 1);
 
   const term = q
