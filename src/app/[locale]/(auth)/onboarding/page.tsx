@@ -19,7 +19,9 @@ export default async function OnboardingPage({ params }: PageProps<"/[locale]/on
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-xl">{t("title")}</CardTitle>
+        <CardTitle>
+          <h1 className="text-xl">{t("title")}</h1>
+        </CardTitle>
         <CardDescription>{t("subtitle")}</CardDescription>
       </CardHeader>
       <CardContent>

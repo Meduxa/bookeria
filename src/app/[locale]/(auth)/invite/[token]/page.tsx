@@ -44,18 +44,16 @@ export default async function InvitePage({ params }: PageProps<"/[locale]/invite
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-xl">{t("invite.title")}</CardTitle>
+        <CardTitle>
+          <h1 className="text-xl">{t("invite.title")}</h1>
+        </CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
         {!user && (
           <>
             <Button asChild className="h-11 md:h-9">
-              <Link
-                href={`/signup?next=${encodeURIComponent(here)}&email=${encodeURIComponent(invite.email)}`}
-              >
-                {t("invite.signUp")}
-              </Link>
+              <Link href={`/signup?next=${encodeURIComponent(here)}`}>{t("invite.signUp")}</Link>
             </Button>
             <Button asChild variant="outline" className="h-11 md:h-9">
               <Link href={`/login?next=${encodeURIComponent(here)}`}>{t("invite.signIn")}</Link>

@@ -3,15 +3,19 @@
 Work one phase at a time. Claude Code ticks the boxes and updates `CHANGELOG.md` at the end of each phase. Rough durations assume a few focused hours per day.
 
 ## Phase 0 — Foundation (≈ 2–4 days)
-- [ ] Tools checked (Node LTS, Git, Docker Desktop), Git repo initialised
-- [ ] Next.js + TypeScript (strict) + Tailwind + shadcn/ui
-- [ ] Supabase local + EU cloud project; env files; typed Supabase client (server + browser)
-- [ ] next-intl (ka default, en, ru), Georgian font
-- [ ] ESLint, Prettier, Vitest, Playwright, RLS test setup
-- [ ] Migration: tenants, profiles, memberships, audit_log + RLS + isolation test
-- [ ] Sign-up → create business (salon/dental) → invite staff → dashboard shell
-- [ ] Seed: demo salon + demo dental clinic
-- [ ] `APP_NAME` constant
+✅ Done 2026-10-25
+
+- [x] Tools checked (Node 24 LTS, Git), Git repo initialised — no Docker (no admin rights on the laptop), see decision 002
+- [x] Next.js 16 + TypeScript (strict) + Tailwind 4 + shadcn/ui
+- [x] Supabase EU cloud **dev** project `bookeria-dev` (Frankfurt) instead of local Docker; env files; typed Supabase clients (server, browser, admin)
+- [x] next-intl (ka default — always, not from browser language — en, ru), temporary Noto Sans Georgian font (final font in Phase 2)
+- [x] ESLint, Prettier, Vitest, Playwright, RLS test setup (Vitest integration tests against the dev project)
+- [x] Migration: tenants, profiles, memberships, invitations, audit_log + RLS + isolation tests (32)
+- [x] Sign-up → create business (salon/dental) → invite staff (link) → accept → dashboard shell (sidebar desktop, bottom nav mobile)
+- [x] Seed: demo salon + demo dental clinic (`npm.cmd run db:seed`)
+- [x] `APP_NAME` constant
+- [ ] Production Supabase project (separate from dev) — create before the pilot
+- [ ] Transactional email provider (invites + sign-up confirmation) — needed before the pilot
 
 ## Phase 1 — Services, staff, clients (≈ 1 week) — SPEC 4.1–4.4
 - [ ] Business settings (hours, holidays, booking rules)

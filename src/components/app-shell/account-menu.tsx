@@ -15,20 +15,13 @@ import {
 import { signOut } from "@/features/auth/actions";
 import { switchTenant } from "@/features/tenants/actions";
 import { Link } from "@/i18n/navigation";
+import { initials } from "@/lib/initials";
 
 type Props = {
   user: { fullName: string; email: string };
   active: { tenantId: string; name: string; role: "owner" | "admin" | "staff" };
   tenants: { tenantId: string; name: string }[];
 };
-
-function initials(name: string, email: string) {
-  const parts = (name || email).trim().split(/\s+/);
-  return parts
-    .slice(0, 2)
-    .map((p) => p[0]?.toUpperCase() ?? "")
-    .join("");
-}
 
 export function AccountMenu({ user, active, tenants }: Props) {
   const t = useTranslations();
