@@ -38,6 +38,8 @@ test("staff: list with work days, profile opens with tabs", async ({ page }) => 
 test("clients: count, search by phone, important note warning", async ({ page }) => {
   await signIn(page, "salon.owner@demo.test");
   await page.goto("/ka/clients");
+  // type only after the page is interactive, or the input is reset by hydration
+  await page.waitForLoadState("networkidle");
   await expect(page.getByText("30 კლიენტი")).toBeVisible();
   await page.getByRole("searchbox").fill("555100000");
   await expect(page.getByText("1 კლიენტი")).toBeVisible();
