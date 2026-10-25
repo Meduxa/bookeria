@@ -687,7 +687,16 @@
     "visits": "Visits",
     "visitsEmpty": "No visits yet.",
     "upcoming": "Upcoming",
-    "past": "Past"
+    "past": "Past",
+    "repeat": "Repeat",
+    "everyWeeks": "Every … weeks",
+    "times": "Times",
+    "checkDates": "Check dates",
+    "seriesSaved": "{count} bookings created",
+    "needTwo": "Choose at least two dates.",
+    "cancelThis": "Only this one",
+    "cancelFollowing": "This and all following",
+    "series": "Part of a series"
   },
   "myDay": {
     "title": "My day",

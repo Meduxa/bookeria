@@ -316,3 +316,125 @@ export async function findClients(q: string) {
     .limit(8);
   return data ?? [];
 }
+
+// ---------------------------------------------------------------------------
+// Recurring bookings
+// ---------------------------------------------------------------------------
+
+const recurringSchema = z.object({
+  clientId: z.uuid().nullable(),
+  picks: picksSchema,
+  staffId: z.uuid(),
+  start: z.iso.datetime({ offset: true }),
+  everyWeeks: z.number().int().min(1).max(12),
+  times: z.number().int().min(2).max(52),
+});
+
+// Every date of the series with its problems (empty = fine), so the user can
+// skip dates that clash before anything is saved.
+export async function previewRecurring(
+  input: z.input<typeof recurringSchema>,
+): Promise<ActionResult<{ start: string; conflicts: Conflict[] }[]>> {
+  const ctx = await memberContext();
+  const parsed = recurringSchema.safeParse(input);
+  if (!ctx || !parsed.success) return fail("invalidInput");
+  const v = parsed.data;
+  if (!allowedStaff(ctx, v.staffId)) return fail("notAllowed");
+
+  const starts = Array.from(
+    { length: v.times },
+    (_, k) => new Date(new Date(v.start).getTime() + k * v.everyWeeks * 7 * 86_400_000),
+  );
+  const first = await localDate(ctx, starts[0].toISOString());
+  const last = await localDate(ctx, starts.at(-1)!.toISOString());
+  const data = await loadEngineData(ctx.supabase, ctx.tenant.tenantId, first, last);
+  const services = await loadServiceRequests(ctx.supabase, ctx.tenant.tenantId, v.picks);
+  if (!services) return fail("notFound");
+  return ok(
+    starts.map((s) => ({
+      start: s.toISOString(),
+      conflicts: validateBooking({ staffId: v.staffId, start: s, services }, data),
+    })),
+  );
+}
+
+export async function createRecurring(input: {
+  clientId: string | null;
+  picks: { serviceId: string; variantId?: string | null }[];
+  staffId: string;
+  starts: string[];
+  everyWeeks: number;
+  note?: string;
+}): Promise<ActionResult<{ count: number }>> {
+  const ctx = await memberContext();
+  const parsed = z
+    .object({
+      clientId: z.uuid().nullable(),
+      picks: picksSchema,
+      staffId: z.uuid(),
+      starts: z
+        .array(z.iso.datetime({ offset: true }))
+        .min(2)
+        .max(52),
+      everyWeeks: z.number().int().min(1).max(12),
+      note: z.string().max(2000).optional(),
+    })
+    .safeParse(input);
+  if (!ctx || !parsed.success) return fail("invalidInput");
+  const v = parsed.data;
+  if (!allowedStaff(ctx, v.staffId)) return fail("notAllowed");
+
+  // the same back-to-back layout as a single booking, repeated per date
+  const data = await loadEngineData(
+    ctx.supabase,
+    ctx.tenant.tenantId,
+    await localDate(ctx, v.starts[0]),
+    await localDate(ctx, v.starts.at(-1)!),
+  );
+  const services = await loadServiceRequests(ctx.supabase, ctx.tenant.tenantId, v.picks);
+  const staff = data.staff.find((s) => s.id === v.staffId);
+  if (!services || !staff) return fail("notFound");
+  const occurrences = v.starts.map((start) => {
+    let t = new Date(start).getTime();
+    return services.map((s) => {
+      const item = {
+        service_id: s.serviceId,
+        variant_id: v.picks.find((p) => p.serviceId === s.serviceId)?.variantId ?? null,
+        staff_id: v.staffId,
+        starts_at: new Date(t).toISOString(),
+      };
+      t += ((staff.services[s.serviceId]?.durationMin ?? s.durationMin) + (s.addonMin ?? 0)) * 60_000;
+      return item;
+    });
+  });
+
+  const { error } = await ctx.supabase.rpc("create_recurring_booking", {
+    p_tenant: ctx.tenant.tenantId,
+    p_client: v.clientId as string,
+    p_occurrences: occurrences,
+    p_every_weeks: v.everyWeeks,
+    p_source: "admin",
+    p_note: v.note ?? "",
+    p_locale: ctx.locale,
+  });
+  if (error) return fail(bookingError(error));
+  done(ctx);
+  return ok({ count: v.starts.length });
+}
+
+export async function cancelFollowing(
+  bookingId: string,
+  status: "cancelled_by_client" | "cancelled_by_business",
+  reason?: string,
+): Promise<ActionResult<{ count: number }>> {
+  const ctx = await memberContext();
+  if (!ctx || !uuid.safeParse(bookingId).success) return fail("invalidInput");
+  const { data, error } = await ctx.supabase.rpc("cancel_following", {
+    p_booking: bookingId,
+    p_status: status,
+    p_reason: (reason ?? "").slice(0, 300),
+  });
+  if (error) return fail(bookingError(error));
+  done(ctx);
+  return ok({ count: data });
+}

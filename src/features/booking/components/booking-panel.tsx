@@ -16,7 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { formatMoney } from "@/lib/money";
 import { useDates } from "@/lib/use-dates";
-import { bookingHistory, moveBooking, setBookingNote, setBookingStatus } from "../actions";
+import { bookingHistory, cancelFollowing, moveBooking, setBookingNote, setBookingStatus } from "../actions";
 import type { Conflict } from "../engine/availability";
 import type { CalBooking, CalStaff } from "../queries";
 import { DentalNotes } from "./dental-notes";
@@ -147,6 +147,7 @@ export function BookingPanel({
           </StatusPill>
           <span className="text-sm text-muted-foreground">
             {staffName} · {t(`booking.sources.${booking.source as "admin"}`)}
+            {booking.recurrenceId && ` · ${t("booking.series")}`}
           </span>
         </div>
 
@@ -210,6 +211,25 @@ export function BookingPanel({
                   aria-label={t("booking.cancelReason")}
                   className="h-11 max-w-60 md:h-9"
                 />
+                {booking.recurrenceId && NEXT[booking.status].includes("cancelled_by_client") && (
+                  <ConfirmDialog
+                    description={t("common.confirm")}
+                    confirmLabel={t("booking.cancelFollowing")}
+                    onConfirm={() =>
+                      startTransition(async () => {
+                        const r = await cancelFollowing(booking.id, "cancelled_by_client", reason);
+                        if (!r.ok) return setError(r.error);
+                        toast.success(t("booking.status.cancelled_by_client"));
+                        onClose();
+                      })
+                    }
+                    trigger={
+                      <Button variant="outline" className="h-11 md:h-9" disabled={pending}>
+                        {t("booking.cancelFollowing")}
+                      </Button>
+                    }
+                  />
+                )}
                 {NEXT[booking.status]
                   .filter((s) => DESTRUCTIVE.includes(s))
                   .map((s) => (

@@ -16,7 +16,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { localized, type I18nText } from "@/lib/i18n-text";
 import { useFormat, type PriceShape } from "@/lib/use-format";
 import { cn } from "@/lib/utils";
-import { createBooking, findClients, findSlots } from "../actions";
+import { createBooking, createRecurring, findClients, findSlots, previewRecurring } from "../actions";
+import { useDates } from "@/lib/use-dates";
 import type { Conflict } from "../engine/availability";
 import type { CalStaff } from "../queries";
 
@@ -72,6 +73,13 @@ export function NewBookingPanel({
   const [note, setNote] = useState("");
   const [conflicts, setConflicts] = useState<Conflict[]>([]);
   const [error, setError] = useState<string>();
+  const dates = useDates();
+  const [repeat, setRepeat] = useState(false);
+  const [everyWeeks, setEveryWeeks] = useState(1);
+  const [times, setTimes] = useState(4);
+  const [series, setSeries] = useState<{ start: string; conflicts: Conflict[]; include: boolean }[] | null>(
+    null,
+  );
 
   // client search, debounced
   useEffect(() => {
@@ -118,6 +126,21 @@ export function NewBookingPanel({
           ? { start: fromZonedTime(`${date}T${otherTime}`, timeZone).toISOString(), staffId }
           : null);
       if (!target) return setError("invalidInput");
+      if (repeat) {
+        const starts = (series ?? []).filter((x) => x.include).map((x) => x.start);
+        if (starts.length < 2) return setError("needTwo");
+        const r = await createRecurring({
+          clientId: client?.id ?? null,
+          picks: picked.map((serviceId) => ({ serviceId })),
+          staffId: target.staffId,
+          starts,
+          everyWeeks,
+          note,
+        });
+        if (!r.ok) return setError(r.error);
+        toast.success(t("booking.seriesSaved", { count: r.data.count }));
+        return onClose();
+      }
       const r = await createBooking({
         clientId: client?.id ?? null,
         newClient: !client && newClient ? newClient : null,
@@ -138,7 +161,8 @@ export function NewBookingPanel({
 
   const softOnly = conflicts.length > 0 && conflicts.every((c) => c === "outsideHours" || c === "closed");
   const hasClient = !!client || walkIn || (newClient && newClient.firstName.trim());
-  const ready = hasClient && picked.length > 0 && (chosen || (otherTime && staffId !== ANY));
+  const ready =
+    hasClient && picked.length > 0 && (chosen || (otherTime && staffId !== ANY)) && (!repeat || !!series);
 
   return (
     <DetailPanel open={open} onOpenChange={(o) => !o && onClose()} title={t("calendar.newBooking")}>
@@ -395,6 +419,106 @@ export function NewBookingPanel({
           )}
         </section>
 
+        {(chosen || (otherTime && staffId !== ANY)) && client && (
+          <section className="flex flex-col gap-3 rounded-lg border p-3">
+            <label className="flex items-center gap-2 text-sm font-medium">
+              <Checkbox
+                checked={repeat}
+                onCheckedChange={(v) => {
+                  setRepeat(v === true);
+                  setSeries(null);
+                }}
+              />
+              {t("booking.repeat")}
+            </label>
+            {repeat && (
+              <>
+                <div className="flex flex-wrap items-end gap-2">
+                  <FormField id="nb-every" label={t("booking.everyWeeks")} className="w-32">
+                    <Input
+                      id="nb-every"
+                      type="number"
+                      min={1}
+                      max={12}
+                      value={everyWeeks}
+                      onChange={(e) => {
+                        setEveryWeeks(Number(e.target.value) || 1);
+                        setSeries(null);
+                      }}
+                      className="h-11 md:h-9"
+                    />
+                  </FormField>
+                  <FormField id="nb-times" label={t("booking.times")} className="w-28">
+                    <Input
+                      id="nb-times"
+                      type="number"
+                      min={2}
+                      max={52}
+                      value={times}
+                      onChange={(e) => {
+                        setTimes(Number(e.target.value) || 2);
+                        setSeries(null);
+                      }}
+                      className="h-11 md:h-9"
+                    />
+                  </FormField>
+                  <Button
+                    variant="outline"
+                    className="h-11 md:h-9"
+                    disabled={pending}
+                    onClick={() =>
+                      startTransition(async () => {
+                        const start =
+                          chosen?.start ?? fromZonedTime(`${date}T${otherTime}`, timeZone).toISOString();
+                        const r = await previewRecurring({
+                          clientId: client.id,
+                          picks: picked.map((serviceId) => ({ serviceId })),
+                          staffId: chosen?.staffId ?? staffId,
+                          start,
+                          everyWeeks,
+                          times: Math.min(52, Math.max(2, times)),
+                        });
+                        if (!r.ok) return setError(r.error);
+                        setSeries(r.data.map((x) => ({ ...x, include: x.conflicts.length === 0 })));
+                      })
+                    }
+                  >
+                    {t("booking.checkDates")}
+                  </Button>
+                </div>
+                {series && (
+                  <ul className="flex flex-col divide-y rounded-md border text-sm">
+                    {series.map((x, i) => {
+                      const d = new Date(x.start).toLocaleDateString("en-CA", { timeZone });
+                      return (
+                        <li key={x.start} className="flex flex-wrap items-center gap-2 px-3 py-1.5">
+                          <Checkbox
+                            checked={x.include}
+                            onCheckedChange={(v) =>
+                              setSeries((s) =>
+                                s!.map((y, k) => (k === i ? { ...y, include: v === true } : y)),
+                              )
+                            }
+                            aria-label={dates.dayTitle(d)}
+                          />
+                          <span className="flex-1">
+                            {dates.dayTitle(d)} · {hhmm(x.start, timeZone)}
+                          </span>
+                          {x.conflicts.map((c) => (
+                            <span key={c} className="text-xs text-destructive">
+                              {t(`booking.conflicts.${c}`)}
+                            </span>
+                          ))}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </>
+            )}
+          </section>
+        )}
+
         <FormField id="nb-note" label={`${t("booking.note")} (${t("common.optional")})`}>
           <Textarea id="nb-note" rows={2} value={note} onChange={(e) => setNote(e.target.value)} />
         </FormField>
@@ -406,7 +530,13 @@ export function NewBookingPanel({
             ))}
           </ul>
         )}
-        <FieldError code={error} />
+        {error === "needTwo" ? (
+          <p role="alert" className="text-sm text-destructive">
+            {t("booking.needTwo")}
+          </p>
+        ) : (
+          <FieldError code={error} />
+        )}
         <div className="flex flex-wrap gap-2">
           <Button className="h-11 md:h-9" disabled={pending || !ready} onClick={() => submit(false)}>
             {t("booking.create")}
