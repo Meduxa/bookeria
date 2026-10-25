@@ -9,11 +9,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { intervalProblem, WEEKDAYS, type Interval } from "@/lib/time";
-import { saveWeek } from "../actions";
+import type { ActionResult } from "@/lib/action-result";
 
-type Week = Record<number, Interval[]>;
+export type Week = Record<number, Interval[]>;
 
-export function ScheduleEditor({ staffId, initial }: { staffId: string; initial: Week }) {
+// Weekly hours with several intervals per day. Used for staff schedules and
+// business opening hours; the caller decides where it is saved.
+export function WeekEditor({
+  initial,
+  hint,
+  onSave,
+}: {
+  initial: Week;
+  hint: string;
+  onSave: (week: Record<string, Interval[]>) => Promise<ActionResult>;
+}) {
   const t = useTranslations();
   const [week, setWeek] = useState<Week>(() =>
     Object.fromEntries(WEEKDAYS.map((d) => [d, initial[d] ?? []])),
@@ -28,14 +38,14 @@ export function ScheduleEditor({ staffId, initial }: { staffId: string; initial:
     startTransition(async () => {
       setError(undefined);
       if (invalidDays.length) return setError("scheduleInvalid");
-      const r = await saveWeek(staffId, Object.fromEntries(WEEKDAYS.map((d) => [String(d), week[d]])));
+      const r = await onSave(Object.fromEntries(WEEKDAYS.map((d) => [String(d), week[d]])));
       if (!r.ok) return setError(r.error);
       toast.success(t("common.saved"));
     });
 
   return (
     <section className="flex flex-col gap-4">
-      <p className="text-sm text-muted-foreground">{t("staff.schedule.hint")}</p>
+      <p className="text-sm text-muted-foreground">{hint}</p>
       <ul className="flex flex-col divide-y rounded-xl border bg-card">
         {WEEKDAYS.map((d) => {
           const list = week[d];

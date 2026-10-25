@@ -14,9 +14,9 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { I18nText } from "@/lib/i18n-text";
 import type { PriceShape } from "@/lib/use-format";
-import { deleteStaff, linkLogin, setStaffPhoto } from "../actions";
+import { WeekEditor } from "@/components/week-editor";
+import { deleteStaff, linkLogin, saveWeek, setStaffPhoto } from "../actions";
 import type { StaffDetail as Detail } from "../queries";
-import { ScheduleEditor } from "./schedule-editor";
 import { StaffAvatar } from "./staff-avatar";
 import { StaffForm } from "./staff-form";
 import { StaffServicesEditor } from "./staff-services-editor";
@@ -174,7 +174,11 @@ export function StaffDetailView({ staff, tenantId, timeZone, isDental, catalog, 
         </TabsContent>
 
         <TabsContent value="schedule" className="flex flex-col gap-5">
-          <ScheduleEditor staffId={staff.id} initial={staff.week} />
+          <WeekEditor
+            initial={staff.week}
+            hint={t("staff.schedule.hint")}
+            onSave={(week) => saveWeek(staff.id, week)}
+          />
           <OverridesEditor staffId={staff.id} items={staff.overrides} />
         </TabsContent>
 

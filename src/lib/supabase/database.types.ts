@@ -1204,6 +1204,10 @@ export type Database = {
         Returns: undefined
       }
       revoke_invitation: { Args: { p_invitation: string }; Returns: undefined }
+      set_location_hours: {
+        Args: { p_location: string; p_rows: Json }
+        Returns: undefined
+      }
       set_staff_schedule: {
         Args: { p_rows: Json; p_staff: string }
         Returns: undefined

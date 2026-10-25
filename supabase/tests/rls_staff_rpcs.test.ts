@@ -121,3 +121,26 @@ describe("link_staff_login", () => {
     expect(current).toBe(aStaff);
   });
 });
+
+describe("set_location_hours", () => {
+  it("admin replaces own opening hours; never another business's; staff cannot", async () => {
+    const loc = async (tenant: string) =>
+      (await admin().from("locations").select("id").eq("tenant_id", tenant).eq("is_primary", true).single())
+        .data!.id;
+    const [aLoc, bLoc] = [await loc(A.id), await loc(B.id)];
+    const hours = [{ weekday: 7, start_time: "11:00", end_time: "16:00" }];
+    expect(
+      (await A.adminUser.db.rpc("set_location_hours", { p_location: aLoc, p_rows: hours })).error,
+    ).toBeNull();
+    expect((await admin().from("location_hours").select("weekday").eq("location_id", aLoc)).data).toEqual([
+      { weekday: 7 },
+    ]);
+    expect(
+      (await A.adminUser.db.rpc("set_location_hours", { p_location: bLoc, p_rows: hours })).error,
+    ).not.toBeNull();
+    expect(
+      (await A.staff.db.rpc("set_location_hours", { p_location: aLoc, p_rows: [] })).error,
+    ).not.toBeNull();
+    expect((await admin().from("location_hours").select("id").eq("location_id", bLoc)).data).toHaveLength(6);
+  });
+});

@@ -402,5 +402,53 @@
       "break": "Break",
       "other": "Other"
     }
+  },
+  "settings": {
+    "title": "Business settings",
+    "subtitle": "Contact details, opening hours and booking rules.",
+    "business": {
+      "title": "Business details",
+      "address": "Address",
+      "ownerOnly": "Only the owner can rename the business."
+    },
+    "hours": {
+      "title": "Opening hours",
+      "hint": "When the business is open. Staff schedules sit inside these hours."
+    },
+    "closures": {
+      "title": "Holidays and closed days",
+      "hint": "No bookings on these dates.",
+      "reason": "Reason",
+      "empty": "No upcoming closed days."
+    },
+    "rules": {
+      "title": "Booking rules",
+      "hint": "Apply to online bookings and reminders.",
+      "minNoticeHours": "Minimum notice, hours",
+      "minNoticeHoursHint": "How early clients must book online.",
+      "maxDaysAhead": "Book up to, days ahead",
+      "maxDaysAheadHint": "How far into the future clients can book.",
+      "cancelWindowHours": "Free cancellation until, hours before",
+      "cancelWindowHoursHint": "After this clients must call you.",
+      "slotStepMin": "Time slot step",
+      "slotStepMinHint": "Start times offered: every 15 min, every 30 min…",
+      "onlineRequiresApproval": "Approve online bookings",
+      "onlineRequiresApprovalHint": "New online bookings wait for your confirmation.",
+      "staffSeesAllClients": "Staff see all clients",
+      "staffSeesAllClientsHint": "Off: staff see only clients who chose them.",
+      "staffSeesAllBookings": "Staff see all bookings",
+      "staffSeesAllBookingsHint": "Off: staff see only their own calendar."
+    },
+    "resources": {
+      "title": "Chairs and rooms",
+      "hint": "A booking that needs a chair or room can only take a free one.",
+      "type": "Type",
+      "empty": "None yet.",
+      "types": {
+        "chair": "Chair",
+        "room": "Room",
+        "equipment": "Equipment"
+      }
+    }
   }
 }
