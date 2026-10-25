@@ -1,0 +1,169 @@
+import "server-only";
+import { addDays } from "@/lib/dates";
+import { createClient } from "@/lib/supabase/server";
+import { workingRanges } from "./engine/availability";
+import { loadEngineData } from "./load-data";
+
+export type CalItem = {
+  id: string;
+  staffId: string;
+  resourceId: string | null;
+  serviceId: string | null;
+  name: string;
+  priceMinor: number;
+  priceType: string;
+  durationMin: number;
+  start: string;
+  end: string;
+};
+
+export type CalBooking = {
+  id: string;
+  status: string;
+  source: string;
+  start: string;
+  end: string;
+  note: string | null;
+  totalMinor: number;
+  client: {
+    id: string;
+    name: string;
+    phone: string | null;
+    importantNote: string | null;
+    noShows: number;
+  } | null;
+  items: CalItem[];
+};
+
+export type CalStaff = {
+  id: string;
+  name: string;
+  position: string | null;
+  color: string;
+  photoUrl: string | null;
+};
+
+export type CalendarData = {
+  timeZone: string;
+  slotStepMin: number;
+  dayStartMin: number; // grid range in local minutes
+  dayEndMin: number;
+  staff: CalStaff[];
+  bookings: CalBooking[];
+  // per "staffId|date": working ranges and time off as [startMs, endMs]
+  working: Record<string, [number, number][]>;
+  timeOff: Record<string, [number, number][]>;
+};
+
+const toMin = (t: string) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3, 5));
+
+export async function getCalendar(
+  tenantId: string,
+  from: string,
+  to: string,
+  opts: { onlyStaffId?: string } = {},
+): Promise<CalendarData> {
+  const supabase = await createClient();
+  const engine = await loadEngineData(supabase, tenantId, from, to);
+  const fromIso = new Date(`${from}T00:00:00Z`).getTime() - 14 * 3_600_000; // generous; filtered by local date in the UI
+  const toIso = new Date(`${addDays(to, 1)}T00:00:00Z`).getTime() + 14 * 3_600_000;
+
+  const [{ data: staffRows }, { data: rows, error }] = await Promise.all([
+    supabase
+      .from("staff")
+      .select("id, display_name, position, color, photo_path, active")
+      .eq("tenant_id", tenantId)
+      .eq("active", true)
+      .order("sort_order")
+      .order("display_name"),
+    supabase
+      .from("bookings")
+      .select(
+        "id, status, source, starts_at, ends_at, internal_note, total_minor, clients(id, first_name, last_name, phone_e164, important_note, no_show_count), booking_items(id, staff_id, resource_id, service_id, name_snapshot, price_minor_snapshot, price_type_snapshot, duration_min_snapshot, starts_at, ends_at, sort_order)",
+      )
+      .eq("tenant_id", tenantId)
+      .lt("starts_at", new Date(toIso).toISOString())
+      .gt("ends_at", new Date(fromIso).toISOString())
+      .order("starts_at"),
+  ]);
+  if (error) throw new Error("Could not load calendar");
+
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const staff: CalStaff[] = (staffRows ?? [])
+    .filter((s) => !opts.onlyStaffId || s.id === opts.onlyStaffId)
+    .map((s) => ({
+      id: s.id,
+      name: s.display_name,
+      position: s.position,
+      color: s.color,
+      photoUrl: s.photo_path ? `${url}/storage/v1/object/public/staff-photos/${s.photo_path}` : null,
+    }));
+
+  const working: CalendarData["working"] = {};
+  const timeOff: CalendarData["timeOff"] = {};
+  for (let d = from; d <= to; d = addDays(d, 1)) {
+    for (const s of engine.staff) {
+      working[`${s.id}|${d}`] = workingRanges(s, d, engine).map((r) => [r[0], r[1]]);
+      timeOff[`${s.id}|${d}`] = s.timeOff.map((r) => [r[0], r[1]]);
+    }
+  }
+
+  // Grid hours: from the earliest opening to the latest closing (8–20 if none).
+  const all = Object.values(engine.openingHours).flat();
+  const dayStartMin = all.length ? Math.min(...all.map((h) => toMin(h.start))) : 8 * 60;
+  const dayEndMin = all.length ? Math.max(...all.map((h) => toMin(h.end))) : 20 * 60;
+
+  const bookings: CalBooking[] = (rows ?? []).map((b) => {
+    const c = b.clients as unknown as {
+      id: string;
+      first_name: string;
+      last_name: string | null;
+      phone_e164: string | null;
+      important_note: string | null;
+      no_show_count: number;
+    } | null;
+    return {
+      id: b.id,
+      status: b.status,
+      source: b.source,
+      start: b.starts_at,
+      end: b.ends_at,
+      note: b.internal_note,
+      totalMinor: b.total_minor,
+      client: c
+        ? {
+            id: c.id,
+            name: [c.first_name, c.last_name].filter(Boolean).join(" "),
+            phone: c.phone_e164,
+            importantNote: c.important_note,
+            noShows: c.no_show_count,
+          }
+        : null,
+      items: [...b.booking_items]
+        .sort((x, y) => x.sort_order - y.sort_order)
+        .map((i) => ({
+          id: i.id,
+          staffId: i.staff_id,
+          resourceId: i.resource_id,
+          serviceId: i.service_id,
+          name: i.name_snapshot,
+          priceMinor: i.price_minor_snapshot,
+          priceType: i.price_type_snapshot,
+          durationMin: i.duration_min_snapshot,
+          start: i.starts_at,
+          end: i.ends_at,
+        })),
+    };
+  });
+
+  return {
+    timeZone: engine.timeZone,
+    slotStepMin: engine.rules.slotStepMin,
+    dayStartMin: Math.max(0, Math.floor(dayStartMin / 60) * 60),
+    dayEndMin: Math.min(24 * 60, Math.ceil(dayEndMin / 60) * 60),
+    staff,
+    bookings,
+    working,
+    timeOff,
+  };
+}

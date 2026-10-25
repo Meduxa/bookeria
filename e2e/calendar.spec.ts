@@ -1,0 +1,96 @@
+// Calendar flows against the seeded demo data (bookings around today).
+import { expect, test, type Page } from "@playwright/test";
+
+const TZ = "Asia/Tbilisi";
+const localDate = (d: Date) => d.toLocaleDateString("en-CA", { timeZone: TZ });
+const plusDays = (n: number) => localDate(new Date(Date.now() + n * 86_400_000));
+// next weekday (Mon–Fri) at least `from` days ahead
+function weekdayAhead(from: number) {
+  for (let n = from; ; n++) {
+    const day = new Date(`${plusDays(n)}T12:00:00Z`).getUTCDay();
+    if (day >= 1 && day <= 5) return plusDays(n);
+  }
+}
+
+async function signIn(page: Page, email: string) {
+  await page.goto("/ka/login");
+  await page.getByLabel("ელფოსტა").fill(email);
+  await page.getByLabel("პაროლი").fill("Demo-Bookeria-2026");
+  await page.getByRole("button", { name: "შესვლა" }).click();
+  await page.waitForURL("**/ka/dashboard");
+}
+
+test("day view: Georgian title, staff columns, booking opens by click and keyboard", async ({
+  page,
+}, info) => {
+  test.skip(info.project.name !== "desktop");
+  await signIn(page, "salon.owner@demo.test");
+  const date = weekdayAhead(1);
+  await page.goto(`/ka/calendar?view=day&date=${date}`);
+  await page.waitForLoadState("networkidle");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(
+    /ოქტომბერი|ნოემბერი|დეკემბერი|იანვარი|თებერვალი|მარტი|აპრილი|მაისი|ივნისი|ივლისი|აგვისტო|სექტემბერი/,
+  );
+  await expect(page.getByText("ანა გელაშვილი").first()).toBeVisible();
+
+  const block = page.locator('[role="button"][aria-label*="–"]').first();
+  await block.click();
+  const panel = page.getByRole("dialog");
+  await expect(panel).toBeVisible();
+  await expect(panel.getByRole("button", { name: "მოვიდა" })).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(panel).toBeHidden();
+
+  await block.focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("dialog")).toBeVisible();
+});
+
+test("create a booking from an empty slot, then mark the client arrived", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop");
+  await signIn(page, "salon.owner@demo.test");
+  const date = weekdayAhead(8); // beyond the seeded bookings
+  await page.goto(`/ka/calendar?view=day&date=${date}`);
+  await page.waitForLoadState("networkidle");
+
+  await page.getByRole("button", { name: "ახალი ჯავშანი" }).click();
+  const panel = page.getByRole("dialog");
+  await panel.getByRole("searchbox").fill("ნინო");
+  await panel
+    .getByRole("button", { name: /ნინო ბერიძე/ })
+    .first()
+    .click();
+  await panel.getByText("კლასიკური მანიკური").click();
+  const firstSlot = panel.getByRole("radio").first();
+  await expect(firstSlot).toBeVisible();
+  const time = (await firstSlot.textContent())!.slice(0, 5);
+  await firstSlot.click();
+  await panel.getByRole("button", { name: "დაჯავშნა", exact: true }).click();
+  await expect(panel).toBeHidden();
+
+  const block = page.locator(`[role="button"][aria-label^="${time}"][aria-label*="ნინო ბერიძე"]`);
+  await expect(block).toBeVisible();
+  await block.click();
+  await page.getByRole("dialog").getByRole("button", { name: "მოვიდა" }).click();
+  await expect(page.getByRole("dialog")).toBeHidden(); // saved
+  await page.goto(`/ka/calendar?view=list&date=${date}`);
+  await expect(page.getByRole("button", { name: /ნინო ბერიძე/ }).getByText("მოვიდა")).toBeVisible();
+});
+
+test("staff see only their own column", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop");
+  await signIn(page, "salon.staff@demo.test");
+  await page.goto(`/ka/calendar?view=day&date=${weekdayAhead(1)}`);
+  await expect(page.getByText("ანა გელაშვილი").first()).toBeVisible();
+  await expect(page.getByText("ეკა მაჭავარიანი")).toHaveCount(0);
+});
+
+test("phone: calendar opens as a list and never scrolls sideways", async ({ page }, info) => {
+  test.skip(info.project.name !== "mobile");
+  await signIn(page, "dental.owner@demo.test");
+  await page.goto("/ka/calendar");
+  await page.waitForLoadState("networkidle");
+  await expect(page.getByRole("tab", { name: "სია" })).toHaveAttribute("aria-selected", "true");
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+  expect(overflow).toBeLessThanOrEqual(0);
+});

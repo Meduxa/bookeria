@@ -11,6 +11,7 @@
 // Services, staff schedules and clients are added to this seed in Phase 1.
 
 import { createClient } from "@supabase/supabase-js";
+import { formatInTimeZone, fromZonedTime } from "date-fns-tz";
 
 const DEMO_PASSWORD = "Demo-Bookeria-2026";
 
@@ -130,7 +131,7 @@ async function seed() {
     const staffUser = t.people.find((p) => p.role === "staff")!;
     const counts = await seedCatalog(tenant.id, t.type, userIds[staffUser.email]);
     console.log(
-      `✓ ${t.name} (${t.type}) — /book/${t.slug} — ${t.people.length} logins, ${counts.services} services, ${counts.staff} staff, ${counts.clients} clients`,
+      `✓ ${t.name} (${t.type}) — /book/${t.slug} — ${t.people.length} logins, ${counts.services} services, ${counts.staff} staff, ${counts.clients} clients, ${counts.bookings} bookings`,
     );
   }
 }
@@ -399,7 +400,97 @@ async function seedCatalog(tenantId: string, type: "salon" | "dental", staffLogi
     ),
   );
 
-  return { services: serviceIds.length, staff: staffIds.length, clients: inserted.length };
+  const bookings = await seedBookings(
+    tenantId,
+    staffIds,
+    inserted.map((c) => c.id),
+  );
+  return { services: serviceIds.length, staff: staffIds.length, clients: inserted.length, bookings };
+}
+
+// Bookings from 3 days ago to 6 days ahead, Mon–Sat, at times that never
+// overlap (10:00, 12:00, 15:00, 17:00 — services up to 105 min incl. break).
+async function seedBookings(tenantId: string, staffIds: string[], clientIds: string[]) {
+  const { data: services } = await db
+    .from("services")
+    .select("id, name_i18n, price_type, price_minor, duration_min, buffer_after_min")
+    .eq("tenant_id", tenantId);
+  const usable = (services ?? []).filter((s) => s.duration_min + s.buffer_after_min <= 105);
+  const { data: chairs } = await db
+    .from("resources")
+    .select("id")
+    .eq("tenant_id", tenantId)
+    .order("sort_order");
+  const tz = "Asia/Tbilisi";
+  const today = formatInTimeZone(new Date(), tz, "yyyy-MM-dd");
+  let n = 0;
+
+  for (let offset = -3; offset <= 6; offset++) {
+    const day = new Date(`${today}T12:00:00Z`);
+    day.setUTCDate(day.getUTCDate() + offset);
+    if (day.getUTCDay() === 0) continue; // Sunday
+    const date = day.toISOString().slice(0, 10);
+    for (const [si, staffId] of staffIds.entries()) {
+      if (day.getUTCDay() === 6 && si > 0) continue; // only the first person works Saturdays
+      for (const [ti, time] of ["10:00", "12:00", "15:00", "17:00"].entries()) {
+        if ((si + ti + offset) % 3 === 2) continue; // leave gaps
+        const svc = usable[(si * 3 + ti + offset + 30) % usable.length];
+        const start = fromZonedTime(`${date}T${time}`, tz);
+        const end = new Date(start.getTime() + svc.duration_min * 60_000);
+        const status =
+          offset < 0
+            ? n % 9 === 0
+              ? "no_show"
+              : "completed"
+            : offset === 0 && time < "13:00"
+              ? "completed"
+              : "confirmed";
+        const b = must(
+          "booking",
+          await db
+            .from("bookings")
+            .insert({
+              tenant_id: tenantId,
+              client_id: clientIds[(n * 7) % clientIds.length],
+              starts_at: start.toISOString(),
+              ends_at: end.toISOString(),
+              status,
+              source: n % 4 === 0 ? "phone" : "admin",
+              total_minor: svc.price_minor,
+            })
+            .select("id")
+            .single(),
+        );
+        check(
+          "booking item",
+          await db.from("booking_items").insert({
+            tenant_id: tenantId,
+            booking_id: b.id,
+            service_id: svc.id,
+            staff_id: staffId,
+            resource_id: chairs?.length ? chairs[si % chairs.length].id : null,
+            name_snapshot: (svc.name_i18n as { ka: string }).ka,
+            price_type_snapshot: svc.price_type,
+            price_minor_snapshot: svc.price_minor,
+            duration_min_snapshot: svc.duration_min,
+            buffer_min_snapshot: svc.buffer_after_min,
+            starts_at: start.toISOString(),
+            ends_at: end.toISOString(),
+            blocked_until: new Date(end.getTime() + svc.buffer_after_min * 60_000).toISOString(),
+            active: status !== "no_show",
+          }),
+        );
+        check(
+          "history",
+          await db
+            .from("booking_status_history")
+            .insert({ tenant_id: tenantId, booking_id: b.id, to_status: status }),
+        );
+        n++;
+      }
+    }
+  }
+  return n;
 }
 
 seed().then(

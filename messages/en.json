@@ -49,7 +49,8 @@
       "main": "Overview",
       "business": "Business",
       "settings": "Settings"
-    }
+    },
+    "myDay": "My day"
   },
   "auth": {
     "email": "Email",
@@ -187,7 +188,11 @@
     "timeInvalid": "Check the times",
     "endBeforeStart": "The end must be after the start",
     "uploadFailed": "The photo could not be uploaded",
-    "phoneTaken": "A client with this phone already exists"
+    "phoneTaken": "A client with this phone already exists",
+    "slotTaken": "This time was just taken — please choose another.",
+    "invalidTransition": "This status change is not possible.",
+    "cannotPerform": "This person does not do this service.",
+    "staffHasBookings": "This person has bookings. Make them inactive instead."
   },
   "email": {
     "invite": {
@@ -554,6 +559,149 @@
       "badEmail": "Email not valid (left out)",
       "badBirthday": "Birthday not understood (left out)",
       "duplicateInFile": "Same phone twice in file"
+    }
+  },
+  "dates": {
+    "months": {
+      "1": "January",
+      "2": "February",
+      "3": "March",
+      "4": "April",
+      "5": "May",
+      "6": "June",
+      "7": "July",
+      "8": "August",
+      "9": "September",
+      "10": "October",
+      "11": "November",
+      "12": "December"
+    },
+    "monthTitle": {
+      "1": "January",
+      "2": "February",
+      "3": "March",
+      "4": "April",
+      "5": "May",
+      "6": "June",
+      "7": "July",
+      "8": "August",
+      "9": "September",
+      "10": "October",
+      "11": "November",
+      "12": "December"
+    },
+    "day": "{weekday}, {day} {month}",
+    "dayShort": "{day} {month}",
+    "monthYear": "{month} {year}"
+  },
+  "calendar": {
+    "title": "Calendar",
+    "today": "Today",
+    "prev": "Previous",
+    "next": "Next",
+    "newBooking": "New booking",
+    "views": {
+      "day": "Day",
+      "week": "Week",
+      "list": "List",
+      "month": "Month"
+    },
+    "staffPicker": "Staff member",
+    "noStaffTitle": "No staff yet",
+    "noStaffBody": "Add staff and their working hours first.",
+    "emptyDay": "No bookings this day.",
+    "emptyList": "No bookings in these days.",
+    "bookings": "{count, plural, =0 {no bookings} one {# booking} other {# bookings}}",
+    "closed": "Closed",
+    "dragHint": "Drag to move, drag the bottom edge to change length.",
+    "walkIn": "Walk-in"
+  },
+  "booking": {
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "arrived": "Arrived",
+      "in_progress": "In progress",
+      "completed": "Completed",
+      "cancelled_by_client": "Cancelled by client",
+      "cancelled_by_business": "Cancelled",
+      "no_show": "No-show"
+    },
+    "actions": {
+      "confirmed": "Confirm",
+      "arrived": "Arrived",
+      "in_progress": "Start",
+      "completed": "Complete",
+      "no_show": "No-show",
+      "cancelled_by_client": "Client cancelled",
+      "cancelled_by_business": "Cancel",
+      "undo": "Undo"
+    },
+    "cancelReason": "Reason (optional)",
+    "call": "Call",
+    "noClient": "No client",
+    "services": "Services",
+    "total": "Total",
+    "staff": "Staff member",
+    "time": "Time",
+    "date": "Date",
+    "duration": "Length, min",
+    "note": "Internal note",
+    "noteHint": "Only your team sees this.",
+    "saveNote": "Save note",
+    "reschedule": "Reschedule",
+    "move": "Move",
+    "history": "History",
+    "rescheduled": "Rescheduled",
+    "client": "Client",
+    "findClient": "Search client by name or phone",
+    "newClient": "New client",
+    "walkInNoClient": "Walk-in without details",
+    "chooseServices": "Services",
+    "chooseStaff": "Who",
+    "anyStaff": "Anyone free",
+    "freeTimes": "Free times",
+    "noFreeTimes": "No free time this day. Try another day or person.",
+    "otherTime": "Other time",
+    "bookAnyway": "Book anyway",
+    "create": "Book",
+    "created": "Booked",
+    "moved": "Moved",
+    "noShows": "{count, plural, one {# no-show} other {# no-shows}} before",
+    "source": "Booked via",
+    "sources": {
+      "admin": "Admin",
+      "phone": "Phone",
+      "walk_in": "Walk-in",
+      "online": "Online",
+      "import": "Import"
+    },
+    "conflicts": {
+      "closed": "The business is closed that day.",
+      "outsideHours": "Outside this person’s working hours.",
+      "overlap": "This person is busy at that time.",
+      "cannotPerform": "This person does not do one of these services.",
+      "noResource": "No free chair/room at that time.",
+      "inactive": "This person is not active."
+    },
+    "visits": "Visits",
+    "visitsEmpty": "No visits yet.",
+    "upcoming": "Upcoming",
+    "past": "Past"
+  },
+  "myDay": {
+    "title": "My day",
+    "now": "Now",
+    "nextUp": "Next",
+    "inMinutes": "in {minutes} min",
+    "today": "Today",
+    "upcoming": "Upcoming",
+    "past": "Past",
+    "noProfile": "Your login is not linked to a staff profile. Ask the owner to link it in Staff.",
+    "stats": {
+      "today": "Today",
+      "week": "This week",
+      "completed": "Completed (30 days)"
     }
   }
 }

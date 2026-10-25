@@ -1,0 +1,342 @@
+"use client";
+
+import { fromZonedTime } from "date-fns-tz";
+import { Phone, TriangleAlert } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useEffect, useState, useTransition } from "react";
+import { toast } from "sonner";
+import { ConfirmDialog } from "@/components/confirm-dialog";
+import { DetailPanel } from "@/components/detail-panel";
+import { FieldError } from "@/components/field-error";
+import { FormField } from "@/components/form-field";
+import { StatusPill, type PillTone } from "@/components/status-pill";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { formatMoney } from "@/lib/money";
+import { useDates } from "@/lib/use-dates";
+import { bookingHistory, moveBooking, setBookingNote, setBookingStatus } from "../actions";
+import type { Conflict } from "../engine/availability";
+import type { CalBooking, CalStaff } from "../queries";
+
+export const STATUS_TONE: Record<string, PillTone> = {
+  pending: "warning",
+  confirmed: "info",
+  arrived: "arrived",
+  in_progress: "progress",
+  completed: "success",
+  cancelled_by_client: "neutral",
+  cancelled_by_business: "neutral",
+  no_show: "danger",
+};
+
+// Mirrors set_booking_status in the database.
+const NEXT: Record<string, string[]> = {
+  pending: ["confirmed", "cancelled_by_client", "cancelled_by_business"],
+  confirmed: [
+    "arrived",
+    "in_progress",
+    "completed",
+    "no_show",
+    "cancelled_by_client",
+    "cancelled_by_business",
+  ],
+  arrived: ["in_progress", "completed", "no_show", "cancelled_by_client", "cancelled_by_business"],
+  in_progress: ["completed"],
+  completed: [],
+  cancelled_by_client: ["confirmed"],
+  cancelled_by_business: ["confirmed"],
+  no_show: ["confirmed"],
+};
+const DESTRUCTIVE = ["no_show", "cancelled_by_client", "cancelled_by_business"];
+
+const localTime = (iso: string, tz: string) =>
+  new Date(iso).toLocaleTimeString("en-GB", { timeZone: tz, hour: "2-digit", minute: "2-digit" });
+const localDate = (iso: string, tz: string) => new Date(iso).toLocaleDateString("en-CA", { timeZone: tz });
+
+export function BookingPanel({
+  booking,
+  staff,
+  timeZone,
+  canEdit,
+  isManager,
+  onClose,
+}: {
+  booking: CalBooking | null;
+  staff: CalStaff[];
+  timeZone: string;
+  canEdit: boolean;
+  isManager: boolean;
+  onClose: () => void;
+}) {
+  const t = useTranslations();
+  const dates = useDates();
+  const [pending, startTransition] = useTransition();
+  const [note, setNote] = useState(booking?.note ?? "");
+  const [reason, setReason] = useState("");
+  const [move, setMove] = useState({ date: "", time: "", staffId: "" });
+  const [conflicts, setConflicts] = useState<Conflict[]>([]);
+  const [error, setError] = useState<string>();
+  const [history, setHistory] = useState<Awaited<ReturnType<typeof bookingHistory>>>([]);
+
+  useEffect(() => {
+    if (!booking) return;
+    let live = true;
+    bookingHistory(booking.id).then((h) => live && setHistory(h));
+    return () => {
+      live = false;
+    };
+  }, [booking]);
+
+  if (!booking) return null;
+
+  const first = booking.items[0];
+  const staffName = staff.find((s) => s.id === first?.staffId)?.name ?? "";
+  const date = localDate(booking.start, timeZone);
+  const reschedule = {
+    date: move.date || date,
+    time: move.time || localTime(booking.start, timeZone),
+    staffId: move.staffId || first?.staffId,
+  };
+
+  const status = (next: string) =>
+    startTransition(async () => {
+      setError(undefined);
+      const r = await setBookingStatus(booking.id, next as "confirmed", reason);
+      if (!r.ok) return setError(r.error);
+      toast.success(t(`booking.status.${next as "confirmed"}`));
+      onClose();
+    });
+
+  const doMove = (force = false) =>
+    startTransition(async () => {
+      setError(undefined);
+      setConflicts([]);
+      const r = await moveBooking({
+        bookingId: booking.id,
+        staffId: reschedule.staffId!,
+        start: fromZonedTime(`${reschedule.date}T${reschedule.time}`, timeZone).toISOString(),
+        force,
+      });
+      if (!r.ok) {
+        if (r.error === "conflicts" && "conflicts" in r) return setConflicts(r.conflicts);
+        return setError(r.error);
+      }
+      toast.success(t("booking.moved"));
+      onClose();
+    });
+
+  const onlySoftConflicts =
+    conflicts.length > 0 && conflicts.every((c) => c === "outsideHours" || c === "closed");
+
+  return (
+    <DetailPanel
+      open
+      onOpenChange={(o) => !o && onClose()}
+      title={booking.client?.name ?? t("calendar.walkIn")}
+      description={`${dates.dayTitle(date)} · ${localTime(booking.start, timeZone)}–${localTime(booking.end, timeZone)}`}
+    >
+      <div className="flex flex-col gap-6">
+        <div className="flex flex-wrap items-center gap-2">
+          <StatusPill tone={STATUS_TONE[booking.status]} dot>
+            {t(`booking.status.${booking.status as "confirmed"}`)}
+          </StatusPill>
+          <span className="text-sm text-muted-foreground">
+            {staffName} · {t(`booking.sources.${booking.source as "admin"}`)}
+          </span>
+        </div>
+
+        {booking.client?.importantNote && (
+          <div role="note" className="flex gap-2 rounded-lg bg-warning-soft p-3 text-sm text-warning-ink">
+            <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden />
+            {booking.client.importantNote}
+          </div>
+        )}
+        {!!booking.client?.noShows && (
+          <StatusPill tone="danger" className="self-start">
+            {t("booking.noShows", { count: booking.client.noShows })}
+          </StatusPill>
+        )}
+        {booking.client?.phone && (
+          <Button variant="outline" asChild className="h-11 self-start md:h-9">
+            <a href={`tel:${booking.client.phone}`}>
+              <Phone aria-hidden />
+              {t("booking.call")} {booking.client.phone}
+            </a>
+          </Button>
+        )}
+
+        <section className="flex flex-col gap-2">
+          <h3 className="text-sm font-medium">{t("booking.services")}</h3>
+          <ul className="flex flex-col divide-y rounded-lg border text-sm">
+            {booking.items.map((i) => (
+              <li key={i.id} className="flex items-center gap-3 px-3 py-2">
+                <span className="flex-1">{i.name}</span>
+                <span className="text-muted-foreground tabular-nums">
+                  {localTime(i.start, timeZone)} · {formatMoney(i.priceMinor)}
+                </span>
+              </li>
+            ))}
+            <li className="flex items-center gap-3 px-3 py-2 font-medium">
+              <span className="flex-1">{t("booking.total")}</span>
+              <span className="tabular-nums">{formatMoney(booking.totalMinor)}</span>
+            </li>
+          </ul>
+        </section>
+
+        {canEdit && NEXT[booking.status].length > 0 && (
+          <section className="flex flex-col gap-2">
+            <div className="flex flex-wrap gap-2">
+              {NEXT[booking.status]
+                .filter((s) => !DESTRUCTIVE.includes(s))
+                .map((s) => (
+                  <Button key={s} className="h-11 md:h-9" disabled={pending} onClick={() => status(s)}>
+                    {booking.status.startsWith("cancelled") || booking.status === "no_show"
+                      ? t("booking.actions.undo")
+                      : t(`booking.actions.${s as "confirmed"}`)}
+                  </Button>
+                ))}
+            </div>
+            {NEXT[booking.status].some((s) => DESTRUCTIVE.includes(s)) && (
+              <div className="flex flex-wrap items-end gap-2">
+                <Input
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                  placeholder={t("booking.cancelReason")}
+                  aria-label={t("booking.cancelReason")}
+                  className="h-11 max-w-60 md:h-9"
+                />
+                {NEXT[booking.status]
+                  .filter((s) => DESTRUCTIVE.includes(s))
+                  .map((s) => (
+                    <ConfirmDialog
+                      key={s}
+                      description={t("common.confirm")}
+                      confirmLabel={t(`booking.actions.${s as "no_show"}`)}
+                      onConfirm={() => status(s)}
+                      trigger={
+                        <Button variant="outline" className="h-11 md:h-9" disabled={pending}>
+                          {t(`booking.actions.${s as "no_show"}`)}
+                        </Button>
+                      }
+                    />
+                  ))}
+              </div>
+            )}
+          </section>
+        )}
+
+        {canEdit && ["pending", "confirmed", "arrived"].includes(booking.status) && (
+          <section className="flex flex-col gap-3">
+            <h3 className="text-sm font-medium">{t("booking.reschedule")}</h3>
+            <div className="grid gap-3 sm:grid-cols-3">
+              <FormField id="mv-date" label={t("booking.date")}>
+                <Input
+                  id="mv-date"
+                  type="date"
+                  value={reschedule.date}
+                  onChange={(e) => setMove({ ...move, date: e.target.value })}
+                  className="h-11 md:h-9"
+                />
+              </FormField>
+              <FormField id="mv-time" label={t("booking.time")}>
+                <Input
+                  id="mv-time"
+                  type="time"
+                  step={300}
+                  value={reschedule.time}
+                  onChange={(e) => setMove({ ...move, time: e.target.value })}
+                  className="h-11 md:h-9"
+                />
+              </FormField>
+              {isManager && (
+                <FormField id="mv-staff" label={t("booking.staff")}>
+                  <Select value={reschedule.staffId} onValueChange={(v) => setMove({ ...move, staffId: v })}>
+                    <SelectTrigger id="mv-staff" className="h-11 w-full md:h-9">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {staff.map((s) => (
+                        <SelectItem key={s.id} value={s.id}>
+                          {s.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormField>
+              )}
+            </div>
+            {conflicts.length > 0 && (
+              <ul role="alert" className="flex flex-col gap-1 text-sm text-destructive">
+                {conflicts.map((c) => (
+                  <li key={c}>{t(`booking.conflicts.${c}`)}</li>
+                ))}
+              </ul>
+            )}
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant="outline"
+                className="h-11 md:h-9"
+                disabled={pending}
+                onClick={() => doMove(false)}
+              >
+                {t("booking.move")}
+              </Button>
+              {onlySoftConflicts && isManager && (
+                <Button
+                  variant="outline"
+                  className="h-11 md:h-9"
+                  disabled={pending}
+                  onClick={() => doMove(true)}
+                >
+                  {t("booking.bookAnyway")}
+                </Button>
+              )}
+            </div>
+          </section>
+        )}
+
+        {canEdit && (
+          <section className="flex flex-col gap-2">
+            <FormField id="bk-note" label={t("booking.note")} hint={t("booking.noteHint")}>
+              <Textarea id="bk-note" rows={2} value={note} onChange={(e) => setNote(e.target.value)} />
+            </FormField>
+            <Button
+              variant="outline"
+              className="h-11 self-start md:h-9"
+              disabled={pending || note === (booking.note ?? "")}
+              onClick={() =>
+                startTransition(async () => {
+                  const r = await setBookingNote(booking.id, note);
+                  if (r.ok) toast.success(t("common.saved"));
+                  else setError(r.error);
+                })
+              }
+            >
+              {t("booking.saveNote")}
+            </Button>
+          </section>
+        )}
+        <FieldError code={error} />
+
+        {history.length > 0 && (
+          <section className="flex flex-col gap-2">
+            <h3 className="text-sm font-medium">{t("booking.history")}</h3>
+            <ul className="flex flex-col gap-1 text-xs text-muted-foreground">
+              {history.map((h) => (
+                <li key={h.id}>
+                  {localDate(h.changed_at, timeZone)} {localTime(h.changed_at, timeZone)} ·{" "}
+                  {h.reason === "rescheduled"
+                    ? t("booking.rescheduled")
+                    : t(`booking.status.${h.to_status as "confirmed"}`)}
+                  {h.reason && h.reason !== "rescheduled" && ` — ${h.reason}`}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+      </div>
+    </DetailPanel>
+  );
+}
