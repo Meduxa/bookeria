@@ -127,8 +127,279 @@ async function seed() {
         entity_id: tenant.id,
       }),
     );
-    console.log(`✓ ${t.name} (${t.type}) — /book/${t.slug} — ${t.people.length} people`);
+    const staffUser = t.people.find((p) => p.role === "staff")!;
+    const counts = await seedCatalog(tenant.id, t.type, userIds[staffUser.email]);
+    console.log(
+      `✓ ${t.name} (${t.type}) — /book/${t.slug} — ${t.people.length} logins, ${counts.services} services, ${counts.staff} staff, ${counts.clients} clients`,
+    );
   }
+}
+
+// ---------------------------------------------------------------------------
+// Phase 1 demo data: categories, services (incl. the spec's examples), staff
+// with schedules and services, resources (dental), clients with consents.
+// ---------------------------------------------------------------------------
+
+type Svc = [
+  name: string,
+  priceGel: number,
+  minutes: number,
+  extra?: { type?: "from" | "range"; max?: number; buffer?: number },
+];
+
+const CATALOG: Record<"salon" | "dental", { category: string; services: Svc[] }[]> = {
+  salon: [
+    {
+      category: "თმა",
+      services: [
+        ["ქალის თმის შეჭრა", 55, 45],
+        ["შეღებვა X პროდუქტით", 80, 120, { buffer: 15 }],
+        ["დავარცხნა", 25, 30, { type: "from" }],
+        ["აფრიკული ნაწნავები", 250, 240, { type: "range", max: 300 }],
+        ["კაცის თმის შეჭრა", 25, 30],
+      ],
+    },
+    {
+      category: "ფრჩხილები",
+      services: [
+        ["მანიკური გელ-ლაქით", 45, 75],
+        ["კლასიკური მანიკური", 20, 40],
+        ["პედიკური", 50, 60],
+      ],
+    },
+    {
+      category: "წარბები და წამწამები",
+      services: [
+        ["წარბის კორექცია", 20, 20],
+        ["წამწამების ლამინირება", 100, 60],
+      ],
+    },
+  ],
+  dental: [
+    {
+      category: "კონსულტაცია",
+      services: [["სტომატოლოგის კონსულტაცია", 30, 30]],
+    },
+    {
+      category: "ჰიგიენა",
+      services: [
+        ["პროფესიონალური წმენდა", 120, 60, { buffer: 10 }],
+        ["გათეთრება", 400, 90, { type: "from" }],
+      ],
+    },
+    {
+      category: "თერაპია",
+      services: [
+        ["კარიესის მკურნალობა", 80, 60, { type: "range", max: 150, buffer: 10 }],
+        ["არხის მკურნალობა", 250, 90, { type: "from", buffer: 10 }],
+      ],
+    },
+  ],
+};
+
+const STAFF = {
+  salon: [
+    { name: "ანა გელაშვილი", position: "უფროსი სტილისტი", type: "master", color: "violet", linkLogin: true },
+    { name: "ეკა მაჭავარიანი", position: "სტილისტი", type: "master", color: "teal", linkLogin: false },
+    { name: "სოფო ნოზაძე", position: "მანიკურის ოსტატი", type: "master", color: "pink", linkLogin: false },
+  ],
+  dental: [
+    {
+      name: "დავით მაისურაძე",
+      position: "სტომატოლოგი-თერაპევტი",
+      type: "doctor",
+      color: "blue",
+      linkLogin: true,
+    },
+    { name: "ნათია ბერიძე", position: "ჰიგიენისტი", type: "doctor", color: "green", linkLogin: false },
+  ],
+} as const;
+
+const FIRST = [
+  "ნინო",
+  "მარიამ",
+  "ანა",
+  "თამარ",
+  "ეკა",
+  "სალომე",
+  "ნათია",
+  "ქეთი",
+  "ლიკა",
+  "მაკა",
+  "გიორგი",
+  "დავით",
+  "ლევან",
+  "ირაკლი",
+  "ნიკა",
+];
+const LAST = [
+  "ბერიძე",
+  "კაპანაძე",
+  "გელაშვილი",
+  "ლომიძე",
+  "ჩხეიძე",
+  "მაისურაძე",
+  "ნოზაძე",
+  "ხარაძე",
+  "წიკლაური",
+  "ჯაფარიძე",
+];
+
+async function seedCatalog(tenantId: string, type: "salon" | "dental", staffLoginUserId: string) {
+  const serviceIds: string[] = [];
+  for (const [ci, group] of CATALOG[type].entries()) {
+    const cat = must(
+      "category",
+      await db
+        .from("service_categories")
+        .insert({ tenant_id: tenantId, name_i18n: { ka: group.category }, sort_order: ci + 1 })
+        .select("id")
+        .single(),
+    );
+    for (const [si, [name, gel, minutes, extra]] of group.services.entries()) {
+      const svc = must(
+        `service ${name}`,
+        await db
+          .from("services")
+          .insert({
+            tenant_id: tenantId,
+            category_id: cat.id,
+            name_i18n: { ka: name },
+            price_type: extra?.type ?? "fixed",
+            price_minor: gel * 100,
+            price_max_minor: extra?.max ? extra.max * 100 : null,
+            duration_min: minutes,
+            buffer_after_min: extra?.buffer ?? 0,
+            resource_type: type === "dental" ? "chair" : null,
+            sort_order: ci * 100 + si,
+          })
+          .select("id")
+          .single(),
+      );
+      serviceIds.push(svc.id);
+    }
+  }
+
+  const { data: loc } = await db
+    .from("locations")
+    .select("id")
+    .eq("tenant_id", tenantId)
+    .eq("is_primary", true)
+    .single();
+  check(
+    "settings",
+    await db
+      .from("tenant_settings")
+      .update({ phone: "+995322000000", email: "info@example.test" })
+      .eq("tenant_id", tenantId),
+  );
+  check(
+    "address",
+    await db.from("locations").update({ address: "თბილისი, ჭავჭავაძის გამზ. 1" }).eq("id", loc!.id),
+  );
+
+  if (type === "dental") {
+    check(
+      "resources",
+      await db.from("resources").insert(
+        ["სავარძელი 1", "სავარძელი 2"].map((name, i) => ({
+          tenant_id: tenantId,
+          location_id: loc!.id,
+          name,
+          type: "chair",
+          sort_order: i,
+        })),
+      ),
+    );
+  }
+
+  const staffIds: string[] = [];
+  for (const [i, s] of STAFF[type].entries()) {
+    const row = must(
+      `staff ${s.name}`,
+      await db
+        .from("staff")
+        .insert({
+          tenant_id: tenantId,
+          location_id: loc!.id,
+          display_name: s.name,
+          position: s.position,
+          position_type: s.type,
+          color: s.color,
+          sort_order: i,
+        })
+        .select("id")
+        .single(),
+    );
+    staffIds.push(row.id);
+    // Mon–Fri 10–19 with a lunch break; first person also works Saturday
+    const days = i === 0 ? [1, 2, 3, 4, 5, 6] : [1, 2, 3, 4, 5];
+    check(
+      "schedule",
+      await db.from("staff_schedules").insert(
+        days.flatMap((d) => [
+          { tenant_id: tenantId, staff_id: row.id, weekday: d, start_time: "10:00", end_time: "14:00" },
+          { tenant_id: tenantId, staff_id: row.id, weekday: d, start_time: "15:00", end_time: "19:00" },
+        ]),
+      ),
+    );
+    // everyone performs every service at the service's own price
+    check(
+      "staff services",
+      await db.from("staff_services").insert(
+        serviceIds.map((sid) => ({
+          tenant_id: tenantId,
+          staff_id: row.id,
+          service_id: sid,
+          price_minor_override: null as number | null,
+        })),
+      ),
+    );
+    if (s.linkLogin) {
+      check(
+        "link login",
+        await db
+          .from("memberships")
+          .update({ staff_id: row.id })
+          .eq("tenant_id", tenantId)
+          .eq("user_id", staffLoginUserId),
+      );
+    }
+  }
+
+  // ~30 clients with Georgian names; deterministic so re-seeding looks the same
+  const clients = Array.from({ length: 30 }, (_, i) => ({
+    tenant_id: tenantId,
+    first_name: FIRST[i % FIRST.length],
+    last_name: LAST[(i * 7) % LAST.length],
+    phone_e164: `+9955${type === "salon" ? "55" : "99"}${String(100000 + i * 3137).padStart(6, "0")}`,
+    email: i % 3 === 0 ? `client${i}.${type}@example.test` : null,
+    birthday:
+      i % 2 === 0
+        ? `19${70 + (i % 30)}-${String((i % 12) + 1).padStart(2, "0")}-${String((i % 27) + 1).padStart(2, "0")}`
+        : null,
+    source: (["instagram", "walk_in", "phone", "referral", "facebook"] as const)[i % 5],
+    tags: i % 7 === 0 ? ["VIP"] : [],
+    important_note: i === 3 ? (type === "dental" ? "ალერგია ლიდოკაინზე" : "ალერგია ამიაკზე") : null,
+    preferred_staff_id: i % 4 === 0 ? staffIds[0] : null,
+  }));
+  const inserted = must("clients", await db.from("clients").insert(clients).select("id"));
+  check(
+    "consents",
+    await db.from("client_consents").insert(
+      inserted
+        .filter((_, i) => i % 2 === 0)
+        .map((c) => ({
+          tenant_id: tenantId,
+          client_id: c.id,
+          channel: "sms",
+          granted: true,
+          source: "import",
+        })),
+    ),
+  );
+
+  return { services: serviceIds.length, staff: staffIds.length, clients: inserted.length };
 }
 
 seed().then(

@@ -18,22 +18,30 @@ Work one phase at a time. Claude Code ticks the boxes and updates `CHANGELOG.md`
 - [ ] Transactional email provider (invites + sign-up confirmation) — needed before the pilot
 
 ## Phase 1 — Services, staff, clients (≈ 1 week) — SPEC 4.1–4.4
-- [ ] Business settings (hours, holidays, booking rules)
-- [ ] Locations (data model; one in UI)
-- [ ] Service categories, services, variants, add-ons, per-staff overrides
-- [ ] Price list import (CSV/Excel) with preview and error report
-- [ ] Staff profiles, weekly schedules, overrides, time off, services per staff
-- [ ] Resources (chairs/rooms) for dental
-- [ ] Clients: card, search, tags, important note, consents, history placeholder
-- [ ] Client import (CSV/Excel), duplicate detection, merge
-- [ ] Client export / anonymise (data subject requests)
+✅ Done 2026-10-26 (built after the design foundation, see Phase 2 and decision 004)
 
-## Phase 2 — Design system from Figma (≈ 3–5 days)
-- [ ] Screenshots in `design/references/`, Figma link received
-- [ ] Tokens extracted → `design/tokens.json` → CSS variables / Tailwind theme (light + dark if designed)
-- [ ] Core components: buttons, inputs, selects, cards, badges, dialogs, sheets, tabs, toasts, empty states, table, avatar, date/time pickers
-- [ ] App shell: sidebar (desktop), bottom navigation (mobile)
-- [ ] Existing screens restyled; visual check against Figma at 375px and 1440px
+- [x] Business settings (details, opening hours, holidays/closed days, booking rules, staff visibility)
+- [x] Locations (data model; one primary location in UI, created with the business)
+- [x] Service categories (reorder with buttons), services (fixed / from / range price), variants, add-ons, per-staff price/duration
+- [x] Price list import (paste or CSV/XLSX) with preview and error report — tested with two real Georgian price lists
+- [x] Staff profiles (photo, login link), weekly schedules (split shifts), date changes, time off, services per staff
+- [x] Resources (chairs/rooms) for dental
+- [x] Clients: card, server-side search, tags, important note, marketing consents with history, preferred staff, block online booking
+- [x] Client import (paste or CSV/XLSX), duplicate detection (file + existing), merge
+- [x] Client export (JSON) / anonymise (owner only, audited)
+- [ ] Visit history on the client card — needs bookings (Phase 3)
+- [ ] Staff levels — skipped by decision (per-staff price covers it)
+
+## Phase 2 — Design system (≈ 3–5 days)
+Design foundation done 2026-10-26 from screenshots + videos (no Figma file yet). Remaining items wait for Figma / calendar.
+
+- [x] References in `design/references/` with notes on what we take from each (no Figma link yet)
+- [x] Tokens → `design/tokens.json` → CSS variables / Tailwind theme, light + dark, contrast checked (≥ 4.5:1)
+- [x] Core components: buttons, inputs, selects, cards, status pills, stat cards, dialogs, sheets (details panel), tabs, toasts, empty states, avatar with staff colour, colour swatches
+- [x] App shell: grouped sidebar (desktop), bottom navigation + "More" page (mobile), dark-mode switch
+- [x] Phase 0 + 1 screens in the new style; checked at 375px and 1280–1440px
+- [ ] Final fonts and visual check against a Figma file (when available)
+- [ ] Date/time picker components (with the calendar, Phase 3)
 
 ## Phase 3 — Calendar and bookings (≈ 2 weeks) — SPEC 4.5–4.7
 - [ ] Availability engine (booking-engine skill) with unit tests
