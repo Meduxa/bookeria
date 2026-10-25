@@ -301,3 +301,27 @@ describe("deleting a business with bookings", () => {
     expect((await admin().from("booking_items").select("id").eq("tenant_id", id)).data).toEqual([]);
   });
 });
+
+describe("staff adding clients", () => {
+  it("only as their own preferred client, only in their business", async () => {
+    const phone = () => `+99559${Math.floor(1e6 + Math.random() * 8e6)}`;
+    const ok = await B.t.staff.db
+      .from("clients")
+      .insert({ tenant_id: B.t.id, first_name: "New", phone_e164: phone(), preferred_staff_id: B.staffMine })
+      .select("id")
+      .single();
+    expect(ok.error).toBeNull();
+    const notMine = await B.t.staff.db
+      .from("clients")
+      .insert({ tenant_id: B.t.id, first_name: "X", phone_e164: phone(), preferred_staff_id: B.staffOther });
+    expect(notMine.error).not.toBeNull();
+    const none = await B.t.staff.db
+      .from("clients")
+      .insert({ tenant_id: B.t.id, first_name: "Y", phone_e164: phone() });
+    expect(none.error).not.toBeNull();
+    const otherBiz = await B.t.staff.db
+      .from("clients")
+      .insert({ tenant_id: D.t.id, first_name: "Z", phone_e164: phone(), preferred_staff_id: B.staffMine });
+    expect(otherBiz.error).not.toBeNull();
+  });
+});
