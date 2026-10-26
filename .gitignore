@@ -19,3 +19,4 @@ npm-debug.log*
 /playwright/.cache/
 /blob-report/
 /public/_tmp/
+/.dev/

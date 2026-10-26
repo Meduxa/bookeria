@@ -9,7 +9,7 @@ import { ConfirmDialog } from "@/components/confirm-dialog";
 import { DetailPanel } from "@/components/detail-panel";
 import { FieldError } from "@/components/field-error";
 import { FormField } from "@/components/form-field";
-import { StatusPill, type PillTone } from "@/components/status-pill";
+import { StatusPill } from "@/components/status-pill";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -20,20 +20,12 @@ import { read } from "@/lib/read";
 import type { ReadResult } from "../reads";
 import { cancelFollowing, moveBooking, setBookingNote, setBookingStatus } from "../actions";
 import type { Conflict } from "../engine/availability";
+import { STATUS_TONE } from "../status-tone";
 import type { CalBooking, CalStaff } from "../queries";
 import { CheckoutPanel } from "./checkout-panel";
 import { DentalNotes } from "./dental-notes";
 
-export const STATUS_TONE: Record<string, PillTone> = {
-  pending: "warning",
-  confirmed: "info",
-  arrived: "arrived",
-  in_progress: "progress",
-  completed: "success",
-  cancelled_by_client: "neutral",
-  cancelled_by_business: "neutral",
-  no_show: "danger",
-};
+export { STATUS_TONE };
 
 // Mirrors set_booking_status in the database.
 const NEXT: Record<string, string[]> = {

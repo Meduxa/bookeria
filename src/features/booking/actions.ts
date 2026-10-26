@@ -7,7 +7,8 @@ import { memberContext, type MemberContext } from "@/lib/action-context";
 import { fail, ok, type ActionResult } from "@/lib/action-result";
 import { normalizePhone } from "@/lib/phone";
 import { DEFAULT_TZ } from "@/lib/time";
-import { getAvailableSlots, totalFor, validateBooking, type Conflict } from "./engine/availability";
+import { getAvailableSlots, validateBooking, type Conflict } from "./engine/availability";
+import { buildItems } from "./build-items";
 import { loadEngineData, loadServiceRequests } from "./load-data";
 
 const uuid = z.uuid();
@@ -130,30 +131,11 @@ export async function createBooking(
     clientId = c.id;
   }
 
-  // Services run back-to-back with the same person; a chair/room is picked if needed.
-  const staff = fullData.staff.find((s) => s.id === v.staffId)!;
-  const total = totalFor(staff, services)!;
-  const resourceType = services.find((s) => s.resourceType)?.resourceType;
-  let resourceId: string | null = null;
-  if (resourceType) {
-    const end = new Date(v.start).getTime() + (total.durationMin + total.bufferMin) * 60_000;
-    resourceId =
-      fullData.resources
-        .filter((r) => r.type === resourceType)
-        .sort((a, b) => a.sortOrder - b.sortOrder)
-        .find((r) => !r.busy.some(([s, e]) => s < end && new Date(v.start).getTime() < e))?.id ?? null;
-  }
-  let t = new Date(v.start).getTime();
-  const items = services.map((s) => {
-    const item = {
-      service_id: s.serviceId,
-      variant_id: v.picks.find((p) => p.serviceId === s.serviceId)?.variantId ?? null,
-      staff_id: v.staffId,
-      resource_id: resourceId,
-      starts_at: new Date(t).toISOString(),
-    };
-    t += ((staff.services[s.serviceId].durationMin ?? s.durationMin) + (s.addonMin ?? 0)) * 60_000;
-    return item;
+  const items = buildItems(fullData, {
+    staffId: v.staffId,
+    start: new Date(v.start),
+    services,
+    picks: v.picks,
   });
 
   const { data: id, error } = await supabase.rpc("create_booking", {
