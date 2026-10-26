@@ -52,7 +52,8 @@
     },
     "myDay": "My day",
     "cash": "Cash",
-    "sms": "SMS"
+    "sms": "SMS",
+    "reports": "Reports"
   },
   "auth": {
     "email": "Email",
@@ -109,7 +110,24 @@
       "link": "Share your booking link",
       "sms": "Send your first SMS"
     },
-    "inviteTeam": "Invite your team"
+    "inviteTeam": "Invite your team",
+    "reports": "Reports",
+    "today": "Today",
+    "thisMonth": "This month so far",
+    "todayWord": "Today",
+    "birthdays": "Birthdays in the next 7 days",
+    "noBirthdays": "No birthdays in the next 7 days.",
+    "done": "Done",
+    "stats": {
+      "bookings": "Bookings",
+      "received": "Received",
+      "sms": "SMS left",
+      "revenue": "Revenue",
+      "occupancy": "Occupancy",
+      "occupancyHint": "Booked hours ÷ working hours",
+      "newClients": "New clients",
+      "noShows": "No-shows"
+    }
   },
   "placeholder": {
     "title": "{section} is on the way",
@@ -1090,5 +1108,71 @@
     "suspended": "The account is suspended: you can view and download your data, but not change it. Contact Bookeria.",
     "cancelled": "The account is cancelled: you can still view and download your data.",
     "deletion": "This business will be deleted on {date}. You can cancel this in Settings."
+  },
+  "reports": {
+    "title": "Reports",
+    "excel": "Download Excel",
+    "period": "Period",
+    "presets": {
+      "thisMonth": "This month",
+      "lastMonth": "Last month",
+      "last30": "Last 30 days",
+      "thisYear": "This year"
+    },
+    "from": "From",
+    "to": "To",
+    "staff": "Specialist",
+    "allStaff": "Everyone",
+    "show": "Show",
+    "received": "Received",
+    "tips": "Tips",
+    "tipsHint": "plus {tips} tips",
+    "averageTicket": "Average ticket",
+    "visitsCompleted": "Completed visits",
+    "bookingsTotal": "All bookings",
+    "ofBookings": "of {count} bookings",
+    "occupancy": "Occupancy",
+    "noShowRate": "No-show rate",
+    "cancellationRate": "Cancellation rate",
+    "newClients": "New clients",
+    "returningClients": "Returning clients",
+    "returningHint": "{count} returning",
+    "byDay": "Money received by day",
+    "byMethod": "By payment method",
+    "byCategory": "Service value by category",
+    "noCategory": "Without category",
+    "staffTitle": "Specialists",
+    "serviceValue": "Service value",
+    "serviceValueHint": "Service value = prices of completed visits (before discounts). Commission uses each specialist's % from their profile.",
+    "commission": "Commission",
+    "bookedHours": "Booked / working h",
+    "workingHours": "Working hours",
+    "topServices": "Top services",
+    "sourcesTitle": "Where bookings come from",
+    "statusTitle": "Bookings by status",
+    "retentionTitle": "Do new clients come back?",
+    "retentionHint": "New clients of this period who booked again within…",
+    "retention": {
+      "d30": "30 days",
+      "d60": "60 days",
+      "d90": "90 days"
+    },
+    "retention30": "Back within 30 days, %",
+    "retention60": "Back within 60 days, %",
+    "retention90": "Back within 90 days, %",
+    "nothing": "Nothing in this period.",
+    "date": "Date",
+    "method": "Method",
+    "category": "Category",
+    "service": "Service",
+    "count": "Count",
+    "source": "Source",
+    "status": "Status",
+    "sheets": {
+      "summary": "Summary",
+      "money": "Money",
+      "staff": "Specialists",
+      "services": "Services"
+    }
   }
 }

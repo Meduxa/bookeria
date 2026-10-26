@@ -4,6 +4,7 @@ import {
   Banknote,
   CalendarClock,
   CalendarDays,
+  ChartColumn,
   LayoutDashboard,
   Menu,
   MessageSquare,
@@ -36,7 +37,12 @@ function groups(type: BusinessType, canManage: boolean, hasProfile: boolean) {
         { href: "/clients", key: type === "dental" ? "patients" : "clients", icon: Users },
         { href: "/services", key: "services", icon: type === "dental" ? Stethoscope : Scissors },
         { href: "/staff", key: "staff", icon: UserRound },
-        ...(canManage ? [{ href: "/cash", key: "cash", icon: Banknote }] : []),
+        ...(canManage
+          ? [
+              { href: "/cash", key: "cash", icon: Banknote },
+              { href: "/reports", key: "reports", icon: ChartColumn },
+            ]
+          : []),
       ],
     },
     {
@@ -146,7 +152,12 @@ export function MoreNavList({ canManage }: { canManage: boolean }) {
   const t = useTranslations("nav");
   const items = [
     { href: "/staff", key: "staff", icon: UserRound },
-    ...(canManage ? [{ href: "/cash", key: "cash", icon: Banknote }] : []),
+    ...(canManage
+      ? [
+          { href: "/cash", key: "cash", icon: Banknote },
+          { href: "/reports", key: "reports", icon: ChartColumn },
+        ]
+      : []),
     { href: "/settings/team", key: "team", icon: UsersRound },
     ...(canManage
       ? [
