@@ -1,8 +1,10 @@
 import { redirect } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import QRCode from "qrcode";
+import { AccountCard } from "@/features/settings/components/account-card";
 import { SettingsView, type SettingsData } from "@/features/settings/components/settings-view";
 import { ShareCard } from "@/features/settings/components/share-card";
+import { fullDate, ymdIn } from "@/lib/date-format";
 import { publicEnv } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
 import { canManage, getActiveTenant } from "@/lib/tenant";
@@ -80,6 +82,14 @@ export default async function BusinessSettingsPage({ params }: PageProps<"/[loca
           resources: (resources.data ?? []) as SettingsData["resources"],
         }}
       />
+      {tenant.role === "owner" && (
+        <AccountCard
+          businessName={tenant.name}
+          deletionDue={
+            tenant.deletionDueAt ? fullDate(await getTranslations(), ymdIn(tenant.deletionDueAt)) : null
+          }
+        />
+      )}
     </div>
   );
 }

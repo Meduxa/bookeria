@@ -229,7 +229,8 @@
     "noConsentOrSms": "Not sent: the client has not agreed to promotional SMS, or there are no SMS left.",
     "noRecipients": "No clients agreed to promotional SMS (with this tag).",
     "notEnoughSms": "Not enough SMS left for everyone. Please top up first.",
-    "planLimit": "Your plan allows no more active staff. Change the plan or switch another staff member off."
+    "planLimit": "Your plan allows no more active staff. Change the plan or switch another staff member off.",
+    "nameMismatch": "The name does not match."
   },
   "email": {
     "invite": {
@@ -1174,5 +1175,67 @@
       "staff": "Specialists",
       "services": "Services"
     }
+  },
+  "auditLog": {
+    "title": "Audit log",
+    "subtitle": "Who did what and when in your business. Kept for your records and for data protection.",
+    "empty": "Nothing here yet.",
+    "older": "Older",
+    "bookeria": "Bookeria",
+    "system": "System",
+    "groups": {
+      "all": "All",
+      "team": "Team",
+      "clients": "Clients",
+      "bookings": "Bookings",
+      "settings": "Settings",
+      "platform": "Bookeria"
+    },
+    "actions": {
+      "booking_paid": "Payment taken",
+      "bookings_imported": "Bookings imported",
+      "client_anonymized": "Client's data deleted",
+      "client_exported": "Client's data downloaded",
+      "client_merged": "Clients merged",
+      "clients_imported": "Clients imported",
+      "consent_unsubscribed": "Client unsubscribed from promotions",
+      "dental_notes_added": "Treatment note added",
+      "dental_notes_read": "Treatment notes viewed",
+      "invitation_accepted": "Invitation accepted",
+      "invitation_created": "Invitation sent",
+      "invitation_revoked": "Invitation cancelled",
+      "membership_removed": "Team member removed",
+      "membership_updated": "Team member's role changed",
+      "platform_sms_topup": "SMS credits added by Bookeria",
+      "platform_tenant_updated": "Plan or status changed by Bookeria",
+      "services_imported": "Price list imported",
+      "service_deleted": "Service deleted",
+      "settings_rules_updated": "Booking rules changed",
+      "settings_updated": "Business details changed",
+      "staff_deleted": "Staff member deleted",
+      "staff_login_linked": "Staff login linked",
+      "tenant_created": "Business created",
+      "tenant_deletion_cancelled": "Deletion cancelled",
+      "tenant_deletion_requested": "Deletion requested",
+      "tenant_exported": "All business data downloaded",
+      "tenant_seeded": "Demo data loaded"
+    }
+  },
+  "accountData": {
+    "title": "Your data and account",
+    "hint": "Download everything your business stored, see the audit log, or delete the business.",
+    "excel": "Download all (Excel)",
+    "json": "Download all (JSON)",
+    "audit": "Audit log",
+    "deleteTitle": "Delete the business",
+    "deleteHint": "Everything is deleted 14 days after you ask — clients, bookings, payments, staff. Until then you can change your mind. Download your data first.",
+    "delete": "Delete the business…",
+    "deleteConfirm": "Type the business name \"{name}\" to confirm. It will be deleted in 14 days.",
+    "typeName": "Business name",
+    "deleteFinal": "Delete in 14 days",
+    "scheduled": "The business will be deleted on {date}.",
+    "cancel": "Keep the business",
+    "cancelled": "The business will not be deleted.",
+    "requested": "Deletion scheduled in 14 days."
   }
 }
