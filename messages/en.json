@@ -1237,5 +1237,62 @@
     "cancel": "Keep the business",
     "cancelled": "The business will not be deleted.",
     "requested": "Deletion scheduled in 14 days."
+  },
+  "platform": {
+    "title": "Bookeria admin",
+    "nav": {
+      "businesses": "Businesses",
+      "plans": "Plans",
+      "sms": "SMS log",
+      "app": "Back to the app"
+    },
+    "count": "{count, plural, one {# business} other {# businesses}}",
+    "cols": {
+      "business": "Business",
+      "plan": "Plan",
+      "status": "Status",
+      "staff": "Staff",
+      "bookings30": "Bookings, 30 days",
+      "sms": "SMS left",
+      "lastActivity": "Last activity"
+    },
+    "status": {
+      "trial": "Trial",
+      "active": "Active",
+      "past_due": "Payment due",
+      "suspended": "Suspended",
+      "cancelled": "Cancelled"
+    },
+    "until": "until {date}",
+    "deleting": "deleting on {date}",
+    "summary": "{staff} staff · {bookings} bookings in 30 days",
+    "bookingPage": "Booking page",
+    "planAndStatus": "Plan and status",
+    "trialEnds": "Trial ends",
+    "statusHint": "Payment due = warning only. Suspended = read-only (they can still view and download). Changes are written to the business's audit log.",
+    "save": "Save",
+    "smsBalance": "SMS left: {count}",
+    "smsAdd": "Add SMS",
+    "smsAddHint": "Negative to correct a mistake.",
+    "note": "Note (e.g. invoice number)",
+    "smsAddButton": "Add",
+    "plans": {
+      "hint": "Placeholders until you decide. The staff limit applies at once; included SMS are added on the 1st of each month to active businesses.",
+      "code": "Code",
+      "name": "Name",
+      "price": "Price ₾ / month",
+      "maxStaff": "Max staff",
+      "sms": "SMS / month",
+      "active": "Offered to new businesses",
+      "new": "New plan",
+      "add": "Add plan"
+    },
+    "errorRate": "{failed} of the last {total} failed",
+    "smsFilters": {
+      "all": "All",
+      "failed": "Failed",
+      "queued": "Waiting",
+      "skipped": "Skipped"
+    }
   }
 }

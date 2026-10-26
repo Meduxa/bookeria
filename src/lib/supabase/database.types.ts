@@ -2290,6 +2290,7 @@ export type Database = {
           status: string
         }[]
       }
+      grant_monthly_sms: { Args: never; Returns: number }
       has_role: {
         Args: { p_roles: string[]; p_tenant: string }
         Returns: boolean
