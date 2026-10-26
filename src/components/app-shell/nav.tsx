@@ -6,6 +6,7 @@ import {
   CalendarDays,
   LayoutDashboard,
   Menu,
+  MessageSquare,
   Scissors,
   Settings,
   Stethoscope,
@@ -42,7 +43,12 @@ function groups(type: BusinessType, canManage: boolean, hasProfile: boolean) {
       key: "settings",
       items: [
         { href: "/settings/team", key: "team", icon: UsersRound },
-        ...(canManage ? [{ href: "/settings/business", key: "settings", icon: Settings }] : []),
+        ...(canManage
+          ? [
+              { href: "/settings/business", key: "settings", icon: Settings },
+              { href: "/settings/sms", key: "sms", icon: MessageSquare },
+            ]
+          : []),
       ],
     },
   ] as const;
@@ -142,7 +148,12 @@ export function MoreNavList({ canManage }: { canManage: boolean }) {
     { href: "/staff", key: "staff", icon: UserRound },
     ...(canManage ? [{ href: "/cash", key: "cash", icon: Banknote }] : []),
     { href: "/settings/team", key: "team", icon: UsersRound },
-    ...(canManage ? [{ href: "/settings/business", key: "settings", icon: Settings }] : []),
+    ...(canManage
+      ? [
+          { href: "/settings/business", key: "settings", icon: Settings },
+          { href: "/settings/sms", key: "sms", icon: MessageSquare },
+        ]
+      : []),
   ] as const;
   return (
     <ul className="flex flex-col divide-y rounded-xl border bg-card">

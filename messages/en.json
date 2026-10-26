@@ -51,7 +51,8 @@
       "settings": "Settings"
     },
     "myDay": "My day",
-    "cash": "Cash"
+    "cash": "Cash",
+    "sms": "SMS"
   },
   "auth": {
     "email": "Email",
@@ -203,7 +204,9 @@
     "codeExpired": "This code has expired or was tried too often. Request a new one.",
     "smsFailed": "We couldn't send the SMS. Please try again.",
     "cannotMove": "This booking can't be moved online. Please call the business.",
-    "tooLate": "It's too late to change this booking online."
+    "tooLate": "It's too late to change this booking online.",
+    "senderInvalid": "Latin letters, digits, space, dot or dash; 2 to 11 characters.",
+    "templateVariable": "The text has a variable we don't know. Use only the ones offered below the text."
   },
   "email": {
     "invite": {
@@ -942,5 +945,114 @@
     "rescheduled": "{business_name}: your visit is moved to {date}, {time}. {manage_link}",
     "cancelled": "{business_name}: your visit on {date}, {time} is cancelled. {phone}",
     "optOut": "Unsubscribe: {link}"
+  },
+  "smsSettings": {
+    "title": "SMS",
+    "subtitle": "Reminders and booking messages to clients. One Georgian SMS holds 70 characters; longer texts use 2 or more.",
+    "balance": "SMS left",
+    "balanceHint": "Counted in SMS parts. To top up, contact Bookeria.",
+    "sentThisMonth": "Sent this month",
+    "low": "Only {count} SMS left. Reminders stop when the balance reaches zero — please top up.",
+    "empty": "No SMS left. Reminders and booking messages are not being sent.",
+    "log": "Message log",
+    "sender": "Sender name",
+    "senderHint": "What clients see instead of a number, e.g. SalonNino. Latin letters and digits, up to 11. Each name is approved by the SMS company first.",
+    "senderStatus": {
+      "none": "Not set",
+      "pending": "Waiting for approval",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "messagesTitle": "When to send",
+    "onConfirm": "Booking confirmation",
+    "onConfirmHint": "When a booking is made by the team or online (not for walk-ins).",
+    "onReschedule": "Booking moved",
+    "onCancel": "Booking cancelled by the business",
+    "reminder2h": "Reminder 2 hours before",
+    "reminder24h": "Reminder 24 hours before",
+    "quietTitle": "Quiet hours",
+    "quietHint": "No messages in this time; they go out when it ends (if still before the visit). SMS codes for online booking are always sent at once.",
+    "quietStart": "From",
+    "quietEnd": "To",
+    "save": "Save",
+    "saved": "Saved",
+    "templatesTitle": "Texts",
+    "templatesHint": "Change the text per language. Click a variable to add it.",
+    "types": {
+      "confirmed": "Confirmation",
+      "pending": "Request received (needs approval)",
+      "reminder": "Reminder",
+      "rescheduled": "Moved",
+      "cancelled": "Cancelled"
+    },
+    "vars": {
+      "client_name": "client's name",
+      "business_name": "business",
+      "service": "service",
+      "staff": "specialist",
+      "date": "date",
+      "time": "time",
+      "address": "address",
+      "phone": "your phone",
+      "manage_link": "manage link"
+    },
+    "custom": "Your text",
+    "default": "Default text",
+    "preview": "Preview",
+    "counter": "{chars} characters · {segments, plural, one {# SMS} other {# SMS}}",
+    "unknownVars": "Unknown variable: {names}",
+    "saveText": "Save text",
+    "reset": "Back to default",
+    "sample": {
+      "client_name": "Nino",
+      "service": "Haircut",
+      "staff": "Ana",
+      "date": "26 October",
+      "time": "15:00",
+      "address": "1 Chavchavadze Ave",
+      "phone": "+995 322 00 00 00"
+    },
+    "test": "Test SMS",
+    "testHint": "Sends one SMS to your phone (uses 1 credit).",
+    "testPhone": "Your phone",
+    "testSend": "Send test",
+    "testSent": "Test SMS sent",
+    "testText": "{business}: test message from Bookeria."
+  },
+  "smsLog": {
+    "title": "Message log",
+    "filters": {
+      "all": "All",
+      "queued": "Waiting",
+      "sent": "Sent",
+      "failed": "Not sent"
+    },
+    "empty": "No messages yet.",
+    "status": {
+      "queued": "Waiting",
+      "sending": "Sending",
+      "sent": "Sent",
+      "delivered": "Delivered",
+      "failed": "Not sent",
+      "skipped": "Skipped"
+    },
+    "errors": {
+      "no_credits": "no SMS left",
+      "no_consent": "no marketing consent",
+      "exception": "provider error"
+    },
+    "types": {
+      "otp": "Code",
+      "confirmed": "Confirmation",
+      "pending": "Request",
+      "reminder": "Reminder",
+      "rescheduled": "Moved",
+      "cancelled": "Cancelled",
+      "manual": "Manual",
+      "marketing": "Promotion"
+    },
+    "parts": "{count, plural, one {# SMS} other {# SMS}}",
+    "more": "Older",
+    "back": "SMS settings"
   }
 }
