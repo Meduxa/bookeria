@@ -86,14 +86,23 @@ Split into 3a and 3b with a report in between (Levan, 2026-10-26). Staff may cre
 - [x] Manual SMS to a client; promotion to clients who agreed (optional tag), unsubscribe link and page
 
 ## Phase 6 — Reports, settings, polish, production (≈ 1–2 weeks) — SPEC 4.12–4.15
-- [ ] Dashboard home + onboarding checklist
-- [ ] Reports with filters + Excel export
-- [ ] Audit log viewer, full business export, business deletion flow
-- [ ] Trial + plans + plan limits; platform admin area
+Split into 6a (in the app) and 6b (production) with a report in between (Levan, 2026-10-26).
+
+### 6a ✅ Done 2026-10-26
+- [x] Dashboard home (today, month so far, occupancy, new clients, no-shows, birthdays, SMS) + onboarding checklist that ticks itself
+- [x] Reports with filters (period, specialist) + Excel export; money hidden from those who may not see it
+- [x] Audit log viewer, full business export (Excel + JSON), business deletion with a 14-day grace period
+- [x] Trial + placeholder plans + staff limit; status banners; read-only when suspended (decision 009)
+- [x] Platform admin area: businesses, plan/status/trial, SMS top-up, plans editor, global SMS log; monthly included SMS
+- [x] Business photo gallery on the booking page
+
+### 6b — production (next)
 - [ ] PWA (manifest, icons, install prompt), performance pass
 - [ ] Sentry, backups check, security review, accessibility pass
 - [ ] Terms of service, privacy policy, data processing agreement pages (texts from lawyer)
-- [ ] Production deployment + custom domain
+- [ ] Production Supabase project, Netlify deployment (Levan, 2026-10-26), scheduled jobs with CRON_SECRET, custom domain
+- [ ] Transactional email provider (invites, sign-up confirmation)
+- [ ] Plan prices — Levan decides (editable in /admin/plans)
 
 ## 🚀 Pilot with 2–3 salons + 1 dental clinic (2–4 weeks of real use, fix feedback)
 

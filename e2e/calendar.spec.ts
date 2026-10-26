@@ -18,7 +18,7 @@ async function signIn(page: Page, email: string) {
   await page.getByLabel("ელფოსტა").fill(email);
   await page.getByLabel("პაროლი").fill("Demo-Bookeria-2026");
   await page.getByRole("button", { name: "შესვლა" }).click();
-  await page.waitForURL("**/ka/dashboard");
+  await page.waitForURL("**/ka/dashboard", { waitUntil: "commit" }); // the page itself may still be loading
 }
 
 test("day view: Georgian title, staff columns, booking opens by click and keyboard", async ({

@@ -2,6 +2,18 @@
 
 All notable changes per phase. Newest on top.
 
+## Phase 6a — Reports, account and platform admin (2026-10-26)
+
+- **Dashboard home** for owners/admins: today's bookings and money received, this month's revenue, occupancy, new clients and no-shows, birthdays in the next 7 days, SMS left (with a warning when low), and a first-steps checklist that ticks itself and disappears when done.
+- **Reports** (period presets or dates, one specialist or all): money received by day and payment method, service value by category, per specialist (service value, commission, booked vs working hours, occupancy), top services, booking sources and statuses, no-show and cancellation rates, new vs returning clients, retention after 30/60/90 days. **Excel download** with the same filters. Admins see no money when the owner switched revenue off.
+- **Owner's data and account** (Settings → Business): download everything (Excel or JSON), audit log page with readable actions and filters, delete the business — typed name, 14 days to change your mind, banner on every page meanwhile.
+- **Plans and status**: placeholder plans (Trial, Start, Pro, Clinic) with a staff limit; trial ends → "payment due" banner (online booking keeps working); suspended → read-only (viewing and export still work). Decision 009.
+- **Platform admin area** `/admin` (Levan only; others get "not found"): all businesses with owner, plan, status, staff, bookings, SMS left and last activity; change plan/status/trial; add SMS credits; edit plans; SMS log across businesses with error rate. Make yourself admin with `npm.cmd run platform-admin -- your@email`.
+- **Photo gallery** (up to 12) shown on the booking page.
+- **Daily job** (`/api/cron/daily`, also run by `npm.cmd run jobs`): ends trials, deletes businesses whose 14 days are over, adds monthly included SMS.
+- 8 new security tests (platform admin, plans, staff limit, deletion, export, photos); report calculations unit-tested.
+- **Tests**: end-to-end tests now run against a production build (decision 010): 1.5 minutes instead of 4, and stable. The dashboard numbers are reused for one minute per business, so many sign-ins at once stay fast.
+
 ## Phase 5 — SMS (2026-10-26)
 
 - **One SMS queue and log** for everything: booking codes, confirmations, reminders, moved/cancelled messages, manual SMS and promotions. A message can never go twice; failed sends are retried and their credits returned. The owner/admin sees every message with its status in **Settings → SMS → Message log** (codes are blanked out).

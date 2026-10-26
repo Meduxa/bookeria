@@ -15,7 +15,7 @@ async function signIn(page: Page, email: string) {
   await page.getByLabel("ელფოსტა").fill(email);
   await page.getByLabel("პაროლი").fill("Demo-Bookeria-2026");
   await page.getByRole("button", { name: "შესვლა" }).click();
-  await page.waitForURL("**/ka/dashboard");
+  await page.waitForURL("**/ka/dashboard", { waitUntil: "commit" }); // the page itself may still be loading
 }
 
 test("checkout with a split payment shows up in the cash summary", async ({ page }, info) => {

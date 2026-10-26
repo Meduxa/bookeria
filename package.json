@@ -13,13 +13,14 @@
     "test": "vitest run --project unit",
     "test:watch": "vitest --project unit",
     "test:rls": "vitest run --project rls",
-    "test:e2e": "playwright test",
+    "test:e2e": "next build && playwright test --config playwright.prod.config.ts",
     "db:push": "supabase db push --linked",
     "db:types": "supabase gen types typescript --linked --schema public > src/lib/supabase/database.types.ts",
     "db:seed": "node --env-file=.env.local scripts/seed.mts",
     "check": "npm run typecheck && npm run lint && npm run test",
     "jobs": "node --env-file=.env.local scripts/jobs.mts",
-    "platform-admin": "node --env-file=.env.local scripts/platform-admin.mts"
+    "platform-admin": "node --env-file=.env.local scripts/platform-admin.mts",
+    "test:e2e:dev": "playwright test"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.2",

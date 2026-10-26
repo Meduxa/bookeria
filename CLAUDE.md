@@ -74,7 +74,7 @@ Read this file at the start of every session. The full product specification is 
     app/[locale]/(auth)/...          login, signup, invite
     app/[locale]/(dashboard)/...     admin & staff app
     app/[locale]/book/[slug]/...     public online booking page
-    app/api/...                      webhooks (SMS status, payments) + read/[name]/[id] for panel loads (decision 006)
+    app/api/...                      webhooks, read/[name]/[id] panel loads (decision 006), cron/* jobs, export/* downloads
     components/ui/                   shadcn primitives (do not edit by hand except via tokens)
     components/                      app components
     features/<module>/               actions.ts, queries.ts, schema.ts, components/
@@ -128,11 +128,13 @@ npm.cmd run lint             # ESLint
 npm.cmd run format           # Prettier (format:check to only check)
 npm.cmd run test             # unit tests (Vitest, no network)
 npm.cmd run test:rls         # tenant-isolation tests against bookeria-dev (needs .env.local)
-npm.cmd run test:e2e         # Playwright, phone 375px + desktop 1440px (needs seeded dev DB; starts dev server if not running)
+npm.cmd run test:e2e         # Playwright on a production build (port 3100), phone 375px + desktop 1440px (needs seeded dev DB) — decision 010
+npm.cmd run test:e2e:dev     # the same tests against the running dev server (quicker to start, slower and less stable)
 npm.cmd run db:push          # apply new migrations in supabase/migrations to bookeria-dev
 npm.cmd run db:types         # regenerate src/lib/supabase/database.types.ts from the DB
 npm.cmd run db:seed          # reset + load demo salon & dental clinic (scripts/seed.mts; logins listed there)
-npm.cmd run jobs             # SMS reminders/queue every minute while the dev server runs (prod: host scheduler + CRON_SECRET)
+npm.cmd run jobs             # SMS every minute + daily job (trials, deletions, monthly SMS) while the dev server runs
+npm.cmd run platform-admin -- you@example.com   # make an existing account a platform admin (/admin); --remove to undo
 npx.cmd supabase login       # once per computer
 npx.cmd supabase link --project-ref cznbcglbskunoofrdeut   # once per checkout
 ```

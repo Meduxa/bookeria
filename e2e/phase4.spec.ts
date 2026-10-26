@@ -121,7 +121,7 @@ test("the team sees the online client and visit in the client list", async ({ pa
   await staff.getByLabel("ელფოსტა").fill("salon.owner@demo.test");
   await staff.getByLabel("პაროლი").fill("Demo-Bookeria-2026");
   await staff.getByRole("button", { name: "შესვლა" }).click();
-  await staff.waitForURL("**/ka/dashboard");
+  await staff.waitForURL("**/ka/dashboard", { waitUntil: "commit" }); // the page itself may still be loading
   await staff.goto("/ka/clients");
   await staff.waitForLoadState("networkidle");
   await staff.getByRole("searchbox").fill(phone);
@@ -139,7 +139,7 @@ test("owner settings: booking link, QR code and the SMS code switch", async ({ p
   await page.getByLabel("ელფოსტა").fill("salon.owner@demo.test");
   await page.getByLabel("პაროლი").fill("Demo-Bookeria-2026");
   await page.getByRole("button", { name: "შესვლა" }).click();
-  await page.waitForURL("**/ka/dashboard");
+  await page.waitForURL("**/ka/dashboard", { waitUntil: "commit" }); // the page itself may still be loading
   await page.goto("/ka/settings/business");
   await expect(page.getByRole("heading", { name: "ონლაინ ჯავშნის ბმული" })).toBeVisible();
   await expect(page.getByText(/\/book\/demo-salon$/)).toBeVisible();

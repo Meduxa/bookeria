@@ -6,7 +6,7 @@ async function signIn(page: Page, email: string) {
   await page.getByLabel("ელფოსტა").fill(email);
   await page.getByLabel("პაროლი").fill("Demo-Bookeria-2026");
   await page.getByRole("button", { name: "შესვლა" }).click();
-  await page.waitForURL("**/ka/dashboard");
+  await page.waitForURL("**/ka/dashboard", { waitUntil: "commit" }); // the page itself may still be loading
 }
 
 test("services: seeded price list with categories and Georgian prices", async ({ page }) => {
@@ -43,10 +43,10 @@ test("clients: count, search by phone, important note warning", async ({ page })
   // 30 seeded; online-booking tests add more
   await expect(page.getByText(/^\d+ კლიენტი$/)).toBeVisible();
   await page.getByRole("searchbox").fill("555100000");
-  await expect(page.getByText("1 კლიენტი")).toBeVisible();
+  await expect(page.getByText("1 კლიენტი", { exact: true })).toBeVisible();
   // the demo client with an allergy note (there are two Tamars, found by phone)
   await page.getByRole("searchbox").fill("555109411");
-  await expect(page.getByText("1 კლიენტი")).toBeVisible();
+  await expect(page.getByText("1 კლიენტი", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: /თამარ/ }).click();
   await expect(page.getByRole("note")).toContainText("ალერგია");
 });

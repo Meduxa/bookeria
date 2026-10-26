@@ -2,12 +2,15 @@
 import { existsSync, readFileSync } from "node:fs";
 import { expect, test, type Page } from "@playwright/test";
 
+// some tests here walk through several pages and sign-ins
+test.describe.configure({ timeout: 60_000 });
+
 async function signIn(page: Page, email: string) {
   await page.goto("/ka/login");
   await page.getByLabel("ელფოსტა").fill(email);
   await page.getByLabel("პაროლი").fill("Demo-Bookeria-2026");
   await page.getByRole("button", { name: "შესვლა" }).click();
-  await page.waitForURL("**/ka/dashboard");
+  await page.waitForURL("**/ka/dashboard", { waitUntil: "commit" }); // the page itself may still be loading
 }
 
 // The fake SMS provider writes every message to .dev/sms-outbox.jsonl.
@@ -64,7 +67,7 @@ test("manual SMS to a client; a promotion needs consent; it shows in the log", a
 
   // demo client 0 (+995555100000) agreed to SMS; client 1 (+995555103137) did not
   await page.getByRole("searchbox").fill("555100000");
-  await expect(page.getByText("1 კლიენტი")).toBeVisible();
+  await expect(page.getByText("1 კლიენტი", { exact: true })).toBeVisible();
   await page
     .getByRole("main")
     .getByRole("button", { name: /ნინო ბერიძე/ })
@@ -79,7 +82,7 @@ test("manual SMS to a client; a promotion needs consent; it shows in the log", a
   await page.goto("/ka/clients");
   await page.waitForLoadState("networkidle");
   await page.getByRole("searchbox").fill("555103137");
-  await expect(page.getByText("1 კლიენტი")).toBeVisible();
+  await expect(page.getByText("1 კლიენტი", { exact: true })).toBeVisible();
   await page
     .getByRole("main")
     .getByRole("button", { name: /მარიამ/ })
@@ -133,7 +136,12 @@ test("a broken unsubscribe link is refused", async ({ page }) => {
 });
 
 test("the SMS job answers locally", async ({ request }) => {
-  const res = await request.get("/api/cron/sms");
+  // locally the job runs without a secret; against a production build it needs one
+  const secret = process.env.CRON_SECRET;
+  const res = await request.get(
+    "/api/cron/sms",
+    secret ? { headers: { authorization: `Bearer ${secret}` } } : {},
+  );
   expect(res.status()).toBe(200);
   expect(await res.json()).toMatchObject({ queued: expect.any(Number), sent: expect.any(Number) });
 });

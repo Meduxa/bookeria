@@ -8,16 +8,40 @@ import { buildReport, canSeeMoney } from "./report";
 type Db = Awaited<ReturnType<typeof createClient>>;
 
 // The owner/admin home screen: today, this month so far, birthdays, SMS, first steps.
-export async function getDashboard(db: Db, tenantId: string, role: string, locale: string) {
+// The month report behind these numbers is the heaviest page load in the app, and
+// every sign-in lands here. Owners and admins of a business share the numbers for a
+// minute. Whether this person may see money is checked on every visit and is part
+// of the key, so switching revenue off for admins applies at once. Staff never get them.
+const TTL_MS = 60_000;
+const recent = new Map<string, { at: number; value: Promise<Dashboard> }>();
+type Dashboard = Awaited<ReturnType<typeof loadDashboard>>;
+
+export async function getDashboard(
+  db: Db,
+  tenantId: string,
+  role: string,
+  locale: string,
+): Promise<Dashboard> {
+  const money = await canSeeMoney(db, tenantId, role);
+  const key = `${tenantId}|${money}|${locale}`;
+  const hit = recent.get(key);
+  if (hit && Date.now() - hit.at < TTL_MS) return hit.value;
+  const value = loadDashboard(db, tenantId, money, locale);
+  recent.set(key, { at: Date.now(), value });
+  value.catch(() => recent.delete(key)); // never keep a failure
+  if (recent.size > 500) recent.delete(recent.keys().next().value!);
+  return value;
+}
+
+async function loadDashboard(db: Db, tenantId: string, money: boolean, locale: string) {
   const { data: tenant } = await db.from("tenants").select("timezone").eq("id", tenantId).single();
   const tz = tenant?.timezone ?? DEFAULT_TZ;
   const today = ymdIn(new Date().toISOString(), tz);
   const monthStart = `${today.slice(0, 8)}01`;
 
   // one report for the month so far; today is part of it
-  const [month, money, balance, settings, clients, counts] = await Promise.all([
+  const [month, balance, settings, clients, counts] = await Promise.all([
     buildReport(db, tenantId, { from: monthStart, to: today, locale }),
-    canSeeMoney(db, tenantId, role),
     db.rpc("sms_balance", { p_tenant: tenantId }),
     db.from("tenant_settings").select("sms_low_balance").eq("tenant_id", tenantId).single(),
     db

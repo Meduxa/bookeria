@@ -1105,7 +1105,7 @@
     "invalidBody": "It may be incomplete. Please contact the business."
   },
   "account": {
-    "trialEnding": "Your trial ends {days, plural, =0 {today} one {in # day} other {in # days}}. Contact Bookeria to choose a plan.",
+    "trialEnding": "Your trial ends in {days, plural, =0 {less than a day} one {# day} other {# days}}. Contact Bookeria to choose a plan.",
     "pastDue": "Your trial has ended or a payment is overdue. Contact Bookeria so the account is not suspended.",
     "suspended": "The account is suspended: you can view and download your data, but not change it. Contact Bookeria.",
     "cancelled": "The account is cancelled: you can still view and download your data.",
