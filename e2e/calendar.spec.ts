@@ -49,9 +49,15 @@ test("day view: Georgian title, staff columns, booking opens by click and keyboa
 test("create a booking from an empty slot, then mark the client arrived", async ({ page }, info) => {
   test.skip(info.project.name !== "desktop");
   await signIn(page, "salon.owner@demo.test");
-  const date = weekdayAhead(8 + Math.floor(Math.random() * 60)); // beyond the seeded bookings, fresh each run
-  await page.goto(`/ka/calendar?view=day&date=${date}`);
-  await page.waitForLoadState("networkidle");
+  // a random day beyond the seeded bookings that earlier runs have not used yet
+  let date = "";
+  for (let tries = 0; ; tries++) {
+    expect(tries).toBeLessThan(10);
+    date = weekdayAhead(8 + Math.floor(Math.random() * 300));
+    await page.goto(`/ka/calendar?view=day&date=${date}`);
+    await page.waitForLoadState("networkidle");
+    if ((await page.locator('[role="button"][aria-label*="–"]').count()) === 0) break;
+  }
 
   await page.getByRole("button", { name: "ახალი ჯავშანი" }).click();
   const panel = page.getByRole("dialog");

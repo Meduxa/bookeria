@@ -7,28 +7,6 @@ import { fail, ok, type ActionResult } from "@/lib/action-result";
 import { parseMoneyToMinor } from "@/lib/money";
 import { PAYMENT_METHODS } from "./payment-methods";
 
-const uuid = z.uuid();
-
-// Extra items and payments of one booking. Payments come back empty when the
-// person may not see money (RLS: owner / admins unless hidden / own bookings).
-export async function bookingMoney(bookingId: string) {
-  const ctx = await memberContext();
-  if (!ctx || !uuid.safeParse(bookingId).success) return null;
-  const [charges, payments] = await Promise.all([
-    ctx.supabase
-      .from("booking_charges")
-      .select("id, name, price_minor")
-      .eq("booking_id", bookingId)
-      .order("created_at"),
-    ctx.supabase
-      .from("payments")
-      .select("id, method, amount_minor, tip_minor, status, created_at")
-      .eq("booking_id", bookingId)
-      .order("created_at"),
-  ]);
-  return { charges: charges.data ?? [], payments: payments.data ?? [] };
-}
-
 const moneyText = z
   .string()
   .trim()

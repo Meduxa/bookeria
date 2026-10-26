@@ -11,7 +11,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { formatMoney, parseMoneyToMinor } from "@/lib/money";
-import { bookingMoney, checkout } from "../checkout-actions";
+import { read } from "@/lib/read";
+import type { ReadResult } from "../reads";
+import { checkout } from "../checkout-actions";
 import { PAYMENT_METHODS, type PaymentMethod } from "../payment-methods";
 import type { CalBooking, CalStaff } from "../queries";
 
@@ -32,7 +34,7 @@ export function CheckoutPanel({
 }) {
   const t = useTranslations();
   const [pending, startTransition] = useTransition();
-  const [existing, setExisting] = useState<Awaited<ReturnType<typeof bookingMoney>>>(null);
+  const [existing, setExisting] = useState<ReadResult<"bookingMoney">>(null);
   const [charges, setCharges] = useState<{ name: string; price: string }[]>([]);
   const [discount, setDiscount] = useState<{ kind: "amount" | "percent"; value: string }>({
     kind: "amount",
@@ -44,7 +46,7 @@ export function CheckoutPanel({
   const [error, setError] = useState<string>();
 
   useEffect(() => {
-    bookingMoney(booking.id).then(setExisting);
+    read("bookingMoney", booking.id, null).then(setExisting);
   }, [booking.id]);
 
   const itemsMinor =

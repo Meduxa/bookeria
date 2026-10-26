@@ -2,6 +2,13 @@
 
 All notable changes per phase. Newest on top.
 
+## After Phase 3b (2026-10-26)
+
+- **Logo** in the sidebar, phone header, sign-in pages and browser tab; works in dark mode.
+- **Faster panels, no stuck buttons**: client card, booking history and payments now load in parallel (decision 006). Before, a button pressed right after opening a panel ("arrived", "view notes") could wait 15+ seconds on a busy server.
+- **Dates** everywhere use our own month names, so server and browser always show the same text (fixed a page redraw on the clients list).
+- Client list order is stable for clients added at the same moment (imports).
+
 ## Phase 3b — Calendar and bookings, the rest (2026-10-26)
 
 - **Recurring bookings**: "repeat every N weeks, X times" in the new-booking panel; the list of dates shows clashes before saving, clashing dates can be skipped, the series is saved in one go. "Cancel this and all following" on any booking of a series.

@@ -128,3 +128,13 @@ test("staff cannot open booking import", async ({ page }, info) => {
   await page.waitForURL("**/ka/calendar");
   await expect(page.getByRole("link", { name: "ჯავშნების იმპორტი" })).toHaveCount(0);
 });
+
+test("panel read route: nothing for signed-out visitors, unknown loaders 404", async ({ request }, info) => {
+  test.skip(info.project.name !== "desktop");
+  const id = "00000000-0000-4000-8000-000000000000";
+  const visits = await request.get(`/api/read/clientVisits/${id}`, { maxRedirects: 0 });
+  expect(visits.status()).not.toBe(200);
+  expect(await visits.text()).not.toContain("starts_at");
+  const unknown = await request.get(`/api/read/exportClient/${id}`, { maxRedirects: 0 });
+  expect(unknown.status()).toBe(404);
+});

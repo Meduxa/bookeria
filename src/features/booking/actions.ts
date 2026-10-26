@@ -285,17 +285,6 @@ export async function setBookingNote(bookingId: string, note: string): Promise<A
   return ok(undefined);
 }
 
-export async function bookingHistory(bookingId: string) {
-  const ctx = await memberContext();
-  if (!ctx || !uuid.safeParse(bookingId).success) return [];
-  const { data } = await ctx.supabase
-    .from("booking_status_history")
-    .select("id, from_status, to_status, reason, changed_at")
-    .eq("booking_id", bookingId)
-    .order("changed_at", { ascending: false });
-  return data ?? [];
-}
-
 // For the new-booking panel: clients matching a search (RLS limits staff).
 export async function findClients(q: string) {
   const ctx = await memberContext();

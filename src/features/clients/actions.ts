@@ -4,7 +4,6 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { dbErrorCode, managerContext } from "@/lib/action-context";
 import { fail, ok, type ActionResult } from "@/lib/action-result";
-import { getConsentHistory } from "./queries";
 import { clientSchema, importClientsSchema, type ClientInput } from "./schema";
 
 const uuid = z.uuid();
@@ -84,12 +83,6 @@ export async function saveClient(
 
   revalidatePath(`/${ctx.locale}/clients`);
   return ok({ id: data.id });
-}
-
-export async function consentHistory(clientId: string) {
-  const ctx = await managerContext();
-  if (!ctx || !uuid.safeParse(clientId).success) return [];
-  return getConsentHistory(clientId);
 }
 
 // Data subject request: everything stored about one client, as JSON. Owner only (RPC checks).

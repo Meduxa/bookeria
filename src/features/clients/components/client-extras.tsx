@@ -9,9 +9,11 @@ import { ConfirmDialog } from "@/components/confirm-dialog";
 import { StatusPill } from "@/components/status-pill";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { anonymizeClient, consentHistory, exportClient, mergeClients, searchClients } from "../actions";
+import { read } from "@/lib/read";
+import type { ReadResult } from "@/features/booking/reads";
+import { anonymizeClient, exportClient, mergeClients, searchClients } from "../actions";
 
-type History = Awaited<ReturnType<typeof consentHistory>>;
+type History = ReadResult<"consentHistory">;
 
 export function ConsentHistory({ clientId }: { clientId: string }) {
   const t = useTranslations("clients.consent");
@@ -19,7 +21,7 @@ export function ConsentHistory({ clientId }: { clientId: string }) {
   const [items, setItems] = useState<History | null>(null);
   useEffect(() => {
     let live = true;
-    consentHistory(clientId).then((h) => live && setItems(h));
+    read("consentHistory", clientId, []).then((h) => live && setItems(h));
     return () => {
       live = false;
     };

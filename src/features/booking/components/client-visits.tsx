@@ -5,10 +5,11 @@ import { useEffect, useState } from "react";
 import { StatusPill } from "@/components/status-pill";
 import { formatMoney } from "@/lib/money";
 import { useDates } from "@/lib/use-dates";
-import { clientVisits } from "../history-actions";
+import { read } from "@/lib/read";
+import type { ReadResult } from "../reads";
 import { STATUS_TONE } from "./booking-panel";
 
-type Visit = Awaited<ReturnType<typeof clientVisits>>[number];
+type Visit = ReadResult<"clientVisits">[number];
 
 // Visit history on the client card: upcoming first, then the past.
 export function ClientVisits({ clientId }: { clientId: string }) {
@@ -19,7 +20,7 @@ export function ClientVisits({ clientId }: { clientId: string }) {
 
   useEffect(() => {
     let live = true;
-    clientVisits(clientId).then((v) => live && setVisits(v));
+    read("clientVisits", clientId, []).then((v) => live && setVisits(v));
     return () => {
       live = false;
     };

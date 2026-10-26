@@ -74,7 +74,7 @@ Read this file at the start of every session. The full product specification is 
     app/[locale]/(auth)/...          login, signup, invite
     app/[locale]/(dashboard)/...     admin & staff app
     app/[locale]/book/[slug]/...     public online booking page
-    app/api/...                      webhooks only (SMS status, payments)
+    app/api/...                      webhooks (SMS status, payments) + read/[name]/[id] for panel loads (decision 006)
     components/ui/                   shadcn primitives (do not edit by hand except via tokens)
     components/                      app components
     features/<module>/               actions.ts, queries.ts, schema.ts, components/

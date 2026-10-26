@@ -16,7 +16,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { formatMoney } from "@/lib/money";
 import { useDates } from "@/lib/use-dates";
-import { bookingHistory, cancelFollowing, moveBooking, setBookingNote, setBookingStatus } from "../actions";
+import { read } from "@/lib/read";
+import type { ReadResult } from "../reads";
+import { cancelFollowing, moveBooking, setBookingNote, setBookingStatus } from "../actions";
 import type { Conflict } from "../engine/availability";
 import type { CalBooking, CalStaff } from "../queries";
 import { CheckoutPanel } from "./checkout-panel";
@@ -85,12 +87,12 @@ export function BookingPanel({
   const [conflicts, setConflicts] = useState<Conflict[]>([]);
   const [error, setError] = useState<string>();
   const [paying, setPaying] = useState(false);
-  const [history, setHistory] = useState<Awaited<ReturnType<typeof bookingHistory>>>([]);
+  const [history, setHistory] = useState<ReadResult<"bookingHistory">>([]);
 
   useEffect(() => {
     if (!booking) return;
     let live = true;
-    bookingHistory(booking.id).then((h) => live && setHistory(h));
+    read("bookingHistory", booking.id, []).then((h) => live && setHistory(h));
     return () => {
       live = false;
     };

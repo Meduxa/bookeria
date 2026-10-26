@@ -64,7 +64,7 @@ Split into 3a and 3b with a report in between (Levan, 2026-10-26). Staff may cre
 - [x] Checkout: payment methods, split payment, discounts, tip, daily cash summary; owner decides whether admins see revenue
 - [x] Dental: day view by chair/room
 - [x] Speed: day view with 15 staff × 150 bookings loads in ~340 ms (test `perf_calendar`)
-- [ ] Later: client card loads visits / history / notes one after another (Next.js runs server actions in sequence) — move these reads to parallel route handlers before launch
+- [x] Panels load in parallel (GET /api/read, decision 006) — buttons no longer wait behind loading panels
 
 ## Phase 4 — Public online booking page (≈ 1 week) — SPEC 4.8
 - [ ] `/book/[slug]` flow, mobile-first, ka default
