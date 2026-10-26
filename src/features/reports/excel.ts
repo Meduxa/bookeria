@@ -1,5 +1,6 @@
 import "server-only";
 import writeXlsxFile from "write-excel-file/node";
+import { excelSafe } from "@/lib/excel-safe";
 import type { Report } from "./compute";
 
 type Cell = {
@@ -13,7 +14,7 @@ type T = (key: string, values?: Record<string, string | number>) => string;
 const head = (...labels: string[]): Cell[] => labels.map((value) => ({ value, fontWeight: "bold" }));
 const gel = (minor: number): Cell => ({ value: minor / 100, type: Number, format: "#,##0.00" });
 const num = (n: number | null): Cell => ({ value: n, type: Number });
-const text = (s: string): Cell => ({ value: s, type: String });
+const text = (s: string): Cell => ({ value: excelSafe(s), type: String });
 
 /** One workbook: summary, money, staff, services, clients. Money sheets only for people who may see money. */
 export async function reportWorkbook(r: Report, opts: { t: T; money: boolean; from: string; to: string }) {

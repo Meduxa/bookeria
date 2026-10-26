@@ -1,4 +1,5 @@
 import writeXlsxFile from "write-excel-file/node";
+import { excelSafe } from "@/lib/excel-safe";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveTenant } from "@/lib/tenant";
 
@@ -14,7 +15,7 @@ const cell = (v: unknown) =>
     ? null
     : typeof v === "number"
       ? { value: v, type: Number }
-      : { value: typeof v === "object" ? JSON.stringify(v) : String(v), type: String };
+      : { value: excelSafe(typeof v === "object" ? JSON.stringify(v) : String(v)), type: String };
 
 export async function GET(req: Request) {
   const tenant = await getActiveTenant();
