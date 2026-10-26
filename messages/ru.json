@@ -908,12 +908,11 @@
     "notFoundTitle": "Страница не найдена",
     "notFoundBody": "Проверьте адрес — возможно, ссылка изменилась.",
     "sms": {
-      "code": "{business}: ваш код {code}",
-      "booked": "{business}: вы записаны на {when}. Изменить или отменить: {link}",
-      "pending": "{business}: заявка на {when} получена, скоро подтвердим. Управление: {link}"
+      "code": "{business}: ваш код {code}"
     },
     "emailMessage": {
-      "subject": "Ваш визит — {business}"
+      "subject": "Ваш визит — {business}",
+      "body": "{business}: {when}. Изменить или отменить: {link}"
     }
   },
   "manageBooking": {
@@ -935,5 +934,13 @@
     "notFoundTitle": "Ссылка не работает",
     "notFoundBody": "Возможно, в ней ошибка, или записи больше нет.",
     "bookAgain": "Записаться снова"
+  },
+  "smsTemplates": {
+    "confirmed": "{business_name}: запись {date}, {time}. Изменить: {manage_link}",
+    "pending": "{business_name}: заявка на {date}, {time} получена, скоро подтвердим. {manage_link}",
+    "reminder": "{business_name}: напоминание — {date}, {time}. Изменить: {manage_link}",
+    "rescheduled": "{business_name}: визит перенесён на {date}, {time}. {manage_link}",
+    "cancelled": "{business_name}: визит {date}, {time} отменён. {phone}",
+    "optOut": "Отписаться: {link}"
   }
 }

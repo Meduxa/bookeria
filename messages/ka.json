@@ -908,12 +908,11 @@
     "notFoundTitle": "გვერდი ვერ მოიძებნა",
     "notFoundBody": "შეამოწმეთ მისამართი — შესაძლოა ბიზნესმა ბმული შეცვალა.",
     "sms": {
-      "code": "{business}: თქვენი კოდია {code}",
-      "booked": "{business}: დაჯავშნილია {when}. შეცვლა ან გაუქმება: {link}",
-      "pending": "{business}: მოთხოვნა მიღებულია ({when}), მალე დაგიდასტურებთ. მართვა: {link}"
+      "code": "{business}: თქვენი კოდია {code}"
     },
     "emailMessage": {
-      "subject": "თქვენი ვიზიტი — {business}"
+      "subject": "თქვენი ვიზიტი — {business}",
+      "body": "{business}: {when}. შეცვლა ან გაუქმება: {link}"
     }
   },
   "manageBooking": {
@@ -935,5 +934,13 @@
     "notFoundTitle": "ბმული არ მუშაობს",
     "notFoundBody": "შესაძლოა არასწორადაა აკრეფილი, ან ჯავშანი აღარ არსებობს.",
     "bookAgain": "ხელახლა დაჯავშნა"
+  },
+  "smsTemplates": {
+    "confirmed": "{business_name}: ჯავშანი {date}, {time}. შეცვლა: {manage_link}",
+    "pending": "{business_name}: მოთხოვნა მიღებულია ({date}, {time}), მალე დაგიდასტურებთ. {manage_link}",
+    "reminder": "{business_name}: შეხსენება — {date}, {time}. შეცვლა: {manage_link}",
+    "rescheduled": "{business_name}: ვიზიტი გადატანილია — {date}, {time}. {manage_link}",
+    "cancelled": "{business_name}: ვიზიტი {date}, {time} გაუქმებულია. {phone}",
+    "optOut": "გამოწერის გაუქმება: {link}"
   }
 }

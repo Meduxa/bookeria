@@ -4,7 +4,8 @@ import { formatInTimeZone } from "date-fns-tz";
 import { getLocale, getTranslations } from "next-intl/server";
 import { z } from "zod";
 import { getEmailProvider } from "@/integrations/email";
-import { getSmsProvider } from "@/integrations/sms";
+import { notifyBooking } from "@/features/sms/booking-sms";
+import { sendNow } from "@/features/sms/send";
 import { fail, ok, type ActionResult } from "@/lib/action-result";
 import { fullDateTime } from "@/lib/date-format";
 import { publicEnv } from "@/lib/env";
@@ -96,12 +97,16 @@ export async function sendCode(input: {
   });
   if (error) return fail("generic");
   const t = await getTranslations("publicBooking.sms");
-  const sent = await getSmsProvider().send({
+  const sent = await sendNow({
+    tenantId: business.tenantId,
     to: phone,
     text: t("code", { code, business: business.name }),
-    idempotencyKey: `otp:${business.tenantId}:${phone}:${hmac(code).slice(0, 12)}`,
+    storedText: t("code", { code: "••••••", business: business.name }), // the log never shows codes
+    kind: "service",
+    type: "otp",
+    key: `otp:${phone}:${hmac(code).slice(0, 16)}`,
   });
-  return sent.ok ? ok(undefined) : fail("smsFailed");
+  return sent ? ok(undefined) : fail("smsFailed");
 }
 
 // Returns a one-off pass proving the phone; the booking spends it.
@@ -204,23 +209,21 @@ export async function bookOnline(input: z.input<typeof bookSchema>): Promise<Act
   const booked = data as { booking_id: string; status: "pending" | "confirmed" };
   const staffName = r.data.staffNames[slot.staffId]?.name ?? "";
 
-  // Service messages (no marketing consent needed). Phase 5 moves these into the SMS queue and log.
-  const t = await getTranslations();
-  const link = `${publicEnv.NEXT_PUBLIC_APP_URL}/m/${token}`;
-  const when = fullDateTime(t, slot.start.toISOString(), business.timeZone);
-  const text = t(booked.status === "pending" ? "publicBooking.sms.pending" : "publicBooking.sms.booked", {
-    business: business.name,
-    when,
-    link,
-  });
-  await getSmsProvider().send({ to: phone, text, idempotencyKey: `booked:${booked.booking_id}` });
-  if (v.email)
+  // Confirmation with the manage link: right away, the client is waiting for it.
+  await notifyBooking(booked.booking_id, booked.status, { immediate: true, manageToken: token });
+  if (v.email) {
+    const t = await getTranslations();
     await getEmailProvider().sendTransactional({
       to: v.email,
       subject: t("publicBooking.emailMessage.subject", { business: business.name }),
-      text,
+      text: t("publicBooking.emailMessage.body", {
+        business: business.name,
+        when: fullDateTime(t, slot.start.toISOString(), business.timeZone),
+        link: `${publicEnv.NEXT_PUBLIC_APP_URL}/m/${token}`,
+      }),
       idempotencyKey: `booked:${booked.booking_id}`,
     });
+  }
 
   return ok({
     token,

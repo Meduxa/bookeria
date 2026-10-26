@@ -25,3 +25,9 @@ export function fullDateTime(t: Translator, iso: string, timeZone = DEFAULT_TZ) 
   const time = new Date(iso).toLocaleTimeString("en-GB", { timeZone, hour: "2-digit", minute: "2-digit" });
   return tr(t, "dates.at", { date: fullDate(t, ymdIn(iso, timeZone)), time });
 }
+
+/** "26 ოქტომბერი" — day and month only, for SMS where every character counts */
+export function shortDate(t: Translator, date: string) {
+  const p = dateParts(date.slice(0, 10));
+  return tr(t, "dates.dayShort", { day: p.day, month: tr(t, `dates.months.${p.month}`) });
+}

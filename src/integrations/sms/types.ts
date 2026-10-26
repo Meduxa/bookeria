@@ -9,6 +9,7 @@ export type SmsSendResult = {
   ok: boolean;
   providerRef?: string;
   segments?: number;
+  delivered?: boolean; // the provider already knows it arrived (fake provider)
   error?: { code: string; message: string; retryable: boolean };
 };
 

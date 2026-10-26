@@ -17,7 +17,8 @@
     "db:push": "supabase db push --linked",
     "db:types": "supabase gen types typescript --linked --schema public > src/lib/supabase/database.types.ts",
     "db:seed": "node --env-file=.env.local scripts/seed.mts",
-    "check": "npm run typecheck && npm run lint && npm run test"
+    "check": "npm run typecheck && npm run lint && npm run test",
+    "jobs": "node --env-file=.env.local scripts/jobs.mts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.2",

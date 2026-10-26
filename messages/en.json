@@ -908,12 +908,11 @@
     "notFoundTitle": "Page not found",
     "notFoundBody": "Check the address — this business may have changed its link.",
     "sms": {
-      "code": "{business}: your code is {code}",
-      "booked": "{business}: booked for {when}. Change or cancel: {link}",
-      "pending": "{business}: request for {when} received, we'll confirm soon. Manage: {link}"
+      "code": "{business}: your code is {code}"
     },
     "emailMessage": {
-      "subject": "Your visit at {business}"
+      "subject": "Your visit at {business}",
+      "body": "{business}: {when}. Change or cancel: {link}"
     }
   },
   "manageBooking": {
@@ -935,5 +934,13 @@
     "notFoundTitle": "This link doesn't work",
     "notFoundBody": "It may be mistyped, or the booking no longer exists.",
     "bookAgain": "Book again"
+  },
+  "smsTemplates": {
+    "confirmed": "{business_name}: booked for {date}, {time}. Change: {manage_link}",
+    "pending": "{business_name}: request for {date}, {time} received, we'll confirm soon. {manage_link}",
+    "reminder": "{business_name}: reminder — {date}, {time}. Change: {manage_link}",
+    "rescheduled": "{business_name}: your visit is moved to {date}, {time}. {manage_link}",
+    "cancelled": "{business_name}: your visit on {date}, {time} is cancelled. {phone}",
+    "optOut": "Unsubscribe: {link}"
   }
 }

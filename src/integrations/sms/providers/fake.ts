@@ -20,6 +20,6 @@ export const fakeSmsProvider: SmsProvider = {
         JSON.stringify({ to: sms.to, text: sms.text, at: new Date().toISOString() }) + "\n",
       );
     }
-    return { ok: true, providerRef: `fake-${sms.idempotencyKey}`, segments: 1 };
+    return { ok: true, providerRef: `fake-${sms.idempotencyKey}`, segments: 1, delivered: true };
   },
 };

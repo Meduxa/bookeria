@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { formatInTimeZone } from "date-fns-tz";
 import { z } from "zod";
 import { memberContext, type MemberContext } from "@/lib/action-context";
@@ -8,6 +9,7 @@ import { fail, ok, type ActionResult } from "@/lib/action-result";
 import { normalizePhone } from "@/lib/phone";
 import { DEFAULT_TZ } from "@/lib/time";
 import { getAvailableSlots, validateBooking, type Conflict } from "./engine/availability";
+import { notifyBooking } from "../sms/booking-sms";
 import { buildItems } from "./build-items";
 import { loadEngineData, loadServiceRequests } from "./load-data";
 
@@ -149,6 +151,7 @@ export async function createBooking(
   });
   if (error) return fail(bookingError(error));
   done(ctx);
+  if (v.source !== "walk_in") after(() => notifyBooking(id, "confirmed"));
   return ok({ id });
 }
 
@@ -224,6 +227,7 @@ export async function moveBooking(
   });
   if (error) return fail(bookingError(error));
   done(ctx);
+  if (delta !== 0) after(() => notifyBooking(v.bookingId, "rescheduled"));
   return ok(undefined);
 }
 
@@ -252,6 +256,9 @@ export async function setBookingStatus(
   });
   if (error) return fail(bookingError(error));
   done(ctx);
+  // approving a pending (online) booking confirms it; one message per booking, so an undo never resends
+  if (status === "confirmed") after(() => notifyBooking(bookingId, "confirmed"));
+  if (status === "cancelled_by_business") after(() => notifyBooking(bookingId, "cancelled"));
   return ok(undefined);
 }
 
