@@ -104,7 +104,8 @@ Split into 6a (in the app) and 6b (production) with a report in between (Levan, 
 - [x] Legal pages as marked drafts (ka/en/ru) — [ ] lawyer's texts
 - [x] Sentry and Resend wired, switched on by keys (decision 011)
 - [x] Netlify config, scheduled jobs, CI on GitHub, encrypted nightly backup workflow (decision 012)
-- [ ] Levan: GitHub repo, Supabase production (free plan to start), Sentry, Netlify — then the checks in `docs/go-live.md`
+- [x] GitHub repo (Meduxa/bookeria, private) — code pushed, CI green (2026-10-26)
+- [ ] Production: Supabase production project, Sentry, Netlify — **deferred until the pilot** (Levan, 2026-10-26: the free plan allows only 2 active projects and both are in use; plan: Supabase Pro at pilot time, which also brings backups). Follow `docs/go-live.md` from step 2 then.
 - [ ] Later: domain + Resend (needed for real sign-ups), SMS company, Turnstile, plan prices, Supabase Pro
 
 ## 🚀 Pilot with 2–3 salons + 1 dental clinic (2–4 weeks of real use, fix feedback)
