@@ -16,6 +16,7 @@ import { signUpSchema, type SignUpInput } from "../schema";
 
 export function SignupForm({ next, defaultEmail }: { next: string; defaultEmail?: string }) {
   const t = useTranslations("auth");
+  const tl = useTranslations("legal");
   const [pending, startTransition] = useTransition();
   const [formError, setFormError] = useState<string>();
   const [sentTo, setSentTo] = useState<string>();
@@ -78,6 +79,28 @@ export function SignupForm({ next, defaultEmail }: { next: string; defaultEmail?
         </div>
       ))}
       <FieldError code={formError} />
+      <p className="text-xs text-muted-foreground">
+        {tl.rich("agree", {
+          terms: (chunks) => (
+            <Link
+              href="/legal/terms"
+              target="_blank"
+              className="text-foreground underline underline-offset-4"
+            >
+              {chunks}
+            </Link>
+          ),
+          privacy: (chunks) => (
+            <Link
+              href="/legal/privacy"
+              target="_blank"
+              className="text-foreground underline underline-offset-4"
+            >
+              {chunks}
+            </Link>
+          ),
+        })}
+      </p>
       <Button type="submit" className="h-11 md:h-9" disabled={pending}>
         {pending ? t("signup.submit") + "…" : t("signup.submit")}
       </Button>

@@ -60,3 +60,20 @@ test("no content blocked by the security policy", async ({ page }, info) => {
   ])
     await noBlocked(page, p, blocked);
 });
+
+test("legal pages are reachable from sign-up and the booking page, in every language", async ({ page }) => {
+  await page.goto("/ka/signup");
+  await page.getByRole("link", { name: "კონფიდენციალურობის პოლიტიკა" }).first().waitFor();
+  await page.goto("/ka/book/demo-salon");
+  await page.getByRole("contentinfo").getByRole("link", { name: "მომსახურების პირობები" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "მომსახურების პირობები" })).toBeVisible();
+  await expect(page.getByRole("note")).toContainText("სამუშაო ვერსია");
+  for (const [l, title] of [
+    ["en", "Data processing agreement"],
+    ["ru", "Политика конфиденциальности"],
+  ] as const) {
+    await page.goto(`/${l}/legal/${l === "en" ? "dpa" : "privacy"}`);
+    await expect(page.getByRole("heading", { level: 1, name: title })).toBeVisible();
+  }
+  expect((await page.goto("/ka/legal/nothing"))?.status()).toBe(404);
+});

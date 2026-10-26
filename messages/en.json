@@ -1307,5 +1307,122 @@
   "pwa": {
     "install": "Install the app",
     "iosHint": "To install on your phone: Share → “Add to Home Screen”."
+  },
+  "legal": {
+    "draft": "Draft — this text will be replaced by the version prepared by our lawyer. It describes how Bookeria works today but is not yet legally binding.",
+    "updated": "Last updated: {date}",
+    "links": {
+      "privacy": "Privacy policy",
+      "terms": "Terms of service",
+      "dpa": "Data processing agreement"
+    },
+    "agree": "By creating an account you agree to the <terms>Terms of service</terms> and the <privacy>Privacy policy</privacy>.",
+    "privacy": {
+      "title": "Privacy policy",
+      "sections": [
+        {
+          "h": "Who we are",
+          "p": "Bookeria is an online booking and client management service for beauty salons and dental clinics in Georgia. Operator details (company name, address, identification number) will be added here."
+        },
+        {
+          "h": "Two roles",
+          "p": "Each salon or clinic decides what it stores about its clients and why — it is the data controller. Bookeria processes that data only on the business's behalf, as a data processor. For the accounts of business owners and their teams, Bookeria itself is the controller."
+        },
+        {
+          "h": "What data is stored",
+          "p": "Accounts: name, email, language. Clients of a business: name, phone, optional email and birthday, notes, booking history, payments, marketing consents with date and source. Clients who book online also give a comment if they wish. Dental clinics may keep treatment notes — health data that only the clinic's doctors and owner can open, and every opening is logged."
+        },
+        {
+          "h": "Where it is kept",
+          "p": "In the European Union: the database is hosted by Supabase in Frankfurt (Germany); the application runs on Netlify. Text messages and emails are sent through providers listed in the data processing agreement."
+        },
+        {
+          "h": "Messages",
+          "p": "Booking confirmations and reminders are service messages. Promotions are sent only with separate, recorded consent and always contain an unsubscribe link."
+        },
+        {
+          "h": "How long",
+          "p": "Data is kept while the business uses Bookeria. When a business deletes its account, everything is removed after 14 days. A business can delete a single client's personal data at any time."
+        },
+        {
+          "h": "Your rights",
+          "p": "You can ask the salon or clinic for a copy of your data, a correction or deletion, and you can withdraw marketing consent at any time with the link in any promotional message. Businesses can export or delete a client's data in Bookeria in one step."
+        },
+        {
+          "h": "Security",
+          "p": "Strict separation between businesses in the database, encrypted connections, access by role, and an audit log of sensitive actions."
+        },
+        {
+          "h": "Contact",
+          "p": "Contact details for privacy questions will be added here."
+        }
+      ]
+    },
+    "terms": {
+      "title": "Terms of service",
+      "sections": [
+        {
+          "h": "The service",
+          "p": "Bookeria provides online booking, a calendar, client records, SMS reminders and reports to salons and clinics (\"businesses\")."
+        },
+        {
+          "h": "Trial and plans",
+          "p": "New businesses start with a 14-day free trial. Plans, prices and included SMS are shown before payment and may change with notice."
+        },
+        {
+          "h": "The business's responsibilities",
+          "p": "The business is responsible for the client data it enters, for having a lawful reason to process it, and for clients' consent to promotional messages."
+        },
+        {
+          "h": "Acceptable use",
+          "p": "No spam, no unlawful content, no attempts to access other businesses' data or to disrupt the service."
+        },
+        {
+          "h": "Availability",
+          "p": "We aim for high availability and back up data, but cannot promise uninterrupted service."
+        },
+        {
+          "h": "Ending",
+          "p": "A business can export its data and delete its account at any time; data is removed 14 days later. We may suspend accounts for unpaid invoices or misuse; data stays available for export."
+        },
+        {
+          "h": "Liability and law",
+          "p": "Limitation of liability, dispute resolution and governing law (Georgia) will be set out here by our lawyer."
+        }
+      ]
+    },
+    "dpa": {
+      "title": "Data processing agreement",
+      "sections": [
+        {
+          "h": "Parties and roles",
+          "p": "The business (controller) instructs Bookeria (processor) to process its clients' personal data to provide the service."
+        },
+        {
+          "h": "Subject and purpose",
+          "p": "Bookings, reminders, client records, payments records and reports, for as long as the business uses Bookeria."
+        },
+        {
+          "h": "Categories of data",
+          "p": "Contact data, booking and payment history, consents, notes; for dental clinics, treatment notes (health data, special category)."
+        },
+        {
+          "h": "Sub-processors",
+          "p": "Supabase (database, EU — Frankfurt), Netlify (hosting), Resend (email), an SMS provider in Georgia (to be named), Sentry (error reports, without client data). The business is informed before new sub-processors are added."
+        },
+        {
+          "h": "Security measures",
+          "p": "Row-level separation of businesses, encryption in transit and at rest, role-based access, logging of sensitive actions, regular backups."
+        },
+        {
+          "h": "Personal data breaches",
+          "p": "Bookeria informs the business without undue delay after becoming aware of a breach."
+        },
+        {
+          "h": "End of processing",
+          "p": "The business can export all data at any time; on deletion, data is erased after 14 days, including from active systems."
+        }
+      ]
+    }
   }
 }
