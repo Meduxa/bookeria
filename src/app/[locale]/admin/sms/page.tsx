@@ -56,7 +56,12 @@ export default async function AdminSmsPage({ params, searchParams }: PageProps<"
           </Link>
         ))}
       </nav>
-      <div className="overflow-x-auto rounded-xl border bg-card">
+      <div
+        tabIndex={0}
+        role="region"
+        aria-label={t("platform.nav.sms")}
+        className="overflow-x-auto rounded-xl border bg-card focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+      >
         <table className="w-full min-w-[720px] text-sm">
           <tbody className="divide-y">
             {rows.map((r) => (

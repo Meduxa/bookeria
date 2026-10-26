@@ -440,7 +440,7 @@ export function CalendarScreen({
                           onClick={() => setOpenBooking(b.id)}
                           className={cn(
                             "flex w-full items-start gap-3 px-4 py-3 text-left outline-none hover:bg-muted/50 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:ring-inset",
-                            HIDDEN_IN_GRID.includes(b.status) && "opacity-60",
+                            HIDDEN_IN_GRID.includes(b.status) && "[&_*]:text-muted-foreground", // cancelled: muted, still readable
                           )}
                         >
                           <span className="w-12 shrink-0 text-sm font-semibold tabular-nums">

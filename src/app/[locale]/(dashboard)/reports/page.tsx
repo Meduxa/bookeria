@@ -236,7 +236,12 @@ export default async function ReportsPage({ params, searchParams }: PageProps<"/
         )}
 
         <Section title={L("staffTitle")} wide>
-          <div className="overflow-x-auto">
+          <div
+            tabIndex={0}
+            role="region"
+            aria-label={L("staffTitle")}
+            className="overflow-x-auto rounded-lg focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+          >
             <table className="w-full text-sm">
               <thead className="text-left text-muted-foreground">
                 <tr>

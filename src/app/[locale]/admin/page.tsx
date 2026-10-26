@@ -36,7 +36,12 @@ export default async function AdminHome({ params }: PageProps<"/[locale]/admin">
         title={t("platform.nav.businesses")}
         description={t("platform.count", { count: rows.length })}
       />
-      <div className="overflow-x-auto rounded-xl border bg-card">
+      <div
+        tabIndex={0}
+        role="region"
+        aria-label={t("platform.nav.businesses")}
+        className="overflow-x-auto rounded-xl border bg-card focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+      >
         <table className="w-full min-w-[900px] text-sm">
           <thead className="text-left text-muted-foreground">
             <tr className="border-b">

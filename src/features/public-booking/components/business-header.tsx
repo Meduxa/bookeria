@@ -19,7 +19,11 @@ export async function BusinessHeader({ business }: { business: PublicBusinessVie
         {business.address && <p className="text-sm text-muted-foreground">{business.address}</p>}
       </div>
       {business.photos.length > 0 && (
-        <ul className="-mx-1 flex snap-x gap-2 overflow-x-auto px-1 pb-1" aria-label={t("photos.title")}>
+        <ul
+          tabIndex={0}
+          aria-label={t("photos.title")}
+          className="-mx-1 flex snap-x gap-2 overflow-x-auto rounded-lg px-1 pb-1 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+        >
           {business.photos.map((src, i) => (
             <li key={src} className="shrink-0 snap-start">
               {/* eslint-disable-next-line @next/next/no-img-element -- our own storage */}
@@ -74,7 +78,11 @@ export async function BusinessHeader({ business }: { business: PublicBusinessVie
       {business.staff.length > 0 && (
         <section className="flex flex-col gap-2">
           <h2 className="text-sm font-medium">{t("publicBooking.teamTitle")}</h2>
-          <ul className="flex gap-3 overflow-x-auto pb-1">
+          <ul
+            tabIndex={0}
+            aria-label={t("publicBooking.teamTitle")}
+            className="flex gap-3 overflow-x-auto rounded-lg pb-1 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+          >
             {business.staff.map((s) => (
               <li key={s.id} className="flex w-24 shrink-0 flex-col items-center gap-1 text-center">
                 {s.photoUrl ? (

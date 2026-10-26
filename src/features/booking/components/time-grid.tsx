@@ -275,7 +275,7 @@ export function TimeGrid({
                         BLOCK[b.color] ?? BLOCK.green,
                         draggable && "cursor-grab touch-none active:cursor-grabbing",
                         b.booking.status === "pending" && "border-dashed",
-                        ["completed", "no_show"].includes(b.booking.status) && "opacity-60",
+                        ["completed", "no_show"].includes(b.booking.status) && "bg-card", // done: no fill, still readable
                         isDragging && drag.moved && "z-30 shadow-lg ring-2 ring-primary",
                       )}
                       style={{
