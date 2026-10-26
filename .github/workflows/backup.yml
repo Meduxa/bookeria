@@ -1,0 +1,46 @@
+# Nightly backup of the PRODUCTION database while it is on Supabase's free plan
+# (no automatic backups there). The dump is encrypted with a passphrase only
+# Levan knows before it is stored, and kept 30 days as a private artifact.
+# Runs only when both secrets are set in GitHub → Settings → Secrets → Actions:
+#   SUPABASE_DB_URL     the production "connection string" (Supabase → Connect → Session pooler)
+#   BACKUP_PASSPHRASE   a long passphrase — store it in your password manager
+# Restore steps: docs/go-live.md → "Backups".
+name: Backup
+on:
+  schedule:
+    - cron: "15 0 * * *" # 04:15 in Tbilisi
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+      BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+    steps:
+      - name: Skip when not configured
+        id: check
+        run: |
+          if [ -z "$SUPABASE_DB_URL" ] || [ -z "$BACKUP_PASSPHRASE" ]; then
+            echo "Backup secrets not set — skipping."; echo "run=false" >> "$GITHUB_OUTPUT"
+          else echo "run=true" >> "$GITHUB_OUTPUT"; fi
+      - if: steps.check.outputs.run == 'true'
+        name: Dump (schema, roles, data)
+        run: |
+          npx --yes supabase@2.122.0 db dump --db-url "$SUPABASE_DB_URL" -f schema.sql
+          npx --yes supabase@2.122.0 db dump --db-url "$SUPABASE_DB_URL" -f roles.sql --role-only
+          npx --yes supabase@2.122.0 db dump --db-url "$SUPABASE_DB_URL" -f data.sql --use-copy --data-only
+      - if: steps.check.outputs.run == 'true'
+        name: Encrypt
+        run: |
+          tar czf backup.tgz schema.sql roles.sql data.sql
+          gpg --batch --yes --pinentry-mode loopback --passphrase "$BACKUP_PASSPHRASE" \
+              --symmetric --cipher-algo AES256 -o "bookeria-$(date -u +%F).tgz.gpg" backup.tgz
+          rm -f schema.sql roles.sql data.sql backup.tgz
+      - if: steps.check.outputs.run == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: bookeria-backup
+          path: bookeria-*.tgz.gpg
+          retention-days: 30

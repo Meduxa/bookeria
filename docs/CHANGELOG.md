@@ -2,6 +2,16 @@
 
 All notable changes per phase. Newest on top.
 
+## Phase 6b — Ready for production (2026-10-26)
+
+- **Installable app**: Bookeria can be added to a phone's home screen with its own icon; an "Install the app" button (Android/Chrome) or a hint (iPhone) in the menu; a friendly page when there is no internet. Nothing personal is stored on the phone.
+- **Security**: browser security headers on every page (no embedding in other sites, scripts only from us and the database), 0 known vulnerable packages, written review with a before-go-live list. Fixed: names starting with "=" could run as formulas when an export was opened in Excel.
+- **Accessibility**: automatic WCAG 2.1 AA checks on 16 screens at phone and desktop size; fixed keyboard access to scrolling strips and the contrast of inactive tabs and finished bookings.
+- **Speed**: every main page loads in under a second on the production build (`docs/performance.md`).
+- **Legal pages**: privacy policy, terms of service and data processing agreement in ka/en/ru, clearly marked as drafts for the lawyer; linked from sign-up and the booking page.
+- **Error reports (Sentry)** and **email (Resend)** ready, switched on by entering their keys; error reports never contain client data.
+- **Going live**: Netlify configuration, the SMS and daily jobs as scheduled functions, automatic checks on GitHub, an encrypted nightly backup while on Supabase's free plan, and a step-by-step guide (`docs/go-live.md`). Demo data and database tests can no longer touch any project but the dev one. Without an SMS company, SMS are logged as "not sent" instead of failing.
+
 ## Phase 6a — Reports, account and platform admin (2026-10-26)
 
 - **Dashboard home** for owners/admins: today's bookings and money received, this month's revenue, occupancy, new clients and no-shows, birthdays in the next 7 days, SMS left (with a warning when low), and a first-steps checklist that ticks itself and disappears when done.

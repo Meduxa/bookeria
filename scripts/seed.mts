@@ -13,6 +13,7 @@
 
 import { createClient } from "@supabase/supabase-js";
 import { formatInTimeZone, fromZonedTime } from "date-fns-tz";
+import { assertDevProject } from "./dev-project.mts";
 
 const DEMO_PASSWORD = "Demo-Bookeria-2026";
 const PLATFORM_ADMIN = "platform.admin@demo.test";
@@ -23,8 +24,10 @@ if (!url || !secret) {
   console.error("NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SECRET_KEY must be set in .env.local");
   process.exit(1);
 }
-if (process.env.ALLOW_SEED !== "dev" && /prod/i.test(url)) {
-  console.error("Refusing to seed something that looks like production.");
+try {
+  assertDevProject(url, "Demo seeding");
+} catch (e) {
+  console.error((e as Error).message);
   process.exit(1);
 }
 

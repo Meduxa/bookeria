@@ -1,0 +1,12 @@
+# Netlify (decision 012). Next.js is detected automatically (OpenNext adapter).
+# Set the Functions region to Frankfurt (eu-central-1) in the Netlify UI so the
+# server sits next to the database — see docs/go-live.md.
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "24"
+
+[functions]
+  directory = "netlify/functions"

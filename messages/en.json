@@ -1064,7 +1064,8 @@
     "errors": {
       "no_credits": "no SMS left",
       "no_consent": "no marketing consent",
-      "exception": "provider error"
+      "exception": "provider error",
+      "no_provider": "no SMS company connected"
     },
     "types": {
       "otp": "Code",

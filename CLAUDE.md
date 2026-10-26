@@ -28,7 +28,7 @@ Read this file at the start of every session. The full product specification is 
 | i18n | `next-intl`. Languages: **Georgian (ka, default)**, English (en), Russian (ru) | |
 | Mobile | **PWA** (installable, push-ready, responsive). Native apps are NOT in scope for v1 | |
 | Testing | **Vitest** (unit), **Playwright** (end-to-end), Supabase local + pgTAP or SQL tests for RLS | |
-| Hosting | Vercel or Netlify (EU functions region) + Supabase Cloud EU | |
+| Hosting | **Netlify** (Frankfurt functions where available) + Supabase Cloud EU — `docs/go-live.md` | |
 | Error tracking | Sentry (add in Phase 6) | |
 
 ## 3. Non-negotiable rules
@@ -132,7 +132,7 @@ npm.cmd run test:e2e         # Playwright on a production build (port 3100), pho
 npm.cmd run test:e2e:dev     # the same tests against the running dev server (quicker to start, slower and less stable)
 npm.cmd run db:push          # apply new migrations in supabase/migrations to bookeria-dev
 npm.cmd run db:types         # regenerate src/lib/supabase/database.types.ts from the DB
-npm.cmd run db:seed          # reset + load demo salon & dental clinic (scripts/seed.mts; logins listed there)
+npm.cmd run db:seed          # reset + load demo salon & dental clinic (dev project only — refuses any other)
 npm.cmd run jobs             # SMS every minute + daily job (trials, deletions, monthly SMS) while the dev server runs
 npm.cmd run platform-admin -- you@example.com   # make an existing account a platform admin (/admin); --remove to undo
 npx.cmd supabase login       # once per computer

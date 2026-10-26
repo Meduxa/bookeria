@@ -57,7 +57,21 @@ async function senderName(tenantId: string) {
 
 async function deliver(m: Claimed, text?: string): Promise<boolean> {
   const db = createAdminClient();
-  const provider = getSmsProvider();
+  let provider: ReturnType<typeof getSmsProvider>;
+  try {
+    provider = getSmsProvider();
+  } catch {
+    // no SMS company connected (production before one is chosen): not sent, credits back
+    await db.rpc("sms_finish", {
+      p_id: m.id,
+      p_ok: false,
+      p_provider: "none",
+      p_ref: "",
+      p_error: "no_provider",
+      p_retry: false,
+    });
+    return false;
+  }
   let ok = false;
   try {
     const r = await provider.send({

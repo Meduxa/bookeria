@@ -96,13 +96,16 @@ Split into 6a (in the app) and 6b (production) with a report in between (Levan, 
 - [x] Platform admin area: businesses, plan/status/trial, SMS top-up, plans editor, global SMS log; monthly included SMS
 - [x] Business photo gallery on the booking page
 
-### 6b — production (next)
-- [ ] PWA (manifest, icons, install prompt), performance pass
-- [ ] Sentry, backups check, security review, accessibility pass
-- [ ] Terms of service, privacy policy, data processing agreement pages (texts from lawyer)
-- [ ] Production Supabase project, Netlify deployment (Levan, 2026-10-26), scheduled jobs with CRON_SECRET, custom domain
-- [ ] Transactional email provider (invites, sign-up confirmation)
-- [ ] Plan prices — Levan decides (editable in /admin/plans)
+### 6b ✅ Code done 2026-10-26 — accounts and go-live by Levan (`docs/go-live.md`)
+- [x] PWA: manifest, icons from the logo, install button / iPhone hint, offline page
+- [x] Performance pass on the production build (all main pages < 1 s, `docs/performance.md`)
+- [x] Security review (`docs/security-review.md`): security headers, package audit, Excel formula-injection fix
+- [x] Accessibility: automatic WCAG 2.1 AA checks on 16 screens, fixes — [ ] a manual keyboard / screen-reader pass
+- [x] Legal pages as marked drafts (ka/en/ru) — [ ] lawyer's texts
+- [x] Sentry and Resend wired, switched on by keys (decision 011)
+- [x] Netlify config, scheduled jobs, CI on GitHub, encrypted nightly backup workflow (decision 012)
+- [ ] Levan: GitHub repo, Supabase production (free plan to start), Sentry, Netlify — then the checks in `docs/go-live.md`
+- [ ] Later: domain + Resend (needed for real sign-ups), SMS company, Turnstile, plan prices, Supabase Pro
 
 ## 🚀 Pilot with 2–3 salons + 1 dental clinic (2–4 weeks of real use, fix feedback)
 
