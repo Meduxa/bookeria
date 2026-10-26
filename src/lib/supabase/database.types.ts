@@ -1335,6 +1335,177 @@ export type Database = {
           },
         ]
       }
+      sms_credit_ledger: {
+        Row: {
+          created_at: string
+          delta: number
+          id: string
+          message_id: string | null
+          note: string | null
+          reason: string
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string
+          delta: number
+          id?: string
+          message_id?: string | null
+          note?: string | null
+          reason: string
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string
+          delta?: number
+          id?: string
+          message_id?: string | null
+          note?: string | null
+          reason?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sms_credit_ledger_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "sms_messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sms_credit_ledger_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sms_messages: {
+        Row: {
+          attempts: number
+          body: string
+          booking_id: string | null
+          client_id: string | null
+          created_at: string
+          created_by: string | null
+          delivered_at: string | null
+          error_code: string | null
+          id: string
+          idempotency_key: string
+          kind: string
+          provider: string | null
+          provider_ref: string | null
+          segments: number
+          send_after: string
+          sent_at: string | null
+          status: string
+          tenant_id: string
+          to_phone: string
+          type: string
+        }
+        Insert: {
+          attempts?: number
+          body: string
+          booking_id?: string | null
+          client_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          delivered_at?: string | null
+          error_code?: string | null
+          id?: string
+          idempotency_key: string
+          kind: string
+          provider?: string | null
+          provider_ref?: string | null
+          segments: number
+          send_after?: string
+          sent_at?: string | null
+          status?: string
+          tenant_id: string
+          to_phone: string
+          type: string
+        }
+        Update: {
+          attempts?: number
+          body?: string
+          booking_id?: string | null
+          client_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          delivered_at?: string | null
+          error_code?: string | null
+          id?: string
+          idempotency_key?: string
+          kind?: string
+          provider?: string | null
+          provider_ref?: string | null
+          segments?: number
+          send_after?: string
+          sent_at?: string | null
+          status?: string
+          tenant_id?: string
+          to_phone?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sms_messages_booking_id_tenant_id_fkey"
+            columns: ["booking_id", "tenant_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id", "tenant_id"]
+          },
+          {
+            foreignKeyName: "sms_messages_client_id_tenant_id_fkey"
+            columns: ["client_id", "tenant_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id", "tenant_id"]
+          },
+          {
+            foreignKeyName: "sms_messages_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sms_templates: {
+        Row: {
+          body: string
+          id: string
+          locale: string
+          tenant_id: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          body: string
+          id?: string
+          locale: string
+          tenant_id: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          id?: string
+          locale?: string
+          tenant_id?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sms_templates_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       staff: {
         Row: {
           active: boolean
@@ -1575,7 +1746,17 @@ export type Database = {
           online_otp_required: boolean
           online_requires_approval: boolean
           phone: string | null
+          quiet_end: string
+          quiet_start: string
+          reminder_24h: boolean
+          reminder_2h: boolean
           slot_step_min: number
+          sms_low_balance: number
+          sms_on_cancel: boolean
+          sms_on_confirm: boolean
+          sms_on_reschedule: boolean
+          sms_sender_name: string | null
+          sms_sender_status: string
           staff_sees_all_bookings: boolean
           staff_sees_all_clients: boolean
           tenant_id: string
@@ -1591,7 +1772,17 @@ export type Database = {
           online_otp_required?: boolean
           online_requires_approval?: boolean
           phone?: string | null
+          quiet_end?: string
+          quiet_start?: string
+          reminder_24h?: boolean
+          reminder_2h?: boolean
           slot_step_min?: number
+          sms_low_balance?: number
+          sms_on_cancel?: boolean
+          sms_on_confirm?: boolean
+          sms_on_reschedule?: boolean
+          sms_sender_name?: string | null
+          sms_sender_status?: string
           staff_sees_all_bookings?: boolean
           staff_sees_all_clients?: boolean
           tenant_id: string
@@ -1607,7 +1798,17 @@ export type Database = {
           online_otp_required?: boolean
           online_requires_approval?: boolean
           phone?: string | null
+          quiet_end?: string
+          quiet_start?: string
+          reminder_24h?: boolean
+          reminder_2h?: boolean
           slot_step_min?: number
+          sms_low_balance?: number
+          sms_on_cancel?: boolean
+          sms_on_confirm?: boolean
+          sms_on_reschedule?: boolean
+          sms_sender_name?: string | null
+          sms_sender_status?: string
           staff_sees_all_bookings?: boolean
           staff_sees_all_clients?: boolean
           tenant_id?: string
@@ -1850,6 +2051,10 @@ export type Database = {
         Args: { p_body: string; p_booking: string; p_client: string }
         Returns: string
       }
+      add_manage_token: {
+        Args: { p_booking: string; p_token_hash: string }
+        Returns: undefined
+      }
       add_to_waitlist: {
         Args: {
           p_client: string
@@ -2086,6 +2291,100 @@ export type Database = {
         Returns: undefined
       }
       shares_tenant_with: { Args: { p_user: string }; Returns: boolean }
+      sms_balance: { Args: { p_tenant: string }; Returns: number }
+      sms_claim: {
+        Args: { p_limit?: number; p_only?: string }
+        Returns: {
+          attempts: number
+          body: string
+          booking_id: string | null
+          client_id: string | null
+          created_at: string
+          created_by: string | null
+          delivered_at: string | null
+          error_code: string | null
+          id: string
+          idempotency_key: string
+          kind: string
+          provider: string | null
+          provider_ref: string | null
+          segments: number
+          send_after: string
+          sent_at: string | null
+          status: string
+          tenant_id: string
+          to_phone: string
+          type: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "sms_messages"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      sms_delivery: {
+        Args: {
+          p_delivered: boolean
+          p_error?: string
+          p_provider: string
+          p_ref: string
+        }
+        Returns: undefined
+      }
+      sms_due_reminders: {
+        Args: never
+        Returns: {
+          address: string
+          booking_id: string
+          business: string
+          business_phone: string
+          client_id: string
+          first_name: string
+          locale: string
+          offset_min: number
+          phone: string
+          quiet_end: string
+          quiet_start: string
+          services: string
+          staff: string
+          starts_at: string
+          tenant_id: string
+          timezone: string
+        }[]
+      }
+      sms_enqueue: {
+        Args: {
+          p_body: string
+          p_booking?: string
+          p_client?: string
+          p_created_by?: string
+          p_key: string
+          p_kind: string
+          p_segments: number
+          p_send_after?: string
+          p_tenant: string
+          p_to: string
+          p_type: string
+        }
+        Returns: string
+      }
+      sms_finish: {
+        Args: {
+          p_error?: string
+          p_id: string
+          p_ok: boolean
+          p_provider: string
+          p_ref: string
+          p_retry?: boolean
+        }
+        Returns: undefined
+      }
+      sms_topup: {
+        Args: { p_note?: string; p_segments: number; p_tenant: string }
+        Returns: undefined
+      }
+      sms_unsubscribe: { Args: { p_client: string }; Returns: undefined }
       staff_has_client: {
         Args: { p_client: string; p_tenant: string }
         Returns: boolean
