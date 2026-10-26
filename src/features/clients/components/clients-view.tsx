@@ -15,6 +15,7 @@ import type { ClientRow } from "../queries";
 import { PAGE_SIZE } from "../schema";
 import { ClientVisits } from "@/features/booking/components/client-visits";
 import { DentalNotes } from "@/features/booking/components/dental-notes";
+import { BulkSmsDialog, ClientSmsDialog } from "@/features/sms/components/sms-dialogs";
 import { ClientForm } from "./client-form";
 import { ClientRights, ConsentHistory, MergeClient } from "./client-extras";
 
@@ -71,6 +72,7 @@ export function ClientsView({
         actions={
           canManage && (
             <div className="flex flex-wrap gap-2">
+              <BulkSmsDialog tags={[...new Set(clients.flatMap((c) => c.tags))].sort()} />
               <Button variant="outline" className="h-11 md:h-9" asChild>
                 <Link href="/clients/import">
                   <FileSpreadsheet aria-hidden />
@@ -227,6 +229,7 @@ export function ClientsView({
             {open && isDental && <DentalNotes clientId={open.id} bookingId={null} timeZone={timeZone} />}
             {open && canManage && (
               <>
+                <ClientSmsDialog clientId={open.id} phone={open.phone} />
                 <ConsentHistory
                   key={`h-${open.id}-${open.consentSms}-${open.consentEmail}`}
                   clientId={open.id}

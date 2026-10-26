@@ -1,4 +1,5 @@
 // Calendar flows against the seeded demo data (bookings around today).
+import { existsSync, readFileSync } from "node:fs";
 import { expect, test, type Page } from "@playwright/test";
 
 const TZ = "Asia/Tbilisi";
@@ -73,6 +74,21 @@ test("create a booking from an empty slot, then mark the client arrived", async 
   await firstSlot.click();
   await panel.getByRole("button", { name: "დაჯავშნა", exact: true }).click();
   await expect(panel).toBeHidden();
+
+  // the client gets a confirmation SMS with the booked time (fake provider outbox)
+  await expect
+    .poll(() =>
+      existsSync(".dev/sms-outbox.jsonl")
+        ? readFileSync(".dev/sms-outbox.jsonl", "utf8")
+            .trim()
+            .split("\n")
+            .map((l) => JSON.parse(l) as { to: string; text: string })
+            .some(
+              (m) => m.to === "+995555100000" && m.text.includes("ჯავშანი") && m.text.includes(`, ${time}.`),
+            )
+        : false,
+    )
+    .toBe(true);
 
   const block = page.locator(`[role="button"][aria-label^="${time}"][aria-label*="ნინო ბერიძე"]`);
   await expect(block).toBeVisible();

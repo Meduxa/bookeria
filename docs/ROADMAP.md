@@ -76,14 +76,14 @@ Split into 3a and 3b with a report in between (Levan, 2026-10-26). Staff may cre
 - [x] Rate limiting (per phone, per IP behind the host) and honeypot — Cloudflare Turnstile before launch (Levan, 2026-10-26)
 - [ ] Later: business photo gallery (Phase 6 polish, Levan 2026-10-26)
 
-## Phase 5 — SMS (≈ 1 week) — SPEC 4.9
-- [ ] SMS adapter interface + first provider + fake provider for tests
-- [ ] Templates (ka/en/ru) with variables, character & segment counter
-- [ ] Sender name settings and status
-- [ ] Scheduled reminders job (idempotent), quiet hours
-- [ ] Delivery status (webhook or polling), message log
-- [ ] SMS credits ledger, low-balance warning
-- [ ] Manual SMS to client / list (consent respected)
+## Phase 5 — SMS (≈ 1 week) — SPEC 4.9 ✅ Done 2026-10-26 (without a real SMS company — Levan chooses later)
+- [x] SMS adapter interface + fake provider for tests — [ ] first real provider: when Levan picks the company (decision 008)
+- [x] Templates (ka/en/ru) with variables, character & segment counter, live preview
+- [x] Sender name settings and status (approval set by the server only)
+- [x] Scheduled reminders job (idempotent), quiet hours — 2 h on by default, 24 h optional (Levan, 2026-10-26)
+- [x] Message log with filters — [ ] delivery reports from the real provider (webhook → `sms_delivery`)
+- [x] SMS credits ledger in SMS parts, 50 trial SMS (Levan, 2026-10-26), low-balance warning — [ ] top-up screen for the platform admin (Phase 6)
+- [x] Manual SMS to a client; promotion to clients who agreed (optional tag), unsubscribe link and page
 
 ## Phase 6 — Reports, settings, polish, production (≈ 1–2 weeks) — SPEC 4.12–4.15
 - [ ] Dashboard home + onboarding checklist

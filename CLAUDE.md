@@ -132,6 +132,7 @@ npm.cmd run test:e2e         # Playwright, phone 375px + desktop 1440px (needs s
 npm.cmd run db:push          # apply new migrations in supabase/migrations to bookeria-dev
 npm.cmd run db:types         # regenerate src/lib/supabase/database.types.ts from the DB
 npm.cmd run db:seed          # reset + load demo salon & dental clinic (scripts/seed.mts; logins listed there)
+npm.cmd run jobs             # SMS reminders/queue every minute while the dev server runs (prod: host scheduler + CRON_SECRET)
 npx.cmd supabase login       # once per computer
 npx.cmd supabase link --project-ref cznbcglbskunoofrdeut   # once per checkout
 ```

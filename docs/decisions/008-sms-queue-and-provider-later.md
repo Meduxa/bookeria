@@ -1,0 +1,7 @@
+# 008 — One SMS queue; the SMS company is chosen later
+
+**Context.** Levan has not chosen a Georgian SMS company yet (2026-10-26). Reminders, booking messages, SMS codes and promotions must still be built, logged and paid for in credits.
+
+**Decision.** Every SMS goes through one queue and log (`sms_messages`): a unique key per message (a reminder can never go twice; a moved booking gets a new one), credits counted in SMS parts and reserved when a message is picked up (refunded on failure), retries for temporary failures, codes stored blanked out. Writes happen only through server-key functions. A background job (`GET /api/cron/sms`, every minute; `npm.cmd run jobs` locally; `CRON_SECRET` in production) queues due reminders and sends what is due. The only provider today is the fake one (prints to the dev window, `.dev/sms-outbox.jsonl`); it refuses to run in production. Defaults: 50 trial SMS, only the 2-hour reminder on, quiet hours 22:00–09:00 (codes and online confirmations ignore them — the client is waiting).
+
+**Consequence.** Connecting a company = one adapter file in `src/integrations/sms/providers/`, the key in `.env.local`, a delivery-report webhook calling `sms_delivery`, and a decision note with its prices, sender-name registration and error codes. Nothing else changes. Until then no real SMS leaves the app, so the app cannot go live with online booking codes switched on.

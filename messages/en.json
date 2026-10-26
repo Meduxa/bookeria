@@ -206,7 +206,11 @@
     "cannotMove": "This booking can't be moved online. Please call the business.",
     "tooLate": "It's too late to change this booking online.",
     "senderInvalid": "Latin letters, digits, space, dot or dash; 2 to 11 characters.",
-    "templateVariable": "The text has a variable we don't know. Use only the ones offered below the text."
+    "templateVariable": "The text has a variable we don't know. Use only the ones offered below the text.",
+    "noPhone": "This client has no phone number.",
+    "noConsentOrSms": "Not sent: the client has not agreed to promotional SMS, or there are no SMS left.",
+    "noRecipients": "No clients agreed to promotional SMS (with this tag).",
+    "notEnoughSms": "Not enough SMS left for everyone. Please top up first."
   },
   "email": {
     "invite": {
@@ -1054,5 +1058,29 @@
     "parts": "{count, plural, one {# SMS} other {# SMS}}",
     "more": "Older",
     "back": "SMS settings"
+  },
+  "smsManual": {
+    "sendToClient": "Send SMS",
+    "text": "Message",
+    "isPromotion": "This is a promotion",
+    "isPromotionHint": "Sent only if the client agreed to promotional SMS; an unsubscribe link is added.",
+    "send": "Send",
+    "sent": "SMS sent",
+    "bulk": "SMS to clients",
+    "bulkHint": "A promotion to every client who agreed to promotional SMS. An unsubscribe link is added; quiet hours apply.",
+    "tag": "Only clients with tag (optional)",
+    "tagHint": "E.g. VIP. Leave empty for everyone who agreed.",
+    "recipients": "{count, plural, one {# client} other {# clients}} will receive it",
+    "cost": "About {total} SMS of your {balance}.",
+    "sendBulk": "Send to {count}",
+    "queued": "{count} SMS are on their way"
+  },
+  "unsubscribe": {
+    "title": "Stop promotional SMS",
+    "body": "You will no longer receive offers and news from {business}. Booking reminders still come.",
+    "confirm": "Unsubscribe",
+    "done": "Done — you are unsubscribed.",
+    "invalidTitle": "This link doesn't work",
+    "invalidBody": "It may be incomplete. Please contact the business."
   }
 }

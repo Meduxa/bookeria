@@ -2,6 +2,19 @@
 
 All notable changes per phase. Newest on top.
 
+## Phase 5 — SMS (2026-10-26)
+
+- **One SMS queue and log** for everything: booking codes, confirmations, reminders, moved/cancelled messages, manual SMS and promotions. A message can never go twice; failed sends are retried and their credits returned. The owner/admin sees every message with its status in **Settings → SMS → Message log** (codes are blanked out).
+- **Credits** in SMS parts: every business starts with 50 trial SMS; a warning appears on the dashboard and in SMS settings when few are left. One Georgian SMS holds 70 characters, so a message with a manage link usually takes 2.
+- **Reminders**: 2 hours before by default, 24 hours optional; never inside quiet hours (default 22:00–09:00 — sent when they end, if still before the visit); a moved booking gets a fresh reminder.
+- **Booking messages**: confirmation when the team books (not for walk-ins) or a client books online, "moved", "cancelled by the business", and "confirmed" when a pending online booking is approved — each can be switched off.
+- **Texts**: every message type in Georgian, English and Russian, editable with variables ({client_name}, {date}, {time}, {manage_link}…), live preview and a character/SMS counter; unknown variables are refused.
+- **Sender name** (e.g. SalonNino) with status; a new name waits for the SMS company's approval.
+- **Manual SMS** from the client card; **promotions** to all clients who agreed (optionally by tag), with an unsubscribe link and page. Clients without consent never get promotions — they are logged as skipped.
+- **Test SMS** button. Background job `npm.cmd run jobs` (production: the host calls it every minute with `CRON_SECRET`).
+- **Not yet**: a real SMS company (Levan chooses later, decision 008) — until then messages are only printed in the dev server window.
+- Fixed: translations in background jobs used no language; "send now" used the computer's clock instead of the database's.
+
 ## Phase 4 — Public online booking page (2026-10-26)
 
 - **Booking page** `/book/<business>` (e.g. /book/demo-salon), built for phones, in Georgian with a language switch: business card (call, directions, opening hours, team) → services → a person or "anyone available" → day and free time → name, phone, optional email and comment → SMS code → booked. Only real free times are offered, with the business's online rules (notice, how far ahead, services and people bookable online, blocked clients).

@@ -218,7 +218,8 @@ describe("queue and credits", () => {
 
 describe("reminders and unsubscribe", () => {
   it("a 2-hour reminder is due once, not for bookings made too late", async () => {
-    const soon = new Date(Date.now() + 90 * 60_000).toISOString();
+    // .900 seconds on purpose: the key must round the same way in SQL and on the server
+    const soon = new Date(Math.floor((Date.now() + 90 * 60_000) / 1000) * 1000 + 900).toISOString();
     const { data: id } = await A.t.adminUser.db.rpc("create_booking", {
       p_tenant: A.t.id,
       p_client: A.client,

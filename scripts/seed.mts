@@ -128,6 +128,11 @@ async function seed() {
         entity_id: tenant.id,
       }),
     );
+    // demo businesses get plenty of SMS credits (real ones start with 50 trial SMS)
+    check(
+      `sms credits ${t.slug}`,
+      await db.rpc("sms_topup", { p_tenant: tenant.id, p_segments: 5000, p_note: "demo" }),
+    );
     const staffUser = t.people.find((p) => p.role === "staff")!;
     const counts = await seedCatalog(tenant.id, t.type, userIds[staffUser.email]);
     console.log(
