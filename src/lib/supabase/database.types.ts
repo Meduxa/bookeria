@@ -246,6 +246,35 @@ export type Database = {
           },
         ]
       }
+      booking_manage_tokens: {
+        Row: {
+          booking_id: string
+          created_at: string
+          tenant_id: string
+          token_hash: string
+        }
+        Insert: {
+          booking_id: string
+          created_at?: string
+          tenant_id: string
+          token_hash: string
+        }
+        Update: {
+          booking_id?: string
+          created_at?: string
+          tenant_id?: string
+          token_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_manage_tokens_booking_id_tenant_id_fkey"
+            columns: ["booking_id", "tenant_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id", "tenant_id"]
+          },
+        ]
+      }
       booking_status_history: {
         Row: {
           booking_id: string
@@ -817,6 +846,79 @@ export type Database = {
           },
         ]
       }
+      otp_codes: {
+        Row: {
+          attempts: number
+          code_hash: string
+          consumed_at: string | null
+          created_at: string
+          expires_at: string
+          id: string
+          phone_e164: string
+          tenant_id: string
+        }
+        Insert: {
+          attempts?: number
+          code_hash: string
+          consumed_at?: string | null
+          created_at?: string
+          expires_at: string
+          id?: string
+          phone_e164: string
+          tenant_id: string
+        }
+        Update: {
+          attempts?: number
+          code_hash?: string
+          consumed_at?: string | null
+          created_at?: string
+          expires_at?: string
+          id?: string
+          phone_e164?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "otp_codes_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      otp_passes: {
+        Row: {
+          expires_at: string
+          phone_e164: string
+          tenant_id: string
+          token_hash: string
+          used_at: string | null
+        }
+        Insert: {
+          expires_at: string
+          phone_e164: string
+          tenant_id: string
+          token_hash: string
+          used_at?: string | null
+        }
+        Update: {
+          expires_at?: string
+          phone_e164?: string
+          tenant_id?: string
+          token_hash?: string
+          used_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "otp_passes_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payments: {
         Row: {
           amount_minor: number
@@ -908,6 +1010,21 @@ export type Database = {
           locale?: string
           phone?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      rate_events: {
+        Row: {
+          at: string
+          key: string
+        }
+        Insert: {
+          at?: string
+          key: string
+        }
+        Update: {
+          at?: string
+          key?: string
         }
         Relationships: []
       }
@@ -1455,6 +1572,7 @@ export type Database = {
           email: string | null
           max_days_ahead: number
           min_notice_min: number
+          online_otp_required: boolean
           online_requires_approval: boolean
           phone: string | null
           slot_step_min: number
@@ -1470,6 +1588,7 @@ export type Database = {
           email?: string | null
           max_days_ahead?: number
           min_notice_min?: number
+          online_otp_required?: boolean
           online_requires_approval?: boolean
           phone?: string | null
           slot_step_min?: number
@@ -1485,6 +1604,7 @@ export type Database = {
           email?: string | null
           max_days_ahead?: number
           min_notice_min?: number
+          online_otp_required?: boolean
           online_requires_approval?: boolean
           phone?: string | null
           slot_step_min?: number
@@ -1881,6 +2001,54 @@ export type Database = {
       move_booking: {
         Args: { p_booking: string; p_items: Json }
         Returns: undefined
+      }
+      otp_issue: {
+        Args: {
+          p_code_hash: string
+          p_phone: string
+          p_tenant: string
+          p_ttl_sec?: number
+        }
+        Returns: undefined
+      }
+      otp_verify: {
+        Args: {
+          p_code_hash: string
+          p_pass_hash: string
+          p_phone: string
+          p_tenant: string
+        }
+        Returns: string
+      }
+      public_cancel_booking: {
+        Args: { p_token_hash: string }
+        Returns: undefined
+      }
+      public_create_booking: {
+        Args: {
+          p_comment: string
+          p_email: string
+          p_first_name: string
+          p_items: Json
+          p_last_name: string
+          p_locale: string
+          p_manage_token_hash: string
+          p_marketing_email: boolean
+          p_marketing_sms: boolean
+          p_otp_pass_hash: string
+          p_phone: string
+          p_tenant: string
+        }
+        Returns: Json
+      }
+      public_manage_view: { Args: { p_token_hash: string }; Returns: Json }
+      public_move_booking: {
+        Args: { p_starts_at: string; p_token_hash: string }
+        Returns: undefined
+      }
+      rate_hit: {
+        Args: { p_key: string; p_limit: number; p_window_sec: number }
+        Returns: boolean
       }
       read_dental_notes: {
         Args: { p_client: string }
