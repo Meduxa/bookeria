@@ -46,6 +46,7 @@ export type PublicBusiness = {
   categories: { id: string; name: string }[];
   services: PublicService[];
   staff: PublicStaff[];
+  photos: string[]; // public URLs, in order
 };
 
 export const getPublicBusiness = cache(
@@ -61,7 +62,7 @@ export const getPublicBusiness = cache(
     if (!tenant) return null;
     const id = tenant.id;
 
-    const [settings, location, categories, services, staff, links] = await Promise.all([
+    const [settings, location, categories, services, staff, links, photos] = await Promise.all([
       db
         .from("tenant_settings")
         .select("phone, online_otp_required, max_days_ahead, cancel_window_min")
@@ -92,6 +93,7 @@ export const getPublicBusiness = cache(
         .order("sort_order")
         .order("display_name"),
       db.from("staff_services").select("staff_id, service_id").eq("tenant_id", id),
+      db.from("business_photos").select("path").eq("tenant_id", id).order("sort_order").limit(12),
     ]);
 
     const staffIds = new Set((staff.data ?? []).map((s) => s.id));
@@ -157,6 +159,7 @@ export const getPublicBusiness = cache(
       hours,
       categories: (categories.data ?? []).map((c) => ({ id: c.id, name: localized(c.name_i18n, locale) })),
       services: list,
+      photos: (photos.data ?? []).map((x) => `${url}/storage/v1/object/public/business-photos/${x.path}`),
       staff: (staff.data ?? [])
         .filter((s) => list.some((x) => x.staffIds.includes(s.id)))
         .map((s) => ({

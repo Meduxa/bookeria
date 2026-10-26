@@ -18,6 +18,21 @@ export async function BusinessHeader({ business }: { business: PublicBusinessVie
         <h1 className="text-2xl font-semibold">{business.name}</h1>
         {business.address && <p className="text-sm text-muted-foreground">{business.address}</p>}
       </div>
+      {business.photos.length > 0 && (
+        <ul className="-mx-1 flex snap-x gap-2 overflow-x-auto px-1 pb-1" aria-label={t("photos.title")}>
+          {business.photos.map((src, i) => (
+            <li key={src} className="shrink-0 snap-start">
+              {/* eslint-disable-next-line @next/next/no-img-element -- our own storage */}
+              <img
+                src={src}
+                alt={t("photos.alt", { n: i + 1 })}
+                loading={i > 1 ? "lazy" : undefined}
+                className="h-32 w-44 rounded-lg object-cover sm:h-40 sm:w-56"
+              />
+            </li>
+          ))}
+        </ul>
+      )}
       <div className="flex flex-wrap gap-2">
         {business.phone && (
           <Button variant="outline" asChild className="h-11 md:h-9">

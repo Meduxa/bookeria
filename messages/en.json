@@ -230,7 +230,8 @@
     "noRecipients": "No clients agreed to promotional SMS (with this tag).",
     "notEnoughSms": "Not enough SMS left for everyone. Please top up first.",
     "planLimit": "Your plan allows no more active staff. Change the plan or switch another staff member off.",
-    "nameMismatch": "The name does not match."
+    "nameMismatch": "The name does not match.",
+    "tooManyPhotos": "At most 12 photos."
   },
   "email": {
     "invite": {
@@ -1294,5 +1295,13 @@
       "queued": "Waiting",
       "skipped": "Skipped"
     }
+  },
+  "photos": {
+    "title": "Photos for the booking page",
+    "hint": "Your interior or work examples — clients see them when booking online. Up to {max} photos, 5 MB each.",
+    "add": "Add",
+    "alt": "Photo {n}",
+    "remove": "Remove photo {n}",
+    "tooBig": "The photo is larger than 5 MB."
   }
 }

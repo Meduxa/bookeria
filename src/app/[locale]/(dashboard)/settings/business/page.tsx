@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import QRCode from "qrcode";
 import { AccountCard } from "@/features/settings/components/account-card";
+import { PhotosCard } from "@/features/settings/components/photos-card";
 import { SettingsView, type SettingsData } from "@/features/settings/components/settings-view";
 import { ShareCard } from "@/features/settings/components/share-card";
 import { fullDate, ymdIn } from "@/lib/date-format";
@@ -23,7 +24,7 @@ export default async function BusinessSettingsPage({ params }: PageProps<"/[loca
 
   const supabase = await createClient();
   const id = tenant.tenantId;
-  const [settings, location, closures, resources] = await Promise.all([
+  const [settings, location, closures, resources, photos] = await Promise.all([
     supabase.from("tenant_settings").select("*").eq("tenant_id", id).single(),
     supabase
       .from("locations")
@@ -38,6 +39,7 @@ export default async function BusinessSettingsPage({ params }: PageProps<"/[loca
       .gte("date", new Date().toISOString().slice(0, 10))
       .order("date"),
     supabase.from("resources").select("id, name, type").eq("tenant_id", id).order("sort_order").order("name"),
+    supabase.from("business_photos").select("id, path").eq("tenant_id", id).order("sort_order"),
   ]);
   if (settings.error || location.error) throw new Error("Could not load settings");
 
@@ -56,6 +58,13 @@ export default async function BusinessSettingsPage({ params }: PageProps<"/[loca
   return (
     <div className="flex flex-col gap-6">
       <ShareCard url={url} slug={tenant.slug} qrSvg={qrSvg} />
+      <PhotosCard
+        tenantId={id}
+        photos={(photos.data ?? []).map((p) => ({
+          id: p.id,
+          url: `${publicEnv.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/business-photos/${p.path}`,
+        }))}
+      />
       <SettingsView
         data={{
           isOwner: tenant.role === "owner",
