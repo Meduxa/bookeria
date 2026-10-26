@@ -424,6 +424,38 @@ export type Database = {
           },
         ]
       }
+      business_photos: {
+        Row: {
+          created_at: string
+          id: string
+          path: string
+          sort_order: number
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          path: string
+          sort_order?: number
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          path?: string
+          sort_order?: number
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_photos_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_consents: {
         Row: {
           at: string
@@ -985,6 +1017,54 @@ export type Database = {
             referencedColumns: ["id", "tenant_id"]
           },
         ]
+      }
+      plans: {
+        Row: {
+          active: boolean
+          code: string
+          max_staff: number | null
+          name: string
+          price_minor: number
+          sms_per_month: number
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          max_staff?: number | null
+          name: string
+          price_minor?: number
+          sms_per_month?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          max_staff?: number | null
+          name?: string
+          price_minor?: number
+          sms_per_month?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      platform_admins: {
+        Row: {
+          created_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -1829,6 +1909,8 @@ export type Database = {
           created_at: string
           created_by: string | null
           currency: string
+          deletion_due_at: string | null
+          deletion_requested_at: string | null
           id: string
           locale_default: string
           name: string
@@ -1845,6 +1927,8 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           currency?: string
+          deletion_due_at?: string | null
+          deletion_requested_at?: string | null
           id?: string
           locale_default?: string
           name: string
@@ -1861,6 +1945,8 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           currency?: string
+          deletion_due_at?: string | null
+          deletion_requested_at?: string | null
           id?: string
           locale_default?: string
           name?: string
@@ -1873,7 +1959,15 @@ export type Database = {
           type?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "tenants_plan_fk"
+            columns: ["plan"]
+            isOneToOne: false
+            referencedRelation: "plans"
+            referencedColumns: ["code"]
+          },
+        ]
       }
       time_off: {
         Row: {
@@ -2069,6 +2163,51 @@ export type Database = {
         }
         Returns: string
       }
+      admin_sms_log: {
+        Args: { p_limit?: number; p_status?: string }
+        Returns: {
+          created_at: string
+          error_code: string
+          id: string
+          segments: number
+          status: string
+          tenant: string
+          to_phone: string
+          type: string
+        }[]
+      }
+      admin_tenants: {
+        Args: never
+        Returns: {
+          bookings_30d: number
+          created_at: string
+          deletion_due_at: string
+          id: string
+          last_activity: string
+          name: string
+          owner_email: string
+          plan: string
+          slug: string
+          sms_balance: number
+          staff_count: number
+          status: string
+          trial_ends_at: string
+          type: string
+        }[]
+      }
+      admin_topup_sms: {
+        Args: { p_note: string; p_segments: number; p_tenant: string }
+        Returns: undefined
+      }
+      admin_update_tenant: {
+        Args: {
+          p_plan: string
+          p_status: string
+          p_tenant: string
+          p_trial_ends_at: string
+        }
+        Returns: undefined
+      }
       anonymize_client: { Args: { p_client: string }; Returns: undefined }
       can_see_booking: {
         Args: { p_booking: string; p_tenant: string }
@@ -2088,6 +2227,7 @@ export type Database = {
         Args: { p_booking: string; p_reason?: string; p_status: string }
         Returns: number
       }
+      cancel_tenant_deletion: { Args: { p_tenant: string }; Returns: undefined }
       checkout_booking: {
         Args: {
           p_booking: string
@@ -2137,7 +2277,9 @@ export type Database = {
         Returns: string
       }
       current_staff_id: { Args: { p_tenant: string }; Returns: string }
+      expire_trials: { Args: never; Returns: number }
       export_client: { Args: { p_client: string }; Returns: Json }
+      export_tenant: { Args: { p_tenant: string }; Returns: Json }
       get_invitation: {
         Args: { p_token: string }
         Returns: {
@@ -2164,6 +2306,7 @@ export type Database = {
         Args: { p_locale: string; p_rows: Json; p_tenant: string }
         Returns: number
       }
+      is_platform_admin: { Args: never; Returns: boolean }
       item_snapshot: {
         Args: {
           p_locale: string
@@ -2251,6 +2394,7 @@ export type Database = {
         Args: { p_starts_at: string; p_token_hash: string }
         Returns: undefined
       }
+      purge_due_tenants: { Args: never; Returns: number }
       rate_hit: {
         Args: { p_key: string; p_limit: number; p_window_sec: number }
         Returns: boolean
@@ -2264,6 +2408,10 @@ export type Database = {
           created_at: string
           id: string
         }[]
+      }
+      request_tenant_deletion: {
+        Args: { p_confirm_name: string; p_tenant: string }
+        Returns: string
       }
       revoke_invitation: { Args: { p_invitation: string }; Returns: undefined }
       set_booking_note: {

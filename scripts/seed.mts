@@ -7,6 +7,7 @@
 // Demo sign-ins (dev only), password for all of them: Demo-Bookeria-2026
 //   salon.owner@demo.test   salon.admin@demo.test   salon.staff@demo.test
 //   dental.owner@demo.test  dental.admin@demo.test  dental.doctor@demo.test
+//   platform.admin@demo.test  (platform admin area /admin, no business of its own)
 //
 // Services, staff schedules and clients are added to this seed in Phase 1.
 
@@ -14,6 +15,7 @@ import { createClient } from "@supabase/supabase-js";
 import { formatInTimeZone, fromZonedTime } from "date-fns-tz";
 
 const DEMO_PASSWORD = "Demo-Bookeria-2026";
+const PLATFORM_ADMIN = "platform.admin@demo.test";
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const secret = process.env.SUPABASE_SECRET_KEY;
@@ -76,7 +78,7 @@ async function removePreviousDemo() {
   const slugs = tenants.map((t) => t.slug);
   check("delete demo tenants", await db.from("tenants").delete().in("slug", slugs));
 
-  const emails = new Set<string>(tenants.flatMap((t) => t.people.map((p) => p.email)));
+  const emails = new Set<string>([...tenants.flatMap((t) => t.people.map((p) => p.email)), PLATFORM_ADMIN]);
   for (let page = 1; ; page++) {
     const { data, error } = await db.auth.admin.listUsers({ page, perPage: 200 });
     if (error) throw error;
@@ -89,6 +91,16 @@ async function removePreviousDemo() {
 
 async function seed() {
   await removePreviousDemo();
+
+  // a demo platform admin (for /admin); real admins: npm.cmd run platform-admin -- <email>
+  const { data: pa, error: paError } = await db.auth.admin.createUser({
+    email: PLATFORM_ADMIN,
+    password: DEMO_PASSWORD,
+    email_confirm: true,
+    user_metadata: { full_name: "Platform Admin", locale: "ka" },
+  });
+  if (paError || !pa.user) throw new Error(`create ${PLATFORM_ADMIN}: ${paError?.message}`);
+  check("platform admin", await db.from("platform_admins").insert({ user_id: pa.user.id }));
 
   for (const t of tenants) {
     const userIds: Record<string, string> = {};
