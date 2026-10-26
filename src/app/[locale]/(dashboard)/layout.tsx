@@ -5,6 +5,7 @@ import { AccountMenu } from "@/components/app-shell/account-menu";
 import { BottomNav, SidebarNav } from "@/components/app-shell/nav";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { BrandLogo } from "@/components/brand-logo";
+import { InstallApp } from "@/components/pwa";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Link } from "@/i18n/navigation";
 import { requireUser } from "@/lib/auth";
@@ -41,6 +42,7 @@ export default async function DashboardLayout({ children, params }: LayoutProps<
         </Link>
         <SidebarNav type={active.type} canManage={canManage(active.role)} hasProfile={!!ownStaffId} />
         <div className="mt-auto flex flex-col gap-1 border-t pt-3">
+          <InstallApp />
           <ThemeToggle />
           <LanguageSwitcher />
           {menu}

@@ -1303,5 +1303,9 @@
     "alt": "Photo {n}",
     "remove": "Remove photo {n}",
     "tooBig": "The photo is larger than 5 MB."
+  },
+  "pwa": {
+    "install": "Install the app",
+    "iosHint": "To install on your phone: Share → “Add to Home Screen”."
   }
 }

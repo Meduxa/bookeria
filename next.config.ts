@@ -10,6 +10,12 @@ const nextConfig: NextConfig = {
   // Dev logging prints server action arguments in plain text — that includes
   // passwords and clients' personal data. Never log them.
   logging: { serverFunctions: false },
+  async headers() {
+    // the service worker must always be fetched fresh, or app updates would hang on old code
+    return [
+      { source: "/sw.js", headers: [{ key: "Cache-Control", value: "no-cache, no-store, must-revalidate" }] },
+    ];
+  },
   turbopack: {
     rules: {
       "*.css": {

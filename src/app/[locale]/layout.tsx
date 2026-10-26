@@ -3,6 +3,7 @@ import { Inter, Noto_Sans_Georgian } from "next/font/google";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { RegisterServiceWorker } from "@/components/pwa";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { routing } from "@/i18n/routing";
@@ -20,10 +21,15 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "meta" });
-  return { title: { default: APP_NAME, template: `%s · ${APP_NAME}` }, description: t("description") };
+  return {
+    title: { default: APP_NAME, template: `%s · ${APP_NAME}` },
+    description: t("description"),
+    icons: { apple: "/icons/apple-touch-icon.png" },
+    appleWebApp: { capable: true, title: APP_NAME, statusBarStyle: "default" },
+  };
 }
 
-export const viewport: Viewport = { width: "device-width", initialScale: 1 };
+export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#16233A" };
 
 export default async function LocaleLayout({ children, params }: LayoutProps<"/[locale]">) {
   const { locale } = await params;
@@ -41,6 +47,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
           <NextIntlClientProvider>
             {children}
             <Toaster />
+            <RegisterServiceWorker />
           </NextIntlClientProvider>
         </ThemeProvider>
       </body>
