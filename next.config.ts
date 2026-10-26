@@ -8,6 +8,16 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 // can't be framed by other sites. 'unsafe-inline' is needed for Next.js's inline
 // bootstrap scripts until we move to per-request nonces.
 const supabase = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+// error reports go to the Sentry project in the DSN (only when it is set)
+const sentryHost = (() => {
+  try {
+    return process.env.NEXT_PUBLIC_SENTRY_DSN
+      ? `https://${new URL(process.env.NEXT_PUBLIC_SENTRY_DSN).host}`
+      : "";
+  } catch {
+    return "";
+  }
+})();
 const dev = process.env.NODE_ENV !== "production";
 const csp = [
   "default-src 'self'",
@@ -15,7 +25,7 @@ const csp = [
   "style-src 'self' 'unsafe-inline'",
   `img-src 'self' data: blob: ${supabase}`,
   "font-src 'self'",
-  `connect-src 'self' ${supabase} ${supabase.replace(/^https/, "wss")}${dev ? " ws:" : ""}`,
+  `connect-src 'self' ${supabase} ${supabase.replace(/^https/, "wss")} ${sentryHost}${dev ? " ws:" : ""}`,
   "worker-src 'self'",
   "manifest-src 'self'",
   "frame-ancestors 'none'",
