@@ -11,7 +11,7 @@ const uuid = z.uuid();
 export async function readDentalNotes(
   clientId: string,
 ): Promise<ActionResult<{ id: string; author: string; body: string; at: string }[]>> {
-  const ctx = await memberContext();
+  const ctx = await memberContext({ read: true });
   if (!ctx || !uuid.safeParse(clientId).success) return fail("notAllowed");
   const { data, error } = await ctx.supabase.rpc("read_dental_notes", { p_client: clientId });
   if (error) return fail(error.code === "42501" ? "notAllowed" : "generic");

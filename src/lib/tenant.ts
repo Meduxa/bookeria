@@ -24,7 +24,19 @@ export type TenantMembership = {
   type: "salon" | "dental";
   slug: string;
   role: Role;
+  plan: string;
+  status: TenantStatus;
+  trialEndsAt: string;
+  deletionDueAt: string | null;
 };
+
+export type TenantStatus = "trial" | "active" | "past_due" | "suspended" | "cancelled";
+const asStatus = (v: string) =>
+  oneOf<TenantStatus>(["trial", "active", "past_due", "suspended", "cancelled"], v, "tenant status");
+
+/** Suspended or cancelled businesses can look and export, but not change anything. */
+export const isReadOnly = (t: Pick<TenantMembership, "status">) =>
+  t.status === "suspended" || t.status === "cancelled";
 
 // The user's active memberships, read through RLS (a user only ever sees their own).
 export const getMyTenants = cache(async (): Promise<TenantMembership[]> => {
@@ -34,7 +46,7 @@ export const getMyTenants = cache(async (): Promise<TenantMembership[]> => {
 
   const { data, error } = await supabase
     .from("memberships")
-    .select("tenant_id, role, tenants!inner(name, type, slug)")
+    .select("tenant_id, role, tenants!inner(name, type, slug, plan, status, trial_ends_at, deletion_due_at)")
     .eq("user_id", auth.user.id)
     .eq("status", "active")
     .order("created_at");
@@ -46,6 +58,10 @@ export const getMyTenants = cache(async (): Promise<TenantMembership[]> => {
     name: m.tenants.name,
     type: asBusinessType(m.tenants.type),
     slug: m.tenants.slug,
+    plan: m.tenants.plan,
+    status: asStatus(m.tenants.status),
+    trialEndsAt: m.tenants.trial_ends_at,
+    deletionDueAt: m.tenants.deletion_due_at,
   }));
 });
 

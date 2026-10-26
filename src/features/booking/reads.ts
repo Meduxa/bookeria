@@ -14,7 +14,7 @@ const uuid = z.uuid();
 
 // Visits of one client, newest first (RLS: staff see only bookings with them).
 export async function clientVisits(clientId: string) {
-  const ctx = await memberContext();
+  const ctx = await memberContext({ read: true });
   if (!ctx || !uuid.safeParse(clientId).success) return [];
   const { data: tenant } = await ctx.supabase
     .from("tenants")
@@ -50,7 +50,7 @@ export async function clientVisits(clientId: string) {
 }
 
 export async function bookingHistory(bookingId: string) {
-  const ctx = await memberContext();
+  const ctx = await memberContext({ read: true });
   if (!ctx || !uuid.safeParse(bookingId).success) return [];
   const { data } = await ctx.supabase
     .from("booking_status_history")
@@ -63,7 +63,7 @@ export async function bookingHistory(bookingId: string) {
 // Extra items and payments of one booking. Payments come back empty when the
 // person may not see money (RLS: owner / admins unless hidden / own bookings).
 export async function bookingMoney(bookingId: string) {
-  const ctx = await memberContext();
+  const ctx = await memberContext({ read: true });
   if (!ctx || !uuid.safeParse(bookingId).success) return null;
   const [charges, payments] = await Promise.all([
     ctx.supabase
@@ -81,7 +81,7 @@ export async function bookingMoney(bookingId: string) {
 }
 
 export async function consentHistory(clientId: string) {
-  const ctx = await managerContext();
+  const ctx = await managerContext({ read: true });
   if (!ctx || !uuid.safeParse(clientId).success) return [];
   return getConsentHistory(clientId);
 }

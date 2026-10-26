@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
+import { AccountBanner } from "@/components/app-shell/account-banner";
 import { AccountMenu } from "@/components/app-shell/account-menu";
 import { BottomNav, SidebarNav } from "@/components/app-shell/nav";
 import { LanguageSwitcher } from "@/components/language-switcher";
@@ -58,6 +59,7 @@ export default async function DashboardLayout({ children, params }: LayoutProps<
           <LanguageSwitcher />
         </header>
         <main className="mx-auto w-full max-w-6xl flex-1 px-4 pt-4 pb-24 md:px-8 md:pt-8 md:pb-10">
+          <AccountBanner tenant={active} />
           {children}
         </main>
       </div>

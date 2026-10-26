@@ -87,7 +87,7 @@ export async function saveClient(
 
 // Data subject request: everything stored about one client, as JSON. Owner only (RPC checks).
 export async function exportClient(clientId: string): Promise<ActionResult<{ json: string }>> {
-  const ctx = await managerContext();
+  const ctx = await managerContext({ read: true });
   if (!ctx || !uuid.safeParse(clientId).success) return fail("notAllowed");
   const { data, error } = await ctx.supabase.rpc("export_client", { p_client: clientId });
   if (error) return fail(dbErrorCode(error));
@@ -114,7 +114,7 @@ export async function mergeClients(keepId: string, removeId: string): Promise<Ac
 
 // For the merge picker: other clients matching a search.
 export async function searchClients(q: string, excludeId: string) {
-  const ctx = await managerContext();
+  const ctx = await managerContext({ read: true });
   const term = q
     .trim()
     .replace(/[%,()*\\]/g, " ")

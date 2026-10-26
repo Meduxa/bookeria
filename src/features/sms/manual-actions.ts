@@ -78,7 +78,7 @@ async function recipients(ctx: NonNullable<Awaited<ReturnType<typeof managerCont
 export async function bulkSmsPreview(input: {
   tag?: string;
 }): Promise<ActionResult<{ count: number; balance: number }>> {
-  const ctx = await managerContext();
+  const ctx = await managerContext({ read: true });
   const p = bulkSchema.safeParse(input);
   if (!ctx || !p.success) return fail("invalidInput");
   const [list, { data: balance }] = await Promise.all([

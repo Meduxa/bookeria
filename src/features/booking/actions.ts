@@ -53,7 +53,7 @@ export async function findSlots(input: {
   staffId: string | "any";
   picks: { serviceId: string; variantId?: string | null }[];
 }): Promise<ActionResult<{ start: string; staffId: string; staffName: string }[]>> {
-  const ctx = await memberContext();
+  const ctx = await memberContext({ read: true });
   const picks = picksSchema.safeParse(input.picks);
   if (!ctx || !picks.success || !dateSchema.safeParse(input.date).success) return fail("invalidInput");
   if (input.staffId !== "any" && !uuid.safeParse(input.staffId).success) return fail("invalidInput");
@@ -276,7 +276,7 @@ export async function setBookingNote(bookingId: string, note: string): Promise<A
 
 // For the new-booking panel: clients matching a search (RLS limits staff).
 export async function findClients(q: string) {
-  const ctx = await memberContext();
+  const ctx = await memberContext({ read: true });
   const term = q
     .trim()
     .replace(/[%,()*\\]/g, " ")
@@ -313,7 +313,7 @@ const recurringSchema = z.object({
 export async function previewRecurring(
   input: z.input<typeof recurringSchema>,
 ): Promise<ActionResult<{ start: string; conflicts: Conflict[] }[]>> {
-  const ctx = await memberContext();
+  const ctx = await memberContext({ read: true });
   const parsed = recurringSchema.safeParse(input);
   if (!ctx || !parsed.success) return fail("invalidInput");
   const v = parsed.data;

@@ -56,7 +56,7 @@ export const getPublicBusiness = cache(
       .from("tenants")
       .select("id, slug, name, type, timezone, status")
       .eq("slug", slug)
-      .in("status", ["trial", "active"])
+      .in("status", ["trial", "active", "past_due"])
       .maybeSingle();
     if (!tenant) return null;
     const id = tenant.id;

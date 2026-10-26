@@ -27,7 +27,7 @@ const date = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 const time = z.string().regex(/^\d{2}:\d{2}$/);
 
 export async function listWaitlist(): Promise<WaitlistEntry[]> {
-  const ctx = await memberContext();
+  const ctx = await memberContext({ read: true });
   if (!ctx) return [];
   const { data } = await ctx.supabase
     .from("waitlist")
@@ -124,7 +124,7 @@ export async function setWaitlistStatus(
 // Who is waiting for the time a cancelled booking just freed: same service,
 // same person (or anyone), the date inside their range, the time in their window.
 export async function waitlistMatches(bookingId: string): Promise<string[]> {
-  const ctx = await memberContext();
+  const ctx = await memberContext({ read: true });
   if (!ctx || !uuid.safeParse(bookingId).success) return [];
   const [{ data: b }, { data: tz }] = await Promise.all([
     ctx.supabase

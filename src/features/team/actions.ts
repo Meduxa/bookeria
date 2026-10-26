@@ -10,7 +10,7 @@ import { APP_NAME } from "@/lib/app";
 import { requireUser } from "@/lib/auth";
 import { publicEnv } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
-import { canManage, getActiveTenant, rememberActiveTenant } from "@/lib/tenant";
+import { canManage, getActiveTenant, isReadOnly, rememberActiveTenant } from "@/lib/tenant";
 import { inviteSchema, type InviteInput } from "./schema";
 
 export async function inviteMember(
@@ -21,7 +21,7 @@ export async function inviteMember(
   if (!parsed.success) return fail("invalidInput");
 
   const tenant = await getActiveTenant();
-  if (!tenant || !canManage(tenant.role)) return fail("notAllowed");
+  if (!tenant || !canManage(tenant.role) || isReadOnly(tenant)) return fail("notAllowed");
 
   const supabase = await createClient();
   const { data: token, error } = await supabase.rpc("create_invitation", {
