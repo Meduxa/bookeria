@@ -77,6 +77,7 @@ export async function saveRules(input: RulesInput): Promise<ActionResult> {
       cancel_window_min: v.cancelWindowHours * 60,
       slot_step_min: v.slotStepMin,
       online_requires_approval: v.onlineRequiresApproval,
+      online_otp_required: v.onlineOtpRequired,
       staff_sees_all_clients: v.staffSeesAllClients,
       staff_sees_all_bookings: v.staffSeesAllBookings,
       // only the owner decides whether admins see money

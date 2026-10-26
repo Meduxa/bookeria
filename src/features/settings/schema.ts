@@ -32,6 +32,7 @@ export const rulesSchema = z.object({
     .number<string | number>()
     .refine((n) => (slotSteps as readonly number[]).includes(n), "invalidInput"),
   onlineRequiresApproval: z.boolean(),
+  onlineOtpRequired: z.boolean(),
   staffSeesAllClients: z.boolean(),
   staffSeesAllBookings: z.boolean(),
   adminsSeeRevenue: z.boolean(),

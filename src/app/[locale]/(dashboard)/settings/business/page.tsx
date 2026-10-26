@@ -1,6 +1,9 @@
 import { redirect } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import QRCode from "qrcode";
 import { SettingsView, type SettingsData } from "@/features/settings/components/settings-view";
+import { ShareCard } from "@/features/settings/components/share-card";
+import { publicEnv } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
 import { canManage, getActiveTenant } from "@/lib/tenant";
 import { trimSeconds } from "@/lib/time";
@@ -44,31 +47,39 @@ export default async function BusinessSettingsPage({ params }: PageProps<"/[loca
     (hours[h.weekday] ??= []).push({ start: trimSeconds(h.start_time), end: trimSeconds(h.end_time) });
   }
 
+  // language-neutral link: it opens in Georgian, clients can switch
+  const url = `${publicEnv.NEXT_PUBLIC_APP_URL}/book/${tenant.slug}`;
+  const qrSvg = await QRCode.toString(url, { type: "svg", margin: 1, errorCorrectionLevel: "M" });
+
   return (
-    <SettingsView
-      data={{
-        isOwner: tenant.role === "owner",
-        isDental: tenant.type === "dental",
-        business: {
-          name: tenant.name,
-          address: location.data.address ?? "",
-          phone: s.phone ?? "",
-          email: s.email ?? "",
-        },
-        rules: {
-          minNoticeHours: Math.round(s.min_notice_min / 60),
-          maxDaysAhead: s.max_days_ahead,
-          cancelWindowHours: Math.round(s.cancel_window_min / 60),
-          slotStepMin: s.slot_step_min,
-          onlineRequiresApproval: s.online_requires_approval,
-          staffSeesAllClients: s.staff_sees_all_clients,
-          staffSeesAllBookings: s.staff_sees_all_bookings,
-          adminsSeeRevenue: s.admins_see_revenue,
-        },
-        hours,
-        closures: closures.data ?? [],
-        resources: (resources.data ?? []) as SettingsData["resources"],
-      }}
-    />
+    <div className="flex flex-col gap-6">
+      <ShareCard url={url} slug={tenant.slug} qrSvg={qrSvg} />
+      <SettingsView
+        data={{
+          isOwner: tenant.role === "owner",
+          isDental: tenant.type === "dental",
+          business: {
+            name: tenant.name,
+            address: location.data.address ?? "",
+            phone: s.phone ?? "",
+            email: s.email ?? "",
+          },
+          rules: {
+            minNoticeHours: Math.round(s.min_notice_min / 60),
+            maxDaysAhead: s.max_days_ahead,
+            cancelWindowHours: Math.round(s.cancel_window_min / 60),
+            slotStepMin: s.slot_step_min,
+            onlineRequiresApproval: s.online_requires_approval,
+            onlineOtpRequired: s.online_otp_required,
+            staffSeesAllClients: s.staff_sees_all_clients,
+            staffSeesAllBookings: s.staff_sees_all_bookings,
+            adminsSeeRevenue: s.admins_see_revenue,
+          },
+          hours,
+          closures: closures.data ?? [],
+          resources: (resources.data ?? []) as SettingsData["resources"],
+        }}
+      />
+    </div>
   );
 }

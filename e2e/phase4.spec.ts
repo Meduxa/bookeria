@@ -60,6 +60,7 @@ test("client books online with an SMS code, then moves and cancels with the link
   await page.getByLabel("SMS კოდი").fill(code);
   await page.getByRole("button", { name: "დაჯავშნა" }).click();
   await expect(page.getByRole("heading", { name: "დაჯავშნილია!" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "კალენდარში დამატება" })).toBeVisible();
 
   // the confirmation SMS carries the manage link
   const link = (await lastSms(`+995${phone}`, "/m/")).match(/\/m\/([A-Za-z0-9_-]{32})/)![1];
@@ -98,4 +99,50 @@ test("phone: booking page never scrolls sideways", async ({ page }, info) => {
   await page.waitForLoadState("networkidle");
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
   expect(overflow).toBeLessThanOrEqual(0);
+});
+
+test("the team sees the online client and visit in the client list", async ({ page, browser }, info) => {
+  test.skip(info.project.name !== "desktop");
+  await pickServiceAndTime(page);
+  const phone = randomPhone();
+  const last = `ტესტი${Math.floor(Math.random() * 1e6)}`;
+  await page.getByLabel("სახელი", { exact: true }).fill("ონლაინ");
+  await page.getByLabel("გვარი").fill(last);
+  await page.getByLabel("მობილური").fill(phone);
+  await page.getByLabel("კომენტარი (არასავალდებულო)").fill("პირველად მოვდივარ");
+  await page.getByRole("button", { name: "SMS კოდის გაგზავნა" }).click();
+  await page.getByLabel("SMS კოდი").fill((await lastSms(`+995${phone}`, "კოდია")).match(/\d{6}/)![0]);
+  await page.getByRole("button", { name: "დაჯავშნა" }).click();
+  await expect(page.getByRole("heading", { name: "დაჯავშნილია!" })).toBeVisible();
+  const when = await page.locator("main p.font-medium").first().textContent(); // "26 ოქტომბერი 2026, 15:45"
+
+  const staff = await browser.newPage();
+  await staff.goto("/ka/login");
+  await staff.getByLabel("ელფოსტა").fill("salon.owner@demo.test");
+  await staff.getByLabel("პაროლი").fill("Demo-Bookeria-2026");
+  await staff.getByRole("button", { name: "შესვლა" }).click();
+  await staff.waitForURL("**/ka/dashboard");
+  await staff.goto("/ka/clients");
+  await staff.waitForLoadState("networkidle");
+  await staff.getByRole("searchbox").fill(phone);
+  await staff
+    .getByRole("main")
+    .getByRole("button", { name: new RegExp(last) })
+    .click();
+  await expect(staff.getByRole("dialog").getByText(when!.split(",")[0])).toBeVisible(); // in visit history
+  await staff.close();
+});
+
+test("owner settings: booking link, QR code and the SMS code switch", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop");
+  await page.goto("/ka/login");
+  await page.getByLabel("ელფოსტა").fill("salon.owner@demo.test");
+  await page.getByLabel("პაროლი").fill("Demo-Bookeria-2026");
+  await page.getByRole("button", { name: "შესვლა" }).click();
+  await page.waitForURL("**/ka/dashboard");
+  await page.goto("/ka/settings/business");
+  await expect(page.getByRole("heading", { name: "ონლაინ ჯავშნის ბმული" })).toBeVisible();
+  await expect(page.getByText(/\/book\/demo-salon$/)).toBeVisible();
+  await expect(page.getByRole("img", { name: "QR კოდი" }).locator("svg")).toBeVisible();
+  await expect(page.getByRole("switch", { name: "ონლაინ ჯავშანი SMS კოდით" })).toBeChecked();
 });

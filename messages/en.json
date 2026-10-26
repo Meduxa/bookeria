@@ -454,7 +454,9 @@
       "staffSeesAllClients": "Staff see all clients",
       "staffSeesAllClientsHint": "Off: staff see only clients who chose them.",
       "staffSeesAllBookings": "Staff see all bookings",
-      "staffSeesAllBookingsHint": "Off: staff see only their own calendar."
+      "staffSeesAllBookingsHint": "Off: staff see only their own calendar.",
+      "onlineOtpRequired": "SMS code for online bookings",
+      "onlineOtpRequiredHint": "Clients confirm their number with a code, which stops fake bookings. One SMS per booking."
     },
     "resources": {
       "title": "Chairs and rooms",
@@ -466,6 +468,16 @@
         "room": "Room",
         "equipment": "Equipment"
       }
+    },
+    "share": {
+      "title": "Online booking link",
+      "hint": "Put it in your Instagram and Facebook bio, or send it to clients.",
+      "copy": "Copy link",
+      "copied": "Copied",
+      "open": "Open",
+      "qr": "QR code",
+      "qrHint": "Print it for the front desk or the mirror — clients scan it with their phone.",
+      "download": "Download QR code"
     }
   },
   "clients": {
@@ -712,7 +724,8 @@
     "needTwo": "Choose at least two dates.",
     "cancelThis": "Only this one",
     "cancelFollowing": "This and all following",
-    "series": "Part of a series"
+    "series": "Part of a series",
+    "clientComment": "Client's comment"
   },
   "myDay": {
     "title": "My day",

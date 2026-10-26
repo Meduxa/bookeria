@@ -242,7 +242,14 @@ export function SettingsView({ data }: { data: SettingsData }) {
             </Select>
           </FormField>
         </div>
-        {(["onlineRequiresApproval", "staffSeesAllClients", "staffSeesAllBookings"] as const).map((k) => (
+        {(
+          [
+            "onlineOtpRequired",
+            "onlineRequiresApproval",
+            "staffSeesAllClients",
+            "staffSeesAllBookings",
+          ] as const
+        ).map((k) => (
           <SwitchRow key={k} label={t(`settings.rules.${k}`)} hint={t(`settings.rules.${k}Hint`)}>
             <Switch checked={rules[k]} onCheckedChange={(v) => setRules({ ...rules, [k]: v })} />
           </SwitchRow>

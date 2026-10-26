@@ -340,6 +340,13 @@ export function BookingPanel({
           </section>
         )}
 
+        {booking.clientComment && (
+          <section className="flex flex-col gap-1 rounded-lg bg-muted/60 p-3">
+            <h3 className="text-sm font-medium">{t("booking.clientComment")}</h3>
+            <p className="text-sm whitespace-pre-line">{booking.clientComment}</p>
+          </section>
+        )}
+
         {canEdit && (
           <section className="flex flex-col gap-2">
             <FormField id="bk-note" label={t("booking.note")} hint={t("booking.noteHint")}>
