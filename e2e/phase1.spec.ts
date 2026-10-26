@@ -40,7 +40,8 @@ test("clients: count, search by phone, important note warning", async ({ page })
   await page.goto("/ka/clients");
   // type only after the page is interactive, or the input is reset by hydration
   await page.waitForLoadState("networkidle");
-  await expect(page.getByText("30 კლიენტი")).toBeVisible();
+  // 30 seeded; online-booking tests add more
+  await expect(page.getByText(/^\d+ კლიენტი$/)).toBeVisible();
   await page.getByRole("searchbox").fill("555100000");
   await expect(page.getByText("1 კლიენტი")).toBeVisible();
   // the demo client with an allergy note (there are two Tamars, found by phone)

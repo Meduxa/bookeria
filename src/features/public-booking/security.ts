@@ -12,11 +12,14 @@ export const hmac = (value: string) =>
 export const newToken = () => randomBytes(24).toString("base64url"); // 32 characters
 export const newCode = () => String(randomInt(0, 1_000_000)).padStart(6, "0");
 
-// The visitor's IP as set by the hosting proxy. Locally there is no proxy and
-// no header, so per-IP limits are skipped there (per-phone limits still apply).
+// The visitor's IP as set by the hosting proxy. On this computer (dev server,
+// tests) it is the loopback address, which never limits anything; per-phone
+// limits still apply everywhere.
+const LOOPBACK = /^(127\.|::1$|::ffff:127\.)/;
 export async function clientIp(): Promise<string | null> {
   const h = await headers();
-  return h.get("x-forwarded-for")?.split(",")[0]?.trim() || h.get("x-real-ip") || null;
+  const ip = h.get("x-forwarded-for")?.split(",")[0]?.trim() || h.get("x-real-ip") || null;
+  return ip && !LOOPBACK.test(ip) ? ip : null;
 }
 
 export const LIMITS = {

@@ -66,14 +66,15 @@ Split into 3a and 3b with a report in between (Levan, 2026-10-26). Staff may cre
 - [x] Speed: day view with 15 staff × 150 bookings loads in ~340 ms (test `perf_calendar`)
 - [x] Panels load in parallel (GET /api/read, decision 006) — buttons no longer wait behind loading panels
 
-## Phase 4 — Public online booking page (≈ 1 week) — SPEC 4.8
-- [ ] `/book/[slug]` flow, mobile-first, ka default
-- [ ] Real availability, "any staff" option
-- [ ] Consents (marketing unchecked by default)
-- [ ] SMS OTP (after Phase 5 adapter exists — stub until then)
-- [ ] Manage-booking link (confirm / cancel / reschedule within policy)
-- [ ] .ics "add to calendar", QR code, link sharing
-- [ ] Rate limiting and bot protection
+## Phase 4 — Public online booking page (≈ 1 week) — SPEC 4.8 ✅ Done 2026-10-26
+- [x] `/book/[slug]` flow, mobile-first, ka default (business card with call, map, hours, team)
+- [x] Real availability, "any staff" option — same engine as the admin calendar, online rules
+- [x] Consents (marketing unticked by default, recorded with source "booking page")
+- [x] SMS OTP — on by default, owner can switch off; fake SMS provider until Phase 5 plugs in a real one
+- [x] Manage-booking link `/m/[key]` (move / cancel within the cancellation window, then the business phone)
+- [x] .ics "add to calendar", QR code, link sharing (settings card)
+- [x] Rate limiting (per phone, per IP behind the host) and honeypot — Cloudflare Turnstile before launch (Levan, 2026-10-26)
+- [ ] Later: business photo gallery (Phase 6 polish, Levan 2026-10-26)
 
 ## Phase 5 — SMS (≈ 1 week) — SPEC 4.9
 - [ ] SMS adapter interface + first provider + fake provider for tests

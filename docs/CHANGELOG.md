@@ -2,6 +2,16 @@
 
 All notable changes per phase. Newest on top.
 
+## Phase 4 — Public online booking page (2026-10-26)
+
+- **Booking page** `/book/<business>` (e.g. /book/demo-salon), built for phones, in Georgian with a language switch: business card (call, directions, opening hours, team) → services → a person or "anyone available" → day and free time → name, phone, optional email and comment → SMS code → booked. Only real free times are offered, with the business's online rules (notice, how far ahead, services and people bookable online, blocked clients).
+- **SMS code** before booking, on by default (owner switch in Settings). Codes last 5 minutes, 5 tries, at most 3 per phone per hour. Until Phase 5 the SMS goes to a fake provider: the code is printed in the dev server window.
+- **Confirmation**: "add to calendar" (.ics) and an SMS with a private **manage link** `/m/<key>`, where the client can move or cancel until the cancellation window; after that the page shows the business phone. Online bookings start as confirmed, or pending if the business approves them.
+- **Consent**: marketing boxes are unticked by default; a ticked box is recorded with the source "booking page". Returning clients are recognised by phone.
+- **Settings**: booking link with copy/open and a QR code to print; SMS-code switch. The team sees "online" and the client's comment on the booking.
+- **Security** (decision 007): visitors' browsers get no new database access; everything goes through server code. Codes and manage keys are stored only scrambled. Rate limits and a hidden trap field against bots. 9 new security tests.
+- Dashboard checklist now links to services, staff, hours and the booking link.
+
 ## After Phase 3b (2026-10-26)
 
 - **Logo** in the sidebar, phone header, sign-in pages and browser tab; works in dark mode.

@@ -1,0 +1,7 @@
+# 007 — Public booking runs on the server only
+
+**Context.** The online booking page is used by people who are not signed in. Opening database functions to anonymous visitors would let anyone call them directly with the public key, skipping our availability check, the SMS code and the rate limits.
+
+**Decision.** Visitors' browsers get no new database access at all. The page's server code (`src/features/public-booking/`) reads with the server-only key, always filtered by the business found from the link, and passes on only public fields (services, team, opening hours, free times — never other clients' bookings). Writes go through a few database functions (`public_create_booking`, `public_move_booking`, `public_cancel_booking`, `otp_*`, `rate_hit`) that only the server key may call. The server re-runs the same availability engine with the online rules and accepts only a time it offers; the database's overlap constraints still have the final word. SMS codes, phone-proof passes and manage-link keys are stored only as an HMAC whose key never leaves the server. Per-IP limits use the hosting proxy's `x-forwarded-for` header and are skipped for the loopback address (this computer: dev server and tests); per-phone limits always apply.
+
+**Consequence.** One implementation of availability for admins and clients. Security tests prove that visitors and signed-in users cannot reach the new tables or functions. Any new public feature must go through server code in the same way.
