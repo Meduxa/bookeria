@@ -1868,6 +1868,12 @@ export type Database = {
           quiet_start: string
           reminder_24h: boolean
           reminder_2h: boolean
+          site_about: Json
+          site_cover_path: string | null
+          site_facebook: string | null
+          site_instagram: string | null
+          site_logo_path: string | null
+          site_theme: string
           slot_step_min: number
           sms_low_balance: number
           sms_on_cancel: boolean
@@ -1894,6 +1900,12 @@ export type Database = {
           quiet_start?: string
           reminder_24h?: boolean
           reminder_2h?: boolean
+          site_about?: Json
+          site_cover_path?: string | null
+          site_facebook?: string | null
+          site_instagram?: string | null
+          site_logo_path?: string | null
+          site_theme?: string
           slot_step_min?: number
           sms_low_balance?: number
           sms_on_cancel?: boolean
@@ -1920,6 +1932,12 @@ export type Database = {
           quiet_start?: string
           reminder_24h?: boolean
           reminder_2h?: boolean
+          site_about?: Json
+          site_cover_path?: string | null
+          site_facebook?: string | null
+          site_instagram?: string | null
+          site_logo_path?: string | null
+          site_theme?: string
           slot_step_min?: number
           sms_low_balance?: number
           sms_on_cancel?: boolean
@@ -2584,6 +2602,7 @@ export type Database = {
       start_support_view: { Args: { p_tenant: string }; Returns: string }
       support_view: { Args: { p_tenant: string }; Returns: boolean }
       user_tenant_ids: { Args: never; Returns: string[] }
+      valid_about: { Args: { p: Json }; Returns: boolean }
       valid_i18n: { Args: { p: Json; p_required?: boolean }; Returns: boolean }
       valid_staff_color: { Args: { p: string }; Returns: boolean }
       write_audit: {
