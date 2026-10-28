@@ -1,12 +1,15 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { getLocale } from "next-intl/server";
 import { z } from "zod";
 import { fail, ok, type ActionResult } from "@/lib/action-result";
 import { requireUser } from "@/lib/auth";
 import { parseMoneyToMinor } from "@/lib/money";
 import { createClient } from "@/lib/supabase/server";
+import { SUPPORT_COOKIE } from "@/lib/tenant";
 
 // Platform admin (Levan) only. The database checks is_platform_admin() again
 // in every function and policy; this check just gives a clean error.
@@ -103,4 +106,26 @@ export async function savePlan(input: z.input<typeof planSchema>): Promise<Actio
   if (error) return fail("generic");
   revalidatePath(`/${ctx.locale}/admin`, "layout");
   return ok(undefined);
+}
+
+// Opens a business in support view (owner's consent required, logged by the database).
+export async function openSupportView(tenantId: string): Promise<ActionResult> {
+  const ctx = await platform();
+  if (!ctx || !z.uuid().safeParse(tenantId).success) return fail("notAllowed");
+  const { error } = await ctx.db.rpc("start_support_view", { p_tenant: tenantId });
+  if (error) return fail("noSupportAccess");
+  (await cookies()).set(SUPPORT_COOKIE, tenantId, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: 60 * 60 * 72,
+  });
+  redirect(`/${ctx.locale}/dashboard`);
+}
+
+export async function leaveSupportView() {
+  const locale = await getLocale();
+  (await cookies()).delete(SUPPORT_COOKIE);
+  redirect(`/${locale}/admin`);
 }

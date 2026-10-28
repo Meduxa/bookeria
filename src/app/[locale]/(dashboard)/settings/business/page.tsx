@@ -2,10 +2,11 @@ import { redirect } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import QRCode from "qrcode";
 import { AccountCard } from "@/features/settings/components/account-card";
+import { SupportCard } from "@/features/settings/components/support-card";
 import { PhotosCard } from "@/features/settings/components/photos-card";
 import { SettingsView, type SettingsData } from "@/features/settings/components/settings-view";
 import { ShareCard } from "@/features/settings/components/share-card";
-import { fullDate, ymdIn } from "@/lib/date-format";
+import { fullDate, fullDateTime, ymdIn } from "@/lib/date-format";
 import { publicEnv } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
 import { canManage, getActiveTenant } from "@/lib/tenant";
@@ -91,6 +92,7 @@ export default async function BusinessSettingsPage({ params }: PageProps<"/[loca
           resources: (resources.data ?? []) as SettingsData["resources"],
         }}
       />
+      {tenant.role === "owner" && <SupportCard until={await supportUntil(tenant.tenantId)} />}
       {tenant.role === "owner" && (
         <AccountCard
           businessName={tenant.name}
@@ -101,4 +103,23 @@ export default async function BusinessSettingsPage({ params }: PageProps<"/[loca
       )}
     </div>
   );
+}
+
+// the open support consent, as a date and time in the business's language
+async function supportUntil(tenantId: string) {
+  const db = await createClient();
+  const [{ data }, { data: tz }, t] = await Promise.all([
+    db
+      .from("support_grants")
+      .select("expires_at")
+      .eq("tenant_id", tenantId)
+      .is("revoked_at", null)
+      .gt("expires_at", new Date().toISOString())
+      .order("expires_at", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+    db.from("tenants").select("timezone").eq("id", tenantId).single(),
+    getTranslations(),
+  ]);
+  return data ? fullDateTime(t, data.expires_at, tz?.timezone) : null;
 }

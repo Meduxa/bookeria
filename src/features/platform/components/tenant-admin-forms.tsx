@@ -10,7 +10,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "@/i18n/navigation";
 import type { ActionResult } from "@/lib/action-result";
-import { savePlan, topUpSms, updateTenant } from "../actions";
+import { openSupportView, savePlan, topUpSms, updateTenant } from "../actions";
 
 const STATUSES = ["trial", "active", "past_due", "suspended", "cancelled"] as const;
 const select = "h-11 w-full rounded-lg border bg-background px-3 md:h-9";
@@ -228,6 +228,34 @@ export function PlanEditor({ plan, isNew = false }: { plan: Plan; isNew?: boolea
           {isNew ? t("plans.add") : t("save")}
         </Button>
       </div>
+    </Card>
+  );
+}
+
+// Support view: only while the owner allows it; the visit is written to their audit log.
+export function SupportViewButton({ tenantId, until }: { tenantId: string; until: string | null }) {
+  const t = useTranslations("supportAccess");
+  const [pending, startTransition] = useTransition();
+  const [error, setError] = useState<string>();
+  return (
+    <Card className="gap-3 p-4 md:p-6">
+      <h2 className="text-base font-semibold">{t("adminTitle")}</h2>
+      <p className="text-sm text-muted-foreground">{until ? t("adminOn", { until }) : t("adminOff")}</p>
+      <FieldError code={error} />
+      {until && (
+        <Button
+          className="h-11 self-start md:h-9"
+          disabled={pending}
+          onClick={() =>
+            startTransition(async () => {
+              const r = await openSupportView(tenantId);
+              if (!r.ok) setError(r.error);
+            })
+          }
+        >
+          {t("open")}
+        </Button>
+      )}
     </Card>
   );
 }

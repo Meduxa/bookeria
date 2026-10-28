@@ -6,6 +6,7 @@ All notable changes per phase. Newest on top.
 
 - **Sign out of all devices**: in the account menu (after a confirmation) — for a lost phone or a shared computer. Other devices are signed out on their next click; recorded in the audit log.
 - **Waitlist SMS offer**: after a cancellation, the clients waiting for that time show up with an "Offer by SMS" button that sends them the freed date and time with the business phone. Pressing twice does not send twice.
+- **Bookeria support access (view only)**: the owner can let Bookeria support look at the business for 24 hours or 3 days (Settings → Business) and end it at any time. Support sees the screens like an admin, with a banner, but the database refuses every change; treatment notes stay hidden. Allowing, ending and every visit are in the business's audit log.
 - The booking button "Cancel" is now "Cancel booking" — the confirmation showed two buttons both called "Cancel" (ka/en).
 
 ## Phase 6b — Ready for production (2026-10-26)

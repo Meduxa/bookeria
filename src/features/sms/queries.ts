@@ -30,7 +30,7 @@ export async function getSmsOverview(tenantId: string): Promise<SmsOverview> {
   const [{ data: s }, { data: balance }, { data: templates }, { data: tenant }, { count }] =
     await Promise.all([
       db.from("tenant_settings").select("*").eq("tenant_id", tenantId).single(),
-      db.rpc("sms_balance", { p_tenant: tenantId }),
+      db.rpc("sms_balance", { p_tenant: tenantId }, { get: true }),
       db.from("sms_templates").select("type, locale, body").eq("tenant_id", tenantId),
       db.from("tenants").select("locale_default").eq("id", tenantId).single(),
       db

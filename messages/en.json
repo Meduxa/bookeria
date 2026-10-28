@@ -234,7 +234,8 @@
     "notEnoughSms": "Not enough SMS left for everyone. Please top up first.",
     "planLimit": "Your plan allows no more active staff. Change the plan or switch another staff member off.",
     "nameMismatch": "The name does not match.",
-    "tooManyPhotos": "At most 12 photos."
+    "tooManyPhotos": "At most 12 photos.",
+    "noSupportAccess": "The owner's permission has ended or was not given."
   },
   "email": {
     "invite": {
@@ -1223,6 +1224,9 @@
       "settings_updated": "Business details changed",
       "staff_deleted": "Staff member deleted",
       "staff_login_linked": "Staff login linked",
+      "support_granted": "Support access allowed",
+      "support_revoked": "Support access ended",
+      "support_viewed": "Bookeria support viewed the business",
       "tenant_created": "Business created",
       "tenant_deletion_cancelled": "Deletion cancelled",
       "tenant_deletion_requested": "Deletion requested",
@@ -1432,5 +1436,22 @@
         }
       ]
     }
+  },
+  "supportAccess": {
+    "title": "Bookeria support access",
+    "hint": "Let Bookeria support look at your business to help with a problem. View only — support cannot change anything, and never sees treatment notes. You can end it at any time; every visit is in your audit log.",
+    "allow24": "Allow for 24 hours",
+    "allow72": "Allow for 3 days",
+    "on": "Support can view your business until {until}.",
+    "end": "End support access",
+    "endConfirm": "Bookeria support will no longer be able to view your business.",
+    "allowed": "Support access allowed",
+    "ended": "Support access ended",
+    "viewing": "Support view of this business — view only, until {until}.",
+    "leave": "Leave",
+    "adminTitle": "Support view",
+    "adminOn": "The owner allows a view-only support visit until {until}.",
+    "adminOff": "The owner has not allowed support access. Ask them to switch it on in Settings → Business.",
+    "open": "Open (view only)"
   }
 }

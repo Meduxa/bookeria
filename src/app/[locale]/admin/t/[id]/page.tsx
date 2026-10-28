@@ -4,10 +4,14 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { PageHeader } from "@/components/page-header";
 import { StatusPill } from "@/components/status-pill";
 import { Button } from "@/components/ui/button";
-import { TenantPlanForm, TopUpForm } from "@/features/platform/components/tenant-admin-forms";
+import {
+  SupportViewButton,
+  TenantPlanForm,
+  TopUpForm,
+} from "@/features/platform/components/tenant-admin-forms";
 import { TENANT_TONE } from "@/features/platform/tone";
 import { Link } from "@/i18n/navigation";
-import { ymdIn } from "@/lib/date-format";
+import { fullDateTime, ymdIn } from "@/lib/date-format";
 import { createClient } from "@/lib/supabase/server";
 
 type Row = {
@@ -29,9 +33,18 @@ export default async function AdminTenantPage({ params }: PageProps<"/[locale]/a
   setRequestLocale(locale);
   const t = await getTranslations();
   const db = await createClient();
-  const [{ data }, { data: plans }] = await Promise.all([
+  const [{ data }, { data: plans }, { data: grant }] = await Promise.all([
     db.rpc("admin_tenants"),
     db.from("plans").select("code, name").order("sort_order"),
+    db
+      .from("support_grants")
+      .select("expires_at")
+      .eq("tenant_id", id)
+      .is("revoked_at", null)
+      .gt("expires_at", new Date().toISOString())
+      .order("expires_at", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
   ]);
   const r = ((data ?? []) as Row[]).find((x) => x.id === id);
   if (!r) notFound();
@@ -67,6 +80,7 @@ export default async function AdminTenantPage({ params }: PageProps<"/[locale]/a
         plans={plans ?? []}
       />
       <TopUpForm tenantId={r.id} balance={r.sms_balance} />
+      <SupportViewButton tenantId={r.id} until={grant ? fullDateTime(t, grant.expires_at) : null} />
     </div>
   );
 }

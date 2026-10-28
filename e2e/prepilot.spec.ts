@@ -126,3 +126,62 @@ test("waitlist: offer a freed time by SMS", async ({ page }, info) => {
     await db.from("bookings").update({ status: b!.status }).eq("id", b!.id);
   }
 });
+
+// Support access: the owner allows it, Bookeria opens the business view-only, the owner ends it.
+test("support access: owner allows, support views (read-only), owner ends", async ({ browser }, info) => {
+  test.skip(info.project.name !== "desktop"); // changes shared demo data
+  const db = admin();
+  const { data: tenant } = await db.from("tenants").select("id").eq("slug", "demo-salon").single();
+  const signIn = async (email: string) => {
+    const page = await (await browser.newContext()).newPage();
+    await page.goto("/ka/login");
+    await page.getByLabel("ელფოსტა").fill(email);
+    await page.getByLabel("პაროლი").fill(PASSWORD);
+    await page.getByRole("button", { name: "შესვლა" }).click();
+    await page.waitForURL(/\/ka\/(dashboard|admin)/, { waitUntil: "commit" });
+    return page;
+  };
+  try {
+    const owner = await signIn("salon.owner@demo.test");
+    await owner.goto("/ka/settings/business");
+    await owner.getByRole("button", { name: "ნებართვა 24 საათით" }).click();
+    await expect(owner.getByText(/მხარდაჭერას შეუძლია თქვენი ბიზნესის ნახვა/)).toBeVisible();
+
+    const support = await signIn("platform.admin@demo.test");
+    await support.goto(`/ka/admin/t/${tenant!.id}`);
+    await support.getByRole("button", { name: "გახსნა (მხოლოდ ნახვა)" }).click();
+    await support.waitForURL("**/ka/dashboard");
+    await expect(support.getByRole("alert").filter({ hasText: "მხარდაჭერის რეჟიმში" })).toBeVisible();
+    const { data: c } = await db
+      .from("clients")
+      .select("first_name, last_name")
+      .eq("tenant_id", tenant!.id)
+      .not("last_name", "is", null)
+      .limit(1)
+      .single();
+    await support.goto(`/ka/clients?q=${encodeURIComponent(c!.last_name!)}`);
+    await expect(support.getByText(c!.last_name!).first()).toBeVisible();
+    await support.getByRole("button", { name: "გასვლა" }).first().click();
+    await support.waitForURL("**/ka/admin");
+
+    const { data: seen } = await db
+      .from("audit_log")
+      .select("id")
+      .eq("tenant_id", tenant!.id)
+      .eq("action", "support.viewed");
+    expect(seen!.length).toBeGreaterThan(0);
+
+    await owner.reload();
+    await owner.getByRole("button", { name: "წვდომის შეწყვეტა" }).click();
+    await owner.getByRole("alertdialog").getByRole("button", { name: "წვდომის შეწყვეტა" }).click();
+    await expect(owner.getByRole("button", { name: "ნებართვა 24 საათით" })).toBeVisible();
+    await support.goto(`/ka/admin/t/${tenant!.id}`);
+    await expect(support.getByRole("button", { name: "გახსნა (მხოლოდ ნახვა)" })).toHaveCount(0);
+  } finally {
+    await db
+      .from("support_grants")
+      .update({ revoked_at: new Date().toISOString() })
+      .eq("tenant_id", tenant!.id)
+      .is("revoked_at", null);
+  }
+});

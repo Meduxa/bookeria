@@ -42,7 +42,7 @@ async function loadDashboard(db: Db, tenantId: string, money: boolean, locale: s
   // one report for the month so far; today is part of it
   const [month, balance, settings, clients, counts] = await Promise.all([
     buildReport(db, tenantId, { from: monthStart, to: today, locale }),
-    db.rpc("sms_balance", { p_tenant: tenantId }),
+    db.rpc("sms_balance", { p_tenant: tenantId }, { get: true }),
     db.from("tenant_settings").select("sms_low_balance").eq("tenant_id", tenantId).single(),
     db
       .from("clients")

@@ -1,7 +1,8 @@
-import { TriangleAlert } from "lucide-react";
+import { Eye, TriangleAlert } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { fullDate, ymdIn } from "@/lib/date-format";
+import { leaveSupportView } from "@/features/platform/actions";
+import { fullDate, fullDateTime, ymdIn } from "@/lib/date-format";
 import { canManage, isReadOnly, type TenantMembership } from "@/lib/tenant";
 
 const daysUntil = (iso: string) => Math.ceil((new Date(iso).getTime() - Date.now()) / 86_400_000);
@@ -9,6 +10,22 @@ const daysUntil = (iso: string) => Math.ceil((new Date(iso).getTime() - Date.now
 // Trial ending, payment due, read-only, deletion scheduled — one line above every page.
 export async function AccountBanner({ tenant }: { tenant: TenantMembership }) {
   const t = await getTranslations();
+  if (tenant.supportUntil)
+    return (
+      <form
+        action={leaveSupportView}
+        role="alert"
+        className="mb-4 flex flex-wrap items-center gap-3 rounded-xl border border-primary/40 bg-accent p-3 text-sm"
+      >
+        <Eye className="size-4 shrink-0" aria-hidden />
+        <span className="flex-1">
+          {t("supportAccess.viewing", { until: fullDateTime(t, tenant.supportUntil) })}
+        </span>
+        <button type="submit" className="font-medium underline">
+          {t("supportAccess.leave")}
+        </button>
+      </form>
+    );
   const manager = canManage(tenant.role);
   let text: string | null = null;
   let href: string | null = null;
