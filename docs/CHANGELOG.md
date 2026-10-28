@@ -2,6 +2,12 @@
 
 All notable changes per phase. Newest on top.
 
+## Before the pilot — part 1 (2026-10-28)
+
+- **Sign out of all devices**: in the account menu (after a confirmation) — for a lost phone or a shared computer. Other devices are signed out on their next click; recorded in the audit log.
+- **Waitlist SMS offer**: after a cancellation, the clients waiting for that time show up with an "Offer by SMS" button that sends them the freed date and time with the business phone. Pressing twice does not send twice.
+- The booking button "Cancel" is now "Cancel booking" — the confirmation showed two buttons both called "Cancel" (ka/en).
+
 ## Phase 6b — Ready for production (2026-10-26)
 
 - **Installable app**: Bookeria can be added to a phone's home screen with its own icon; an "Install the app" button (Android/Chrome) or a hint (iPhone) in the menu; a friendly page when there is no internet. Nothing personal is stored on the phone.

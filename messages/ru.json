@@ -693,7 +693,7 @@
       "completed": "Завершить",
       "no_show": "Не пришёл",
       "cancelled_by_client": "Клиент отменил",
-      "cancelled_by_business": "Отменить",
+      "cancelled_by_business": "Отменить запись",
       "undo": "Вернуть"
     },
     "cancelReason": "Причина (необязательно)",
@@ -794,7 +794,9 @@
     "matches": "{count, plural, one {# клиент ждёт} few {# клиента ждут} many {# клиентов ждут} other {# клиента ждут}} это время",
     "show": "Показать",
     "anyTime": "любое время",
-    "until": "До"
+    "until": "До",
+    "offer": "Предложить по SMS",
+    "offerSent": "Предложение отправлено"
   },
   "checkout": {
     "title": "Оплата",
@@ -972,7 +974,8 @@
     "reminder": "{business_name}: напоминание — {date}, {time}. Изменить: {manage_link}",
     "rescheduled": "{business_name}: визит перенесён на {date}, {time}. {manage_link}",
     "cancelled": "{business_name}: визит {date}, {time} отменён. {phone}",
-    "optOut": "Отписаться: {link}"
+    "optOut": "Отписаться: {link}",
+    "waitlistOffer": "{business_name}: освободилось время — {date}, {time}, {service}. Хотите? Звоните {phone}"
   },
   "smsSettings": {
     "title": "SMS",

@@ -693,7 +693,7 @@
       "completed": "Complete",
       "no_show": "No-show",
       "cancelled_by_client": "Client cancelled",
-      "cancelled_by_business": "Cancel",
+      "cancelled_by_business": "Cancel booking",
       "undo": "Undo"
     },
     "cancelReason": "Reason (optional)",
@@ -794,7 +794,9 @@
     "matches": "{count, plural, one {# client is} other {# clients are}} waiting for this time",
     "show": "Show",
     "anyTime": "any time",
-    "until": "Until"
+    "until": "Until",
+    "offer": "Offer by SMS",
+    "offerSent": "Offer sent"
   },
   "checkout": {
     "title": "Checkout",
@@ -972,7 +974,8 @@
     "reminder": "{business_name}: reminder — {date}, {time}. Change: {manage_link}",
     "rescheduled": "{business_name}: your visit is moved to {date}, {time}. {manage_link}",
     "cancelled": "{business_name}: your visit on {date}, {time} is cancelled. {phone}",
-    "optOut": "Unsubscribe: {link}"
+    "optOut": "Unsubscribe: {link}",
+    "waitlistOffer": "{business_name}: a time opened up — {date}, {time}, {service}. Want it? Call {phone}"
   },
   "smsSettings": {
     "title": "SMS",

@@ -58,3 +58,71 @@ test("sign out of all devices ends the other device's session too", async ({ bro
     await user.remove();
   }
 });
+
+// Cancelling a booking shows who on the waitlist wants that time; the manager offers it by SMS.
+test("waitlist: offer a freed time by SMS", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop"); // changes shared demo data
+  const db = admin();
+  const { data: tenant } = await db.from("tenants").select("id, timezone").eq("slug", "demo-salon").single();
+  const { data: b } = await db
+    .from("bookings")
+    .select("id, status, starts_at, clients(id, first_name), booking_items(service_id)")
+    .eq("tenant_id", tenant!.id)
+    .eq("status", "confirmed")
+    .not("client_id", "is", null)
+    .gt("starts_at", new Date(Date.now() + 2 * 86_400_000).toISOString())
+    .order("starts_at", { ascending: false })
+    .limit(1)
+    .single();
+  const booked = b!.clients as unknown as { id: string; first_name: string };
+  const serviceId = b!.booking_items[0]!.service_id!;
+  const day = new Date(b!.starts_at).toLocaleDateString("en-CA", { timeZone: tenant!.timezone });
+  const { data: waiting } = await db
+    .from("clients")
+    .select("id, first_name, last_name")
+    .eq("tenant_id", tenant!.id)
+    .neq("id", booked.id)
+    .not("phone_e164", "is", null)
+    .is("anonymized_at", null)
+    .limit(1)
+    .single();
+  const { data: entry } = await db
+    .from("waitlist")
+    .insert({
+      tenant_id: tenant!.id,
+      client_id: waiting!.id,
+      service_id: serviceId,
+      date_from: day,
+      date_to: day,
+    })
+    .select("id")
+    .single();
+
+  try {
+    await page.goto("/ka/login");
+    await page.getByLabel("ელფოსტა").fill("salon.owner@demo.test");
+    await page.getByLabel("პაროლი").fill(PASSWORD);
+    await page.getByRole("button", { name: "შესვლა" }).click();
+    await page.waitForURL("**/ka/dashboard", { waitUntil: "commit" });
+    await page.goto(`/ka/calendar?view=day&date=${day}`);
+    await page.locator(`[role="button"][aria-label*="${booked.first_name}"]`).first().click();
+    await page.getByRole("dialog").getByRole("button", { name: "ჯავშნის გაუქმება" }).click();
+    await page.getByRole("alertdialog").getByRole("button", { name: "ჯავშნის გაუქმება" }).click();
+    await page.getByRole("button", { name: "ნახვა" }).click();
+
+    const row = page.getByRole("listitem").filter({ hasText: waiting!.first_name });
+    await row.getByRole("button", { name: "SMS-ით შეთავაზება" }).click();
+    await expect(row.getByRole("button", { name: "შეთავაზება გაიგზავნა" })).toBeDisabled();
+
+    const { data: sms } = await db
+      .from("sms_messages")
+      .select("status, body")
+      .eq("idempotency_key", `waitlist:${entry!.id}:${b!.id}`)
+      .single();
+    expect(sms!.body).toContain("გათავისუფლდა დრო");
+    expect(["sent", "delivered"]).toContain(sms!.status);
+  } finally {
+    await db.from("waitlist").delete().eq("id", entry!.id);
+    await db.from("bookings").update({ status: b!.status }).eq("id", b!.id);
+  }
+});

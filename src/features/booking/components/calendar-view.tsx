@@ -84,6 +84,8 @@ export function CalendarScreen({
   } | null>(null);
   const [waitOpen, setWaitOpen] = useState(false);
   const [waitHighlight, setWaitHighlight] = useState<string[]>([]);
+  // the cancelled booking whose time the highlighted clients could take
+  const [freedBooking, setFreedBooking] = useState<string | null>(null);
   const tz = data.timeZone;
   // Optimistic moves: a dropped booking stays where it was dropped until the
   // refreshed data arrives (or snaps back if the move failed).
@@ -285,6 +287,7 @@ export function CalendarScreen({
           className="h-11 md:h-9"
           onClick={() => {
             setWaitHighlight([]);
+            setFreedBooking(null);
             setWaitOpen(true);
           }}
         >
@@ -543,6 +546,7 @@ export function CalendarScreen({
                 label: t("waitlist.show"),
                 onClick: () => {
                   setWaitHighlight(matches);
+                  setFreedBooking(id);
                   setWaitOpen(true);
                 },
               },
@@ -555,6 +559,7 @@ export function CalendarScreen({
         onOpenChange={setWaitOpen}
         entries={waitlist}
         highlight={waitHighlight}
+        freedBooking={isManager ? freedBooking : null}
         onBook={(w) => {
           setWaitOpen(false);
           setCreating({

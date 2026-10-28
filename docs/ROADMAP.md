@@ -109,6 +109,10 @@ Split into 6a (in the app) and 6b (production) with a report in between (Levan, 
 - [ ] Later: domain + Resend (needed for real sign-ups), SMS company, Turnstile, plan prices, Supabase Pro
 
 ## Before the pilot
+- [x] Sign out of all devices (account menu, confirmation, audit log) — SPEC 4.14 (2026-10-28)
+- [x] Waitlist: offer a freed time to waiting clients by SMS, one tap per client (2026-10-28)
+- [ ] Support access to a business only with the owner's consent, time-limited, audit-logged — SPEC 4.15 (needs Levan's answer: view only or may also change)
+- [ ] Cloudflare Turnstile on the booking page (when Levan has the key); a manual keyboard / screen-reader pass
 - [ ] Short salon addresses `name.bookeria.ge` (e.g. `teka.bookeria.ge`) leading to the booking page; the current `/book/[slug]` link keeps working (Levan, 2026-10-27, after looking at mysalon.ge). Needs: the bookeria.ge domain registered, wildcard DNS on the host (check what the Netlify plan allows), slug rules (reserved words like `www`, `app`, `admin`).
 - [ ] A small, beautiful website for every business at that short address, where clients book online (Levan, 2026-10-28): cover photo, logo, about text, services with prices, team, photo gallery, map, hours, phone/Instagram links, a clear "Book" button; "by service / by specialist" tabs at the first step; phone-first, fast, ka/en/ru; a few colour themes the owner picks in settings (no hand-made design per salon)
 

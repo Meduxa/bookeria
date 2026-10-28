@@ -1,8 +1,8 @@
 "use client";
 
-import { CalendarPlus, Trash2, TriangleAlert } from "lucide-react";
+import { CalendarPlus, MessageSquare, Trash2, TriangleAlert } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { DetailPanel } from "@/components/detail-panel";
@@ -10,24 +10,28 @@ import { EmptyState } from "@/components/empty-state";
 import { Button } from "@/components/ui/button";
 import { useDates } from "@/lib/use-dates";
 import { cn } from "@/lib/utils";
-import { setWaitlistStatus, type WaitlistEntry } from "../waitlist-actions";
+import { sendWaitlistOffer, setWaitlistStatus, type WaitlistEntry } from "../waitlist-actions";
 
 export function WaitlistPanel({
   open,
   onOpenChange,
   entries,
   highlight,
+  freedBooking = null,
   onBook,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   entries: WaitlistEntry[];
   highlight: string[];
+  /** a cancelled booking whose time can be offered by SMS to the highlighted clients (managers) */
+  freedBooking?: string | null;
   onBook: (entry: WaitlistEntry) => void;
 }) {
   const t = useTranslations();
   const dates = useDates();
   const [pending, startTransition] = useTransition();
+  const [offered, setOffered] = useState<string[]>([]);
   const sorted = [...entries].sort(
     (a, b) => Number(highlight.includes(b.id)) - Number(highlight.includes(a.id)),
   );
@@ -76,6 +80,24 @@ export function WaitlistPanel({
                   <CalendarPlus aria-hidden />
                   {t("waitlist.book")}
                 </Button>
+                {freedBooking && highlight.includes(w.id) && w.client.phone && (
+                  <Button
+                    variant="outline"
+                    className="h-11 md:h-9"
+                    disabled={pending || offered.includes(w.id)}
+                    onClick={() =>
+                      startTransition(async () => {
+                        const r = await sendWaitlistOffer(w.id, freedBooking);
+                        if (!r.ok) return void toast.error(t(`errors.${r.error}`));
+                        setOffered((o) => [...o, w.id]);
+                        toast.success(t("waitlist.offerSent"));
+                      })
+                    }
+                  >
+                    <MessageSquare aria-hidden />
+                    {offered.includes(w.id) ? t("waitlist.offerSent") : t("waitlist.offer")}
+                  </Button>
+                )}
                 <ConfirmDialog
                   description={t("common.confirm")}
                   confirmLabel={t("waitlist.remove")}

@@ -2,8 +2,12 @@
 
 import { formatInTimeZone } from "date-fns-tz";
 import { revalidatePath } from "next/cache";
+import { getTranslations } from "next-intl/server";
 import { z } from "zod";
+import { renderSms } from "@/features/sms/render";
+import { sendNow } from "@/features/sms/send";
 import { memberContext } from "@/lib/action-context";
+import { shortDate, ymdIn } from "@/lib/date-format";
 import { fail, ok, type ActionResult } from "@/lib/action-result";
 import { localized } from "@/lib/i18n-text";
 import { DEFAULT_TZ } from "@/lib/time";
@@ -152,4 +156,58 @@ export async function waitlistMatches(bookingId: string): Promise<string[]> {
         (!w.timeTo || hm < w.timeTo),
     )
     .map((w) => w.id);
+}
+
+// Offers a client on the waitlist the time a cancellation just freed (a service
+// message: they asked for it). Managers only, like other SMS the team sends.
+// One offer per client per freed time — pressing twice does not send twice.
+export async function sendWaitlistOffer(entryId: string, bookingId: string): Promise<ActionResult> {
+  const ctx = await memberContext();
+  if (!ctx?.isManager) return fail("notAllowed");
+  if (!uuid.safeParse(entryId).success || !uuid.safeParse(bookingId).success) return fail("invalidInput");
+  if (!(await waitlistMatches(bookingId)).includes(entryId)) return fail("invalidInput");
+
+  const [{ data: w }, { data: b }, { data: tenant }, { data: s }, { data: loc }] = await Promise.all([
+    ctx.supabase
+      .from("waitlist")
+      .select("client_id, clients(phone_e164, anonymized_at), services(name_i18n)")
+      .eq("id", entryId)
+      .single(),
+    ctx.supabase.from("bookings").select("starts_at").eq("id", bookingId).single(),
+    ctx.supabase
+      .from("tenants")
+      .select("name, timezone, locale_default")
+      .eq("id", ctx.tenant.tenantId)
+      .single(),
+    ctx.supabase.from("tenant_settings").select("phone").eq("tenant_id", ctx.tenant.tenantId).single(),
+    ctx.supabase
+      .from("locations")
+      .select("phone")
+      .eq("tenant_id", ctx.tenant.tenantId)
+      .eq("is_primary", true)
+      .maybeSingle(),
+  ]);
+  const client = w?.clients as unknown as { phone_e164: string | null; anonymized_at: string | null } | null;
+  if (!w || !b || !tenant || !client?.phone_e164 || client.anonymized_at) return fail("noPhone");
+  if (new Date(b.starts_at) <= new Date()) return fail("invalidInput");
+
+  const locale = tenant.locale_default;
+  const t = await getTranslations({ locale });
+  const text = renderSms(t.raw("smsTemplates.waitlistOffer") as string, {
+    business_name: tenant.name,
+    service: localized((w.services as unknown as { name_i18n: never }).name_i18n, locale),
+    date: shortDate(t, ymdIn(b.starts_at, tenant.timezone)),
+    time: formatInTimeZone(b.starts_at, tenant.timezone, "HH:mm"),
+    phone: s?.phone ?? loc?.phone ?? "",
+  });
+  const sent = await sendNow({
+    tenantId: ctx.tenant.tenantId,
+    to: client.phone_e164,
+    text,
+    kind: "service",
+    type: "manual",
+    key: `waitlist:${entryId}:${bookingId}`,
+    clientId: w.client_id,
+  });
+  return sent ? ok(undefined) : fail("smsFailed");
 }

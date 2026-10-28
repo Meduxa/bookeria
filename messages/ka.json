@@ -693,7 +693,7 @@
       "completed": "დასრულება",
       "no_show": "არ გამოცხადდა",
       "cancelled_by_client": "კლიენტმა გააუქმა",
-      "cancelled_by_business": "გაუქმება",
+      "cancelled_by_business": "ჯავშნის გაუქმება",
       "undo": "დაბრუნება"
     },
     "cancelReason": "მიზეზი (არასავალდებულო)",
@@ -794,7 +794,9 @@
     "matches": "{count, plural, other {ამ დროს # კლიენტი ელოდება}}",
     "show": "ნახვა",
     "anyTime": "ნებისმიერ დროს",
-    "until": "მდე"
+    "until": "მდე",
+    "offer": "SMS-ით შეთავაზება",
+    "offerSent": "შეთავაზება გაიგზავნა"
   },
   "checkout": {
     "title": "ანგარიშსწორება",
@@ -972,7 +974,8 @@
     "reminder": "{business_name}: შეხსენება — {date}, {time}. შეცვლა: {manage_link}",
     "rescheduled": "{business_name}: ვიზიტი გადატანილია — {date}, {time}. {manage_link}",
     "cancelled": "{business_name}: ვიზიტი {date}, {time} გაუქმებულია. {phone}",
-    "optOut": "გამოწერის გაუქმება: {link}"
+    "optOut": "გამოწერის გაუქმება: {link}",
+    "waitlistOffer": "{business_name}: გათავისუფლდა დრო — {date}, {time}, {service}. გსურთ? დარეკეთ {phone}"
   },
   "smsSettings": {
     "title": "SMS",
