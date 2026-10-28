@@ -1,6 +1,7 @@
 // Before-the-pilot items. Needs the dev project seeded (npm run db:seed) and .env.local.
 import { createClient } from "@supabase/supabase-js";
 import { config } from "dotenv";
+import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 import { assertDevProject } from "../scripts/dev-project.mts";
 
@@ -184,4 +185,86 @@ test("support access: owner allows, support views (read-only), owner ends", asyn
       .eq("tenant_id", tenant!.id)
       .is("revoked_at", null);
   }
+});
+
+// The business website: the owner edits it in Settings; the public page shows it.
+test("website: owner edits cover text, links and colours; the public page shows them", async ({
+  page,
+}, info) => {
+  test.skip(info.project.name !== "desktop"); // changes shared demo data
+  const db = admin();
+  const { data: tenant } = await db.from("tenants").select("id").eq("slug", "demo-salon").single();
+  const { data: before } = await db
+    .from("tenant_settings")
+    .select("site_about, site_instagram, site_theme")
+    .eq("tenant_id", tenant!.id)
+    .single();
+  const about = `E2E ${Date.now()} — ჩვენ შესახებ`;
+  try {
+    await page.goto("/ka/login");
+    await page.getByLabel("ელფოსტა").fill("salon.owner@demo.test");
+    await page.getByLabel("პაროლი").fill(PASSWORD);
+    await page.getByRole("button", { name: "შესვლა" }).click();
+    await page.waitForURL("**/ka/dashboard", { waitUntil: "commit" });
+    await page.goto("/ka/settings/business");
+    const card = page
+      .locator("[data-slot=card]")
+      .filter({ has: page.getByRole("heading", { name: "თქვენი ვებგვერდი" }) });
+    await card.getByLabel("ქართული").fill(about);
+    await card.getByLabel("Instagram").fill("https://www.instagram.com/test.salon.e2e/?hl=ka");
+    await card.getByRole("radio", { name: "ოკეანე" }).click();
+    await card.getByRole("button", { name: "შენახვა" }).click();
+    await expect(page.getByText("შენახულია").first()).toBeVisible();
+
+    await page.goto("/ka/book/demo-salon");
+    await expect(page.getByText(about)).toBeVisible();
+    await expect(page.getByRole("link", { name: "Instagram" })).toHaveAttribute(
+      "href",
+      "https://www.instagram.com/test.salon.e2e",
+    );
+    await expect(page.locator("[data-site-theme=ocean]")).toHaveCount(1);
+    // a bad handle is refused with a message, nothing saved
+    await page.goto("/ka/settings/business");
+    await card.getByLabel("Instagram").fill("https://evil.example/x");
+    await card.getByRole("button", { name: "შენახვა" }).click();
+    await expect(card.getByText(/პროფილის სახელი/)).toBeVisible();
+  } finally {
+    await db.from("tenant_settings").update(before!).eq("tenant_id", tenant!.id);
+  }
+});
+
+test("booking by specialist: choose the person first, the specialist step is skipped", async ({ page }) => {
+  await page.goto("/ka/book/demo-salon");
+  await page.getByRole("radio", { name: "სპეციალისტით" }).click();
+  await page.getByRole("button", { name: /სოფო ნოზაძე/ }).click();
+  await expect(page.getByText("ნაბიჯი 1 / 4")).toBeVisible();
+  await page.locator("#book").getByRole("checkbox").first().check();
+  await page.getByRole("button", { name: "გაგრძელება" }).click();
+  await expect(page.getByRole("heading", { name: "თარიღი და დრო" })).toBeVisible();
+  await expect(page.getByText("ნაბიჯი 2 / 4")).toBeVisible();
+});
+
+test("every website colour theme passes the contrast check", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop"); // changes shared demo data (the dental demo, so it never races the salon tests)
+  test.setTimeout(120_000);
+  const db = admin();
+  const { data: tenant } = await db.from("tenants").select("id").eq("slug", "demo-dental").single();
+  const { data: before } = await db
+    .from("tenant_settings")
+    .select("site_theme")
+    .eq("tenant_id", tenant!.id)
+    .single();
+  const found: string[] = [];
+  try {
+    for (const theme of ["emerald", "rose", "plum", "ocean", "amber"] as const) {
+      await db.from("tenant_settings").update({ site_theme: theme }).eq("tenant_id", tenant!.id);
+      await page.goto("/ka/book/demo-dental");
+      await page.waitForLoadState("networkidle");
+      const r = await new AxeBuilder({ page }).withRules(["color-contrast"]).analyze();
+      found.push(...r.violations.flatMap((v) => v.nodes.map((n) => `${theme}: ${n.target.join(" ")}`)));
+    }
+  } finally {
+    await db.from("tenant_settings").update(before!).eq("tenant_id", tenant!.id);
+  }
+  expect(found, found.join("\n")).toEqual([]);
 });

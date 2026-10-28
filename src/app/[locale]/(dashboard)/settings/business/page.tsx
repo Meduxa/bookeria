@@ -6,6 +6,8 @@ import { SupportCard } from "@/features/settings/components/support-card";
 import { PhotosCard } from "@/features/settings/components/photos-card";
 import { SettingsView, type SettingsData } from "@/features/settings/components/settings-view";
 import { ShareCard } from "@/features/settings/components/share-card";
+import { WebsiteCard } from "@/features/settings/components/website-card";
+import type { SiteTheme } from "@/features/settings/website";
 import { fullDate, fullDateTime, ymdIn } from "@/lib/date-format";
 import { publicEnv } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
@@ -45,6 +47,7 @@ export default async function BusinessSettingsPage({ params }: PageProps<"/[loca
   if (settings.error || location.error) throw new Error("Could not load settings");
 
   const s = settings.data;
+  const about = s.site_about as Partial<Record<"ka" | "en" | "ru", string>>;
   const hours: SettingsData["hours"] = {};
   for (const h of [...location.data.location_hours].sort((a, b) =>
     a.start_time.localeCompare(b.start_time),
@@ -58,6 +61,22 @@ export default async function BusinessSettingsPage({ params }: PageProps<"/[loca
 
   return (
     <div className="flex flex-col gap-6">
+      <WebsiteCard
+        tenantId={id}
+        url={url}
+        data={{
+          about: {
+            ka: about.ka ?? "",
+            en: about.en ?? "",
+            ru: about.ru ?? "",
+          },
+          instagram: s.site_instagram ?? "",
+          facebook: s.site_facebook ?? "",
+          theme: s.site_theme as SiteTheme,
+          coverUrl: s.site_cover_path ? storageUrl(s.site_cover_path) : null,
+          logoUrl: s.site_logo_path ? storageUrl(s.site_logo_path) : null,
+        }}
+      />
       <ShareCard url={url} slug={tenant.slug} qrSvg={qrSvg} />
       <PhotosCard
         tenantId={id}
@@ -123,3 +142,6 @@ async function supportUntil(tenantId: string) {
   ]);
   return data ? fullDateTime(t, data.expires_at, tz?.timezone) : null;
 }
+
+const storageUrl = (path: string) =>
+  `${publicEnv.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/business-photos/${path}`;

@@ -235,7 +235,8 @@
     "planLimit": "Your plan allows no more active staff. Change the plan or switch another staff member off.",
     "nameMismatch": "The name does not match.",
     "tooManyPhotos": "At most 12 photos.",
-    "noSupportAccess": "The owner's permission has ended or was not given."
+    "noSupportAccess": "The owner's permission has ended or was not given.",
+    "invalidHandle": "Enter a profile name like @yoursalon or a link to the profile."
   },
   "email": {
     "invite": {
@@ -947,7 +948,13 @@
     "emailMessage": {
       "subject": "Your visit at {business}",
       "body": "{business}: {when}. Change or cancel: {link}"
-    }
+    },
+    "bookNow": "Book a visit",
+    "byService": "By service",
+    "bySpecialist": "By specialist",
+    "chooseSpecialist": "Who would you like to book with?",
+    "withSpecialist": "With {name}",
+    "change": "Change"
   },
   "manageBooking": {
     "title": "Your booking",
@@ -1453,5 +1460,27 @@
     "adminOn": "The owner allows a view-only support visit until {until}.",
     "adminOff": "The owner has not allowed support access. Ask them to switch it on in Settings → Business.",
     "open": "Open (view only)"
+  },
+  "website": {
+    "title": "Your website",
+    "hint": "Your booking page is your business's small website. Add a cover photo, logo, a few words about you and your social links, and pick its colours.",
+    "view": "Open the website",
+    "cover": "Cover photo",
+    "coverHint": "A wide photo of your salon or work. JPG, PNG or WebP, up to 5 MB.",
+    "logo": "Logo",
+    "logoHint": "Shown in a circle. Square images look best.",
+    "upload": "Upload",
+    "replace": "Replace",
+    "remove": "Remove: {what}",
+    "theme": "Colours",
+    "themes": {
+      "emerald": "Emerald",
+      "rose": "Rose",
+      "plum": "Plum",
+      "ocean": "Ocean",
+      "amber": "Amber"
+    },
+    "about": "About us",
+    "aboutHint": "Write in one language or more; visitors see their language, or the first one you filled in."
   }
 }

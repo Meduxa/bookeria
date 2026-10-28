@@ -212,6 +212,65 @@
   --staff-amber: oklch(0.72 0.12 75);
 }
 
+/* Business website colour themes (owner picks one; decision 015). Only the
+   brand colours change; text and surfaces stay the app's, so contrast holds. */
+[data-site-theme="rose"] {
+  --primary: oklch(0.52 0.14 10);
+  --primary-foreground: oklch(0.99 0 0);
+  --accent: oklch(0.955 0.03 10);
+  --accent-foreground: oklch(0.42 0.11 10);
+  --ring: oklch(0.52 0.14 10);
+}
+.dark [data-site-theme="rose"] {
+  --primary: oklch(0.75 0.13 10);
+  --primary-foreground: oklch(0.18 0.03 10);
+  --accent: oklch(0.3 0.05 10);
+  --accent-foreground: oklch(0.86 0.09 10);
+  --ring: oklch(0.75 0.13 10);
+}
+[data-site-theme="plum"] {
+  --primary: oklch(0.52 0.14 320);
+  --primary-foreground: oklch(0.99 0 0);
+  --accent: oklch(0.955 0.03 320);
+  --accent-foreground: oklch(0.42 0.11 320);
+  --ring: oklch(0.52 0.14 320);
+}
+.dark [data-site-theme="plum"] {
+  --primary: oklch(0.75 0.13 320);
+  --primary-foreground: oklch(0.18 0.03 320);
+  --accent: oklch(0.3 0.05 320);
+  --accent-foreground: oklch(0.86 0.09 320);
+  --ring: oklch(0.75 0.13 320);
+}
+[data-site-theme="ocean"] {
+  --primary: oklch(0.52 0.14 240);
+  --primary-foreground: oklch(0.99 0 0);
+  --accent: oklch(0.955 0.03 240);
+  --accent-foreground: oklch(0.42 0.11 240);
+  --ring: oklch(0.52 0.14 240);
+}
+.dark [data-site-theme="ocean"] {
+  --primary: oklch(0.75 0.13 240);
+  --primary-foreground: oklch(0.18 0.03 240);
+  --accent: oklch(0.3 0.05 240);
+  --accent-foreground: oklch(0.86 0.09 240);
+  --ring: oklch(0.75 0.13 240);
+}
+[data-site-theme="amber"] {
+  --primary: oklch(0.52 0.14 55);
+  --primary-foreground: oklch(0.99 0 0);
+  --accent: oklch(0.955 0.03 55);
+  --accent-foreground: oklch(0.42 0.11 55);
+  --ring: oklch(0.52 0.14 55);
+}
+.dark [data-site-theme="amber"] {
+  --primary: oklch(0.75 0.13 55);
+  --primary-foreground: oklch(0.18 0.03 55);
+  --accent: oklch(0.3 0.05 55);
+  --accent-foreground: oklch(0.86 0.09 55);
+  --ring: oklch(0.75 0.13 55);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

@@ -38,6 +38,8 @@ export function BookingFlow({ business, header }: { business: PublicBusinessView
   const [step, setStep] = useState<Step>("services");
   const [picked, setPicked] = useState<string[]>([]);
   const [staffId, setStaffId] = useState<string>("any");
+  // "by specialist": the client picks the person first, then only their services
+  const [byStaff, setByStaff] = useState<string | null>(null);
   const [date, setDate] = useState(today);
   // free times, remembered with the search they answer; anything else shows as loading
   const [found, setFound] = useState<{ key: string; slots: Slot[] } | null>(null);
@@ -132,9 +134,11 @@ export function BookingFlow({ business, header }: { business: PublicBusinessView
       await book(proof);
     });
 
-  const steps: Step[] = business.otpRequired
-    ? ["services", "staff", "time", "details", "verify"]
-    : ["services", "staff", "time", "details"];
+  const steps = (
+    business.otpRequired
+      ? (["services", "staff", "time", "details", "verify"] as Step[])
+      : (["services", "staff", "time", "details"] as Step[])
+  ).filter((s) => !(byStaff && s === "staff"));
   const n = steps.indexOf(step) + 1;
   const prev = steps[n - 2];
 
@@ -221,7 +225,7 @@ export function BookingFlow({ business, header }: { business: PublicBusinessView
       ) : (
         <p className="px-1 text-sm font-medium text-muted-foreground">{business.name}</p>
       )}
-      <Card className="gap-4 p-4 md:p-6">
+      <Card id="book" className="scroll-mt-4 gap-4 p-4 md:p-6">
         <div className="flex items-center gap-2">
           {prev && (
             <Button
@@ -249,6 +253,15 @@ export function BookingFlow({ business, header }: { business: PublicBusinessView
             toggle={(k) =>
               setPicked((p) => (p.includes(k) ? p.filter((x) => x !== k) : p.length < 5 ? [...p, k] : p))
             }
+            byStaff={byStaff}
+            setByStaff={(id) => {
+              setByStaff(id);
+              // keep only what the chosen person does
+              if (id)
+                setPicked((p) =>
+                  p.filter((k) => business.services.find((s) => s.key === k)?.staffIds.includes(id)),
+                );
+            }}
           />
         )}
 
@@ -502,7 +515,16 @@ export function BookingFlow({ business, header }: { business: PublicBusinessView
                 </>
               )}
             </span>
-            <Button className="h-11 md:h-9" disabled={picked.length === 0} onClick={() => go("staff")}>
+            <Button
+              className="h-11 md:h-9"
+              disabled={picked.length === 0}
+              onClick={() => {
+                if (!byStaff) return go("staff");
+                setStaffId(byStaff);
+                setSlot(null);
+                go("time");
+              }}
+            >
               {tb("continue")}
             </Button>
           </div>
@@ -537,16 +559,23 @@ function ServicesStep({
   business,
   picked,
   toggle,
+  byStaff,
+  setByStaff,
 }: {
   business: PublicBusinessView;
   picked: string[];
   toggle: (key: string) => void;
+  byStaff: string | null;
+  setByStaff: (id: string | null) => void;
 }) {
   const tb = useTranslations("publicBooking");
   const fmt = useFormat();
+  const [mode, setMode] = useState<"service" | "staff">(byStaff ? "staff" : "service");
+  const person = business.staff.find((p) => p.id === byStaff) ?? null;
   const groups = useMemo(() => {
     const byCat = new Map<string | null, PublicService[]>();
-    for (const s of business.services) byCat.set(s.categoryId, [...(byCat.get(s.categoryId) ?? []), s]);
+    const offered = business.services.filter((s) => !byStaff || s.staffIds.includes(byStaff));
+    for (const s of offered) byCat.set(s.categoryId, [...(byCat.get(s.categoryId) ?? []), s]);
     const ordered = business.categories
       .filter((c) => byCat.has(c.id))
       .map((c) => ({ id: c.id, name: c.name, items: byCat.get(c.id)! }));
@@ -554,10 +583,76 @@ function ServicesStep({
       .filter(([k]) => k === null || !business.categories.some((c) => c.id === k))
       .flatMap(([, v]) => v);
     return loose.length ? [...ordered, { id: "other", name: "", items: loose }] : ordered;
-  }, [business]);
+  }, [business, byStaff]);
+
+  // two ways to start: a choice, not tabs with panels
+  const tabs = business.staff.length > 1 && (
+    <div role="radiogroup" aria-label={tb("steps.services")} className="flex rounded-lg bg-muted p-1">
+      {(["service", "staff"] as const).map((m) => (
+        <button
+          key={m}
+          type="button"
+          role="radio"
+          aria-checked={mode === m}
+          onClick={() => {
+            setMode(m);
+            if (m === "service") setByStaff(null);
+          }}
+          className={cn(
+            "min-h-10 flex-1 rounded-md px-3 text-sm font-medium text-muted-foreground focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
+            mode === m && "bg-card text-foreground shadow-sm",
+          )}
+        >
+          {tb(m === "service" ? "byService" : "bySpecialist")}
+        </button>
+      ))}
+    </div>
+  );
+
+  if (mode === "staff" && !person)
+    return (
+      <div className="flex flex-col gap-4">
+        {tabs}
+        <p className="text-sm text-muted-foreground">{tb("chooseSpecialist")}</p>
+        <ul className="flex flex-col gap-2">
+          {business.staff.map((p) => (
+            <li key={p.id}>
+              <button
+                type="button"
+                onClick={() => setByStaff(p.id)}
+                className="flex min-h-14 w-full items-center gap-3 rounded-lg border px-3 py-2 text-left hover:bg-muted/60 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+              >
+                {p.photoUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element -- small avatar from storage
+                  <img src={p.photoUrl} alt="" className="size-10 rounded-full object-cover" />
+                ) : (
+                  <span className="flex size-10 items-center justify-center rounded-full bg-muted">
+                    <UserRound className="size-5" aria-hidden />
+                  </span>
+                )}
+                <span className="flex flex-col">
+                  <span className="font-medium">{p.name}</span>
+                  {p.position && <span className="text-xs text-muted-foreground">{p.position}</span>}
+                </span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
 
   return (
     <div className="flex flex-col gap-4">
+      {tabs}
+      {person && (
+        <div className="flex items-center gap-3 rounded-lg bg-accent px-3 py-2 text-accent-foreground">
+          <UserRound className="size-4" aria-hidden />
+          <span className="flex-1 text-sm font-medium">{tb("withSpecialist", { name: person.name })}</span>
+          <Button variant="ghost" className="h-9" onClick={() => setByStaff(null)}>
+            {tb("change")}
+          </Button>
+        </div>
+      )}
       <p className="text-sm text-muted-foreground">{tb("chooseServices")}</p>
       {groups.map((g) => (
         <section key={g.id} className="flex flex-col gap-2">

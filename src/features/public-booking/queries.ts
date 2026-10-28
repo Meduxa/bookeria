@@ -47,6 +47,13 @@ export type PublicBusiness = {
   services: PublicService[];
   staff: PublicStaff[];
   photos: string[]; // public URLs, in order
+  // the business's small website (Settings → Your website)
+  about: string;
+  coverUrl: string | null;
+  logoUrl: string | null;
+  instagram: string | null;
+  facebook: string | null;
+  theme: string;
 };
 
 export const getPublicBusiness = cache(
@@ -65,7 +72,9 @@ export const getPublicBusiness = cache(
     const [settings, location, categories, services, staff, links, photos] = await Promise.all([
       db
         .from("tenant_settings")
-        .select("phone, online_otp_required, max_days_ahead, cancel_window_min")
+        .select(
+          "phone, online_otp_required, max_days_ahead, cancel_window_min, site_about, site_cover_path, site_logo_path, site_instagram, site_facebook, site_theme",
+        )
         .eq("tenant_id", id)
         .single(),
       db
@@ -160,6 +169,16 @@ export const getPublicBusiness = cache(
       categories: (categories.data ?? []).map((c) => ({ id: c.id, name: localized(c.name_i18n, locale) })),
       services: list,
       photos: (photos.data ?? []).map((x) => `${url}/storage/v1/object/public/business-photos/${x.path}`),
+      about: localized(settings.data?.site_about, locale),
+      coverUrl: settings.data?.site_cover_path
+        ? `${url}/storage/v1/object/public/business-photos/${settings.data.site_cover_path}`
+        : null,
+      logoUrl: settings.data?.site_logo_path
+        ? `${url}/storage/v1/object/public/business-photos/${settings.data.site_logo_path}`
+        : null,
+      instagram: settings.data?.site_instagram ?? null,
+      facebook: settings.data?.site_facebook ?? null,
+      theme: settings.data?.site_theme ?? "emerald",
       staff: (staff.data ?? [])
         .filter((s) => list.some((x) => x.staffIds.includes(s.id)))
         .map((s) => ({

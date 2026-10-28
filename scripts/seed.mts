@@ -314,6 +314,7 @@ async function seedCatalog(tenantId: string, type: "salon" | "dental", staffLogi
       .update({ phone: "+995322000000", email: "info@example.test" })
       .eq("tenant_id", tenantId),
   );
+  await seedWebsite(tenantId, type);
   check(
     "address",
     await db.from("locations").update({ address: "თბილისი, ჭავჭავაძის გამზ. 1" }).eq("id", loc!.id),
@@ -520,3 +521,68 @@ seed().then(
     process.exit(1);
   },
 );
+
+// The business website: a soft abstract cover and logo (drawn here, no stock
+// photos), an about text in three languages, a social link and a colour theme.
+async function seedWebsite(tenantId: string, type: "salon" | "dental") {
+  const sharp = (await import("sharp")).default;
+  const [a, b] = type === "salon" ? ["#f4c6cf", "#b5476a"] : ["#c7def4", "#2f6fa8"];
+  const cover = await sharp(
+    Buffer.from(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="700">
+        <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs>
+        <rect width="1600" height="700" fill="url(#g)"/>
+        <circle cx="1250" cy="160" r="260" fill="#fff" opacity="0.18"/>
+        <circle cx="300" cy="620" r="340" fill="#fff" opacity="0.12"/>
+        <circle cx="820" cy="330" r="120" fill="#fff" opacity="0.1"/>
+      </svg>`,
+    ),
+  )
+    .jpeg({ quality: 82 })
+    .toBuffer();
+  const logo = await sharp(
+    Buffer.from(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400">
+        <rect width="400" height="400" fill="${b}"/>
+        <circle cx="200" cy="200" r="110" fill="none" stroke="#fff" stroke-width="26"/>
+        <circle cx="200" cy="200" r="34" fill="#fff"/>
+      </svg>`,
+    ),
+  )
+    .png()
+    .toBuffer();
+  const up = async (name: string, body: Buffer, contentType: string) => {
+    const path = `${tenantId}/${name}`;
+    check(
+      "website image",
+      await db.storage.from("business-photos").upload(path, body, { contentType, upsert: true }),
+    );
+    return path;
+  };
+  const about =
+    type === "salon"
+      ? {
+          ka: "სილამაზის სალონი ვაკეში — თმა, ფრჩხილები და მაკიაჟი. გელით ყოველდღე, 10:00-დან 20:00-მდე.",
+          en: "A beauty salon in Vake — hair, nails and make-up. Open every day, 10:00 to 20:00.",
+          ru: "Салон красоты в Ваке — волосы, ногти и макияж. Ждём вас каждый день с 10:00 до 20:00.",
+        }
+      : {
+          ka: "ოჯახის სტომატოლოგიური კლინიკა — პროფილაქტიკა, მკურნალობა და ჰიგიენა.",
+          en: "A family dental clinic — check-ups, treatment and hygiene.",
+          ru: "Семейная стоматология — профилактика, лечение и гигиена.",
+        };
+  check(
+    "website",
+    await db
+      .from("tenant_settings")
+      .update({
+        site_cover_path: await up("cover-demo.jpg", cover, "image/jpeg"),
+        site_logo_path: await up("logo-demo.png", logo, "image/png"),
+        site_about: about,
+        site_instagram: type === "salon" ? "salon.nino.demo" : "dental.smile.demo",
+        site_theme: type === "salon" ? "rose" : "ocean",
+      })
+      .eq("tenant_id", tenantId),
+  );
+}

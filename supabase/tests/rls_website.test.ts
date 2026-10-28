@@ -1,4 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import type { Database } from "../../src/lib/supabase/database.types";
 import { admin, anon, cleanup, createTenant, type TestTenant } from "./helpers";
 
 // The business website settings (cover, logo, about, links, theme) in tenant_settings.
@@ -53,7 +54,7 @@ describe("business website settings", () => {
   });
 
   it("photos must be in the business's own folder; values are checked", async () => {
-    const set = (v: Record<string, unknown>) =>
+    const set = (v: Database["public"]["Tables"]["tenant_settings"]["Update"]) =>
       A.owner.db.from("tenant_settings").update(v).eq("tenant_id", A.id);
     expect((await set({ site_cover_path: `${B.id}/cover.jpg` })).error).not.toBeNull();
     expect((await set({ site_logo_path: `${A.id}/../x.jpg` })).error).not.toBeNull();

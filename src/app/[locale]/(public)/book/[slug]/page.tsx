@@ -8,7 +8,18 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/book/[sl
   const { locale, slug } = await params;
   const business = await getPublicBusiness(slug, locale);
   const t = await getTranslations({ locale, namespace: "publicBooking" });
-  return { title: business ? `${business.name} — ${t("title")}` : t("notFoundTitle") };
+  if (!business) return { title: t("notFoundTitle") };
+  // what Instagram, Facebook and messengers show when the link is shared
+  const description = business.about.slice(0, 200) || business.address || undefined;
+  return {
+    title: `${business.name} — ${t("title")}`,
+    description,
+    openGraph: {
+      title: business.name,
+      description,
+      images: business.coverUrl ? [business.coverUrl] : undefined,
+    },
+  };
 }
 
 export default async function PublicBookingPage({ params }: PageProps<"/[locale]/book/[slug]">) {
@@ -20,7 +31,7 @@ export default async function PublicBookingPage({ params }: PageProps<"/[locale]
   void _id;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div data-site-theme={visible.theme} className="flex flex-col gap-4">
       <BookingFlow business={visible} header={<BusinessHeader business={visible} />} />
     </div>
   );
