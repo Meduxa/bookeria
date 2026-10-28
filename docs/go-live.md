@@ -144,6 +144,7 @@ daily, but check it during quiet test weeks.
 ## 8. Later, before inviting real salons
 
 - **Domain** (`bookeria.ge`): Netlify → Domain management; then update `NEXT_PUBLIC_APP_URL`
+- **Short salon addresses** (`teka.bookeria.ge`, decision 016): add a wildcard domain `*.bookeria.ge` to the Netlify site (Domain management; Netlify needs to manage the DNS for wildcard certificates — check the plan), then set `SITE_DOMAIN=bookeria.ge` in Netlify's environment variables and redeploy. Check: open a business's short address on a phone and book a test visit.
   and Supabase's Site URL.
 - **Email (Resend)**: resend.com → add and verify your domain (EU region) → API key → Netlify:
   `EMAIL_PROVIDER=resend`, `EMAIL_API_KEY` (secret), `EMAIL_FROM=Bookeria <no-reply@your-domain>`.

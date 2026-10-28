@@ -268,3 +268,18 @@ test("every website colour theme passes the contrast check", async ({ page }, in
   }
   expect(found, found.join("\n")).toEqual([]);
 });
+
+// Short addresses: {slug}.SITE_DOMAIN shows that business's website, in any language.
+test("short address opens the business website and booking works there", async ({ page }, info) => {
+  const port = new URL(info.project.use.baseURL!).port;
+  await page.goto(`http://demo-salon.localhost:${port}/`);
+  await expect(page.getByRole("heading", { level: 1, name: "სალონი ნინო" })).toBeVisible();
+  await page.locator("#book").getByRole("checkbox").first().check();
+  await page.getByRole("button", { name: "გაგრძელება" }).click();
+  await page.getByRole("radio").first().click(); // anyone
+  await expect(page.getByRole("heading", { name: "თარიღი და დრო" })).toBeVisible();
+  await expect(page).toHaveURL(`http://demo-salon.localhost:${port}/`);
+  await page.goto(`http://demo-salon.localhost:${port}/en`);
+  await expect(page.getByRole("link", { name: "Book a visit" })).toBeVisible();
+  expect((await page.goto(`http://no-such-salon.localhost:${port}/`))?.status()).toBe(404);
+});

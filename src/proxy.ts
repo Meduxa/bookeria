@@ -1,7 +1,8 @@
 import { createServerClient } from "@supabase/ssr";
 import createIntlMiddleware from "next-intl/middleware";
 import { NextResponse, type NextRequest } from "next/server";
-import { routing } from "@/i18n/routing";
+import { locales, routing } from "@/i18n/routing";
+import { siteDomain, slugFromHost } from "@/lib/site";
 
 const intl = createIntlMiddleware(routing);
 
@@ -22,6 +23,12 @@ const PROTECTED = [
 ];
 
 export async function proxy(request: NextRequest) {
+  const slug = slugFromHost(request.headers.get("host"), siteDomain());
+  if (slug) {
+    const site = siteRequest(request, slug);
+    if (site) return site;
+  }
+
   const response = intl(request);
   if (response.headers.has("location")) return response;
 
@@ -62,3 +69,24 @@ export async function proxy(request: NextRequest) {
 export const config = {
   matcher: ["/((?!api|_next|_vercel|.*\\..*).*)"],
 };
+
+// A business's short address ({slug}.bookeria.ge, decision 016): its home page is
+// the booking page, in any language (/en, /ru). Public pages (legal texts, manage
+// and unsubscribe links) work there as usual; anything else belongs to the main site.
+const PUBLIC_ON_SITE = /^\/(?:legal|m|u)(?:\/|$)/;
+function siteRequest(request: NextRequest, slug: string): NextResponse | null {
+  const [, first = "", ...rest] = request.nextUrl.pathname.split("/");
+  const locale = (locales as readonly string[]).includes(first) ? first : null;
+  const path = `/${(locale ? rest : [first, ...rest]).join("/")}`.replace(/\/+$/, "") || "/";
+  if (path === "/") {
+    const url = request.nextUrl.clone();
+    url.pathname = `/${locale ?? routing.defaultLocale}/book/${slug}`;
+    return NextResponse.rewrite(url);
+  }
+  if (PUBLIC_ON_SITE.test(path)) return null;
+  const main = new URL(request.nextUrl.pathname + request.nextUrl.search, process.env.NEXT_PUBLIC_APP_URL);
+  // Next.js points redirects to "localhost" back at the current host, which would
+  // loop on this laptop; there the page simply opens on the short address.
+  if (main.hostname === "localhost") return null;
+  return NextResponse.redirect(main);
+}

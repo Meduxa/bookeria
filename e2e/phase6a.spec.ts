@@ -4,14 +4,14 @@ import { expect, test, type Browser, type Page } from "@playwright/test";
 // several people sign in per test; each sign-in takes a few seconds on the dev server
 test.describe.configure({ timeout: 90_000 });
 
-async function signIn(page: Page, email: string, landing = "**/ka/dashboard") {
+async function signIn(page: Page, email: string, landing: string | RegExp = "**/ka/dashboard") {
   await page.goto("/ka/login");
   await page.getByLabel("ელფოსტა").fill(email);
   await page.getByLabel("პაროლი").fill("Demo-Bookeria-2026");
   await page.getByRole("button", { name: "შესვლა" }).click();
   await page.waitForURL(landing, { waitUntil: "commit" }); // the page itself may still be loading
 }
-async function as(browser: Browser, email: string, landing?: string) {
+async function as(browser: Browser, email: string, landing?: string | RegExp) {
   const page = await (await browser.newContext()).newPage();
   await signIn(page, email, landing);
   return page;
@@ -114,7 +114,8 @@ test("owner schedules deletion (banner everywhere) and cancels it", async ({ pag
 
 test("platform admin: businesses, SMS top-up, plans; nobody else sees /admin", async ({ browser }, info) => {
   test.skip(info.project.name !== "desktop");
-  const admin = await as(browser, "platform.admin@demo.test", "**/ka/onboarding");
+  // the demo admin has no business of its own — unless someone tried sign-up with it
+  const admin = await as(browser, "platform.admin@demo.test", /\/ka\/(onboarding|dashboard)/);
   await admin.goto("/ka/admin");
   await expect(admin.getByRole("heading", { name: "ბიზნესები" })).toBeVisible();
   await admin.getByRole("link", { name: "სალონი ნინო" }).click();

@@ -10,6 +10,7 @@ import { WebsiteCard } from "@/features/settings/components/website-card";
 import type { SiteTheme } from "@/features/settings/website";
 import { fullDate, fullDateTime, ymdIn } from "@/lib/date-format";
 import { publicEnv } from "@/lib/env";
+import { shortUrl, siteDomain } from "@/lib/site";
 import { createClient } from "@/lib/supabase/server";
 import { canManage, getActiveTenant } from "@/lib/tenant";
 import { trimSeconds } from "@/lib/time";
@@ -56,7 +57,10 @@ export default async function BusinessSettingsPage({ params }: PageProps<"/[loca
   }
 
   // language-neutral link: it opens in Georgian, clients can switch
-  const url = `${publicEnv.NEXT_PUBLIC_APP_URL}/book/${tenant.slug}`;
+  // the short address (name.bookeria.ge) when switched on, else the long link
+  const url =
+    shortUrl(tenant.slug, siteDomain(), publicEnv.NEXT_PUBLIC_APP_URL.startsWith("https")) ??
+    `${publicEnv.NEXT_PUBLIC_APP_URL}/book/${tenant.slug}`;
   const qrSvg = await QRCode.toString(url, { type: "svg", margin: 1, errorCorrectionLevel: "M" });
 
   return (

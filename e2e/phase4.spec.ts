@@ -142,7 +142,8 @@ test("owner settings: booking link, QR code and the SMS code switch", async ({ p
   await page.waitForURL("**/ka/dashboard", { waitUntil: "commit" }); // the page itself may still be loading
   await page.goto("/ka/settings/business");
   await expect(page.getByRole("heading", { name: "ონლაინ ჯავშნის ბმული" })).toBeVisible();
-  await expect(page.getByText(/\/book\/demo-salon$/)).toBeVisible();
+  // the short address (decision 016), switched on for these tests
+  await expect(page.getByText(/^http:\/\/demo-salon\.localhost:\d+$/)).toBeVisible();
   await expect(page.getByRole("img", { name: "QR კოდი" }).locator("svg")).toBeVisible();
   await expect(page.getByRole("switch", { name: "ონლაინ ჯავშანი SMS კოდით" })).toBeChecked();
 });

@@ -65,3 +65,15 @@ describe("business website settings", () => {
     expect((await set({ site_logo_path: `${A.id}/logo.png` })).error).toBeNull();
   });
 });
+
+describe("short addresses", () => {
+  it("a business cannot take one of our own names as its address", async () => {
+    for (const slug of ["www", "admin", "app", "api"]) {
+      const r = await A.owner.db.rpc("create_tenant", { p_name: "Reserved", p_type: "salon", p_slug: slug });
+      expect(r.error?.code, slug).toBe("23514");
+    }
+    await expect(admin().from("tenants").update({ slug: "www" }).eq("id", A.id)).resolves.toMatchObject({
+      error: { code: "23514" },
+    });
+  });
+});

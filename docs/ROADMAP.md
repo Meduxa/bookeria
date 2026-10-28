@@ -15,7 +15,7 @@ Work one phase at a time. Claude Code ticks the boxes and updates `CHANGELOG.md`
 - [x] Seed: demo salon + demo dental clinic (`npm.cmd run db:seed`)
 - [x] `APP_NAME` constant
 - [ ] Production Supabase project (separate from dev) — create before the pilot
-- [ ] Transactional email provider (invites + sign-up confirmation) — needed before the pilot
+- [x] Transactional email provider: Resend wired (Phase 6b, decision 011) — [ ] switch on with the domain and key
 
 ## Phase 1 — Services, staff, clients (≈ 1 week) — SPEC 4.1–4.4
 ✅ Done 2026-10-26 (built after the design foundation, see Phase 2 and decision 004)
@@ -29,7 +29,7 @@ Work one phase at a time. Claude Code ticks the boxes and updates `CHANGELOG.md`
 - [x] Clients: card, server-side search, tags, important note, marketing consents with history, preferred staff, block online booking
 - [x] Client import (paste or CSV/XLSX), duplicate detection (file + existing), merge
 - [x] Client export (JSON) / anonymise (owner only, audited)
-- [ ] Visit history on the client card — needs bookings (Phase 3)
+- [x] Visit history on the client card — done in Phase 3a
 - [ ] Staff levels — skipped by decision (per-staff price covers it)
 
 ## Phase 2 — Design system (≈ 3–5 days)
@@ -74,7 +74,7 @@ Split into 3a and 3b with a report in between (Levan, 2026-10-26). Staff may cre
 - [x] Manage-booking link `/m/[key]` (move / cancel within the cancellation window, then the business phone)
 - [x] .ics "add to calendar", QR code, link sharing (settings card)
 - [x] Rate limiting (per phone, per IP behind the host) and honeypot — Cloudflare Turnstile before launch (Levan, 2026-10-26)
-- [ ] Later: business photo gallery (Phase 6 polish, Levan 2026-10-26)
+- [x] Business photo gallery — done in Phase 6a
 
 ## Phase 5 — SMS (≈ 1 week) — SPEC 4.9 ✅ Done 2026-10-26 (without a real SMS company — Levan chooses later)
 - [x] SMS adapter interface + fake provider for tests — [ ] first real provider: when Levan picks the company (decision 008)
@@ -82,7 +82,7 @@ Split into 3a and 3b with a report in between (Levan, 2026-10-26). Staff may cre
 - [x] Sender name settings and status (approval set by the server only)
 - [x] Scheduled reminders job (idempotent), quiet hours — 2 h on by default, 24 h optional (Levan, 2026-10-26)
 - [x] Message log with filters — [ ] delivery reports from the real provider (webhook → `sms_delivery`)
-- [x] SMS credits ledger in SMS parts, 50 trial SMS (Levan, 2026-10-26), low-balance warning — [ ] top-up screen for the platform admin (Phase 6)
+- [x] SMS credits ledger in SMS parts, 50 trial SMS (Levan, 2026-10-26), low-balance warning, top-up screen for the platform admin (done in Phase 6a)
 - [x] Manual SMS to a client; promotion to clients who agreed (optional tag), unsubscribe link and page
 
 ## Phase 6 — Reports, settings, polish, production (≈ 1–2 weeks) — SPEC 4.12–4.15
@@ -100,7 +100,7 @@ Split into 6a (in the app) and 6b (production) with a report in between (Levan, 
 - [x] PWA: manifest, icons from the logo, install button / iPhone hint, offline page
 - [x] Performance pass on the production build (all main pages < 1 s, `docs/performance.md`)
 - [x] Security review (`docs/security-review.md`): security headers, package audit, Excel formula-injection fix
-- [x] Accessibility: automatic WCAG 2.1 AA checks on 16 screens, fixes — [ ] a manual keyboard / screen-reader pass
+- [x] Accessibility: automatic WCAG 2.1 AA checks on 16 screens, fixes; keyboard-only check (see Before the pilot) — [ ] a screen-reader pass by a person
 - [x] Legal pages as marked drafts (ka/en/ru) — [ ] lawyer's texts
 - [x] Sentry and Resend wired, switched on by keys (decision 011)
 - [x] Netlify config, scheduled jobs, CI on GitHub, encrypted nightly backup workflow (decision 012)
@@ -112,8 +112,9 @@ Split into 6a (in the app) and 6b (production) with a report in between (Levan, 
 - [x] Sign out of all devices (account menu, confirmation, audit log) — SPEC 4.14 (2026-10-28)
 - [x] Waitlist: offer a freed time to waiting clients by SMS, one tap per client (2026-10-28)
 - [x] Support access, view only (Levan, 2026-10-28): owner allows 24 h / 3 days and can end it; enforced by the database; every visit audit-logged — SPEC 4.15, decision 014
-- [ ] Cloudflare Turnstile on the booking page (when Levan has the key); a manual keyboard / screen-reader pass
-- [ ] Short salon addresses `name.bookeria.ge` (e.g. `teka.bookeria.ge`) leading to the booking page; the current `/book/[slug]` link keeps working (Levan, 2026-10-27, after looking at mysalon.ge). Needs: the bookeria.ge domain registered, wildcard DNS on the host (check what the Netlify plan allows), slug rules (reserved words like `www`, `app`, `admin`).
+- [x] Keyboard-only check: every control on the booking page, dashboard, calendar, clients and settings shows focus; sign-in and booking work without a mouse (e2e `keyboard.spec.ts`, 2026-10-28)
+- [ ] Cloudflare Turnstile on the booking page (when Levan has the key); a screen-reader pass by a person (e.g. NVDA)
+- [x] Short salon addresses `name.bookeria.ge` (code done 2026-10-28, decision 016; on this laptop: `demo-salon.localhost:3000`); old `/book/...` links keep working; reserved names refused — [ ] at go-live: register bookeria.ge, wildcard domain on Netlify, `SITE_DOMAIN=bookeria.ge` (`docs/go-live.md`)
 - [x] A small, beautiful website for every business, where clients book online (Levan, 2026-10-28): cover, logo, about (ka/en/ru), Instagram/Facebook, gallery, team, map, hours, "Book a visit" button; booking by service or by specialist; 5 colour themes picked in Settings → Your website; share preview — decision 015. Moves to the short address when bookeria.ge is registered
 
 ## 🚀 Pilot with 2–3 salons + 1 dental clinic (2–4 weeks of real use, fix feedback)
