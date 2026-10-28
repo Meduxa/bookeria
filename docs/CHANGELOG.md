@@ -10,6 +10,8 @@ All notable changes per phase. Newest on top.
 - **Each business gets its own small website** (the booking page): cover photo, logo, a few words about the business in ka/en/ru, Instagram and Facebook, photos, team, hours and map, with a big "Book a visit" button. The owner fills it in under Settings → "Your website" and picks one of 5 colour themes. Clients can start "by service" or "by specialist". Shared links show the cover and description. The demo salon and clinic have a cover, logo and text.
 - **Short addresses**: each business's website opens at its own address, e.g. `teka.bookeria.ge` (`/en`, `/ru` for other languages); Settings and the QR code show it. Switched on with one setting once bookeria.ge is registered; old links keep working; names like www/admin/app can't be taken. Try it on this laptop: `http://demo-salon.localhost:3000`.
 - **Keyboard check**: every button and field on the booking page and the main app screens shows where the focus is, and sign-in and booking work without a mouse (automatic test).
+- **Landing page**: bookeria.ge now explains Bookeria to visitors (ka/en/ru) with real screenshots, the features, why clients stay the salon's own, prices (shown automatically once set in the admin area; until then "14 days free, prices soon"), questions and a "Start free" button everywhere. Signed-in people go straight to their dashboard.
+- The booking page no longer jumps down to the booking form when it opens — visitors first see the cover and the business.
 - The booking button "Cancel" is now "Cancel booking" — the confirmation showed two buttons both called "Cancel" (ka/en).
 
 ## Phase 6b — Ready for production (2026-10-26)

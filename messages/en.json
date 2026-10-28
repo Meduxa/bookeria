@@ -1482,5 +1482,132 @@
     },
     "about": "About us",
     "aboutHint": "Write in one language or more; visitors see their language, or the first one you filled in."
+  },
+  "landing": {
+    "meta": {
+      "title": "Bookeria — online booking for salons and clinics in Georgia",
+      "description": "Your own booking website, a calendar for the whole team, SMS reminders, client base and reports. In Georgian, English and Russian. 14 days free."
+    },
+    "navLabel": "Page sections",
+    "nav": {
+      "features": "Features",
+      "pricing": "Prices",
+      "faq": "Questions"
+    },
+    "signIn": "Sign in",
+    "cta": "Start free — 14 days",
+    "ctaShort": "Start free",
+    "demo": "See a salon's page",
+    "hero": {
+      "kicker": "For beauty salons, barbershops and dental clinics",
+      "title": "Clients book online. You see the whole day in one calendar.",
+      "subtitle": "Your own booking page with prices and your team, SMS reminders that cut no-shows, and a calendar the whole team shares — made in Georgia, in Georgian.",
+      "noCard": "No card needed",
+      "languages": "Georgian, English, Russian",
+      "eu": "Data stored in the EU"
+    },
+    "shots": {
+      "calendar": "The Bookeria calendar: a day of bookings by specialist",
+      "booking": "A salon's booking page on a phone"
+    },
+    "features": {
+      "title": "Everything a salon needs in one place",
+      "subtitle": "Set it up in an evening. Works on a computer, a tablet and every phone.",
+      "website": {
+        "title": "Your own website",
+        "text": "A page with your photos, prices and team at yourname.bookeria.ge — perfect for your Instagram bio and a QR code at the desk."
+      },
+      "booking": {
+        "title": "Online booking 24/7",
+        "text": "Clients choose a service, a specialist and a free time themselves. Double bookings are impossible."
+      },
+      "sms": {
+        "title": "SMS reminders",
+        "text": "Automatic reminders before the visit. Clients can move or cancel with a link — no calls needed."
+      },
+      "clients": {
+        "title": "Client base",
+        "text": "Visit history, notes, consents and birthdays. Bring your clients over from Excel in minutes."
+      },
+      "checkout": {
+        "title": "Checkout and reports",
+        "text": "Cash, card, split payments and tips; a daily cash summary and monthly reports in Excel."
+      },
+      "team": {
+        "title": "Your team on their phones",
+        "text": "Each specialist sees their own day. You decide who sees clients and money."
+      },
+      "dental": {
+        "title": "Dental clinics too",
+        "text": "Chairs and rooms, longer visits, treatment notes only doctors can read."
+      },
+      "privacy": {
+        "title": "Safe and lawful",
+        "text": "Every business is strictly separate, with marketing consent, unsubscribe and an audit log."
+      }
+    },
+    "yours": {
+      "title": "Your clients stay yours",
+      "text": "Bookeria is not a marketplace. Your page never lists other salons, competitors' discounts or ads. Clients come to you — and their data belongs to you.",
+      "noCompetitors": "No competitors on your page",
+      "export": "Download or delete your data at any time",
+      "law": "Stored in the EU, following Georgia's personal data law"
+    },
+    "steps": {
+      "1": {
+        "title": "Sign up in two minutes",
+        "text": "Choose salon or clinic and name your business."
+      },
+      "2": {
+        "title": "Add services and your team",
+        "text": "Type them in or import your price list from Excel."
+      },
+      "3": {
+        "title": "Share your link",
+        "text": "Put it in Instagram, print the QR code — bookings start coming in."
+      }
+    },
+    "pricing": {
+      "title": "Simple prices",
+      "subtitle": "Start with 14 days free with everything included. No card needed.",
+      "perMonth": "/ month",
+      "staff": "{count, plural, one {up to # specialist} other {up to # specialists}}",
+      "staffUnlimited": "Any number of specialists",
+      "sms": "{count} SMS a month included",
+      "everything": "Every feature included",
+      "trialTitle": "14 days free, everything included",
+      "soon": "Prices will be announced soon. Start your free trial now — we'll tell you before anything changes."
+    },
+    "faq": {
+      "title": "Questions",
+      "card": {
+        "q": "Do I need a card for the trial?",
+        "a": "No. Sign up with your email; the 14 days start right away."
+      },
+      "phone": {
+        "q": "Does it work on a phone?",
+        "a": "Yes. Bookeria works in any browser and can be added to the home screen of an iPhone or Android phone like an app."
+      },
+      "sms": {
+        "q": "How do the SMS reminders work?",
+        "a": "Bookeria sends reminders automatically before each visit, in your salon's language and with its name. Every plan includes SMS each month."
+      },
+      "data": {
+        "q": "Is my clients' data safe?",
+        "a": "Each business is strictly separated, the data is encrypted and kept on servers in the EU. You can download or delete it at any time."
+      },
+      "switch": {
+        "q": "Can I move from my current program?",
+        "a": "Yes. Import your clients, price list and future bookings from Excel or CSV — nobody gets an SMS during the import."
+      },
+      "dental": {
+        "q": "Is it suitable for a dental clinic?",
+        "a": "Yes. Book by chair or room, plan longer visits, and keep treatment notes that only doctors and the owner can read."
+      }
+    },
+    "final": {
+      "title": "Try Bookeria in your salon",
+      "text": "14 days free. Set up in an evening; your clients book tomorrow."
+    }
   }
 }

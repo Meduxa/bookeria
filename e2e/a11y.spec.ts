@@ -21,6 +21,7 @@ async function scan(page: Page, path: string) {
 
 test("public pages", async ({ page }) => {
   const found = [
+    ...(await scan(page, "/ka")),
     ...(await scan(page, "/ka/login")),
     ...(await scan(page, "/ka/signup")),
     ...(await scan(page, "/ka/book/demo-salon")),

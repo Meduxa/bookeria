@@ -9,11 +9,29 @@ async function signIn(page: Page, email: string) {
   await page.waitForURL("**/ka/dashboard", { waitUntil: "commit" }); // the page itself may still be loading
 }
 
-test("visitors land on the Georgian sign-in page", async ({ page }) => {
+test("visitors land on the Georgian landing page; it leads to sign-up and sign-in", async ({ page }) => {
   await page.goto("/");
-  await expect(page).toHaveURL(/\/ka\/login$/);
-  await expect(page.getByRole("heading", { name: "შესვლა" })).toBeVisible();
+  await expect(page).toHaveURL(/\/ka$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "ka");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("კლიენტები ონლაინ იწერებიან");
+  await page.getByRole("link", { name: "დაიწყეთ უფასოდ — 14 დღე" }).first().click();
+  await expect(page).toHaveURL(/\/ka\/signup$/);
+  await page.goto("/ka");
+  await page.getByRole("banner").getByRole("link", { name: "შესვლა" }).click();
+  await expect(page).toHaveURL(/\/ka\/login$/);
+  for (const [l, title] of [
+    ["en", "Clients book online"],
+    ["ru", "Клиенты записываются онлайн"],
+  ] as const) {
+    await page.goto(`/${l}`);
+    await expect(page.getByRole("heading", { level: 1 })).toContainText(title);
+  }
+});
+
+test("signed-in people skip the landing page", async ({ page }) => {
+  await signIn(page, "salon.owner@demo.test");
+  await page.goto("/ka");
+  await expect(page).toHaveURL(/\/ka\/dashboard$/);
 });
 
 test("protected pages send visitors to sign-in", async ({ page }) => {

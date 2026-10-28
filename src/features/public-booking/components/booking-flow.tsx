@@ -62,7 +62,14 @@ export function BookingFlow({ business, header }: { business: PublicBusinessView
   const [pending, startTransition] = useTransition();
 
   const heading = useRef<HTMLHeadingElement>(null);
-  useEffect(() => heading.current?.focus(), [step]);
+  // move focus to the new step's heading — but not on page load, so a visitor
+  // first sees the business (cover, about), not the middle of the page
+  const shownStep = useRef(step);
+  useEffect(() => {
+    if (shownStep.current === step) return;
+    shownStep.current = step;
+    heading.current?.focus();
+  }, [step]);
 
   const chosen = picked.map((k) => business.services.find((s) => s.key === k)!).filter(Boolean);
   const picks = chosen.map((s) => ({ serviceId: s.serviceId, variantId: s.variantId }));

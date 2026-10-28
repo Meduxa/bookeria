@@ -76,7 +76,9 @@ test("owner: audit log, full export; others cannot export", async ({ browser }, 
   await owner.goto("/ka/settings/business");
   await owner.getByRole("link", { name: "ქმედებების ჟურნალი" }).click();
   await expect(owner.getByRole("heading", { name: "ქმედებების ჟურნალი" })).toBeVisible();
-  await expect(owner.getByText("დემო მონაცემები ჩაიტვირთა").first()).toBeVisible();
+  // entries are there (newest first; other tests keep adding some, so no particular one)
+  await expect(owner.getByRole("main").getByRole("listitem").first()).toBeVisible();
+  await expect(owner.getByText("ჯერ არაფერია.")).toHaveCount(0);
   await owner.getByRole("link", { name: "გუნდი" }).last().click();
   await expect(owner).toHaveURL(/group=team/);
 

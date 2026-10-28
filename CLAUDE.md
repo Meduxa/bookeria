@@ -135,6 +135,7 @@ npm.cmd run db:types         # regenerate src/lib/supabase/database.types.ts fro
 npm.cmd run db:seed          # reset + load demo salon & dental clinic (dev project only — refuses any other)
 npm.cmd run jobs             # SMS every minute + daily job (trials, deletions, monthly SMS) while the dev server runs
 npm.cmd run platform-admin -- you@example.com   # make an existing account a platform admin (/admin); --remove to undo
+npm.cmd run landing:shots       # retake the landing page screenshots from the running dev app (after UI changes)
 npx.cmd supabase login       # once per computer
 npx.cmd supabase link --project-ref cznbcglbskunoofrdeut   # once per checkout
 ```

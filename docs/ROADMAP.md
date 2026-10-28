@@ -123,7 +123,7 @@ Split into 6a (in the app) and 6b (production) with a report in between (Levan, 
 - [ ] Short, friendly **video tutorial** (2–3 min, Georgian, with subtitles) showing a salon's day in Bookeria: add a service → booking from Instagram link → SMS reminder → checkout. Send it to prospects.
 - [ ] Short feature clips (30–60 s each) for Instagram/Facebook
 - [ ] Demo account with realistic seeded data for sales calls
-- [ ] Landing page (Webflow) with pricing, video and trial sign-up
+- [x] Landing page at bookeria.ge, built into the app instead of Webflow (ka/en/ru, real screenshots, features, "your clients stay yours", prices from /admin/plans, FAQ, trial sign-up) — decision 017 (2026-10-28) — [ ] add the video when it exists
 
 ## Phase 7 — Marketing email (≈ 1 week) — SPEC 4.10
 - [ ] Email adapter + provider, contact & consent sync
