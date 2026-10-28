@@ -7,6 +7,17 @@ marked **(Claude can do this)** once you say the step before it is done.
 **Order:** 1 GitHub → 2 Supabase (production) → 3 Sentry → 4 Netlify → 5 your admin account →
 6 checks → 7 backups. Email (Resend) and the domain come together later (step 8).
 
+**Demo site (live since 2026-10-28):** https://bookeria1.netlify.app — Netlify project `bookeria1`,
+built from GitHub `main` on every push, connected to **bookeria-dev** (demo data only, never real
+clients). Lessons from setting it up, which apply to production too:
+- Netlify sees only the GitHub repositories you allowed: GitHub → Settings → Applications → Netlify →
+  Repository access → add the repository.
+- Type variable names by hand; values without quotes or spaces. A secret variable shows a lock and
+  can only be replaced, not read. After changing a variable: Deploys → Trigger deploy.
+- New Netlify projects may start with **Team login protection** (visitors see "This site is
+  private"): Project configuration → Access & security → Visitor access → "Non-production deploys only".
+- Supabase → Authentication → URL Configuration → Redirect URLs must include the site address + `/**`.
+
 ---
 
 ## 1. GitHub — the code, off the laptop
