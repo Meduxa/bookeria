@@ -5,6 +5,7 @@ All notable changes per phase. Newest on top.
 ## Demo site (2026-10-28)
 
 - **Online demo** at https://bookeria1.netlify.app on the demo database (setup notes in `docs/go-live.md`). The demo salon books without an SMS code (no SMS company yet); `db:seed` turns the code back on.
+- **New logo**: a minimalist clock mark instead of "b." and the wordmark in Sora ExtraBold, so it no longer resembles Booking.com. App header, landing page, browser tab and phone app icons all use it; landing screenshots retaken.
 - The SMS job on Netlify runs **every 5 minutes** instead of every minute, to stay within the free plan's monthly credits. Reminders may go out up to 5 minutes later; login codes and booking confirmations are still sent at once.
 
 ## Before the pilot — part 1 (2026-10-28)
