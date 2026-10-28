@@ -151,7 +151,7 @@ type DueRow = {
   staff: string | null;
 };
 
-/** Queues every reminder that is due now (run by the background job every minute). */
+/** Queues every reminder that is due now (run by the background job every 5 minutes on Netlify, every minute on the laptop). */
 export async function enqueueDueReminders() {
   const { data, error } = await createAdminClient().rpc("sms_due_reminders");
   if (error) throw new Error(`reminders: ${error.code}`);

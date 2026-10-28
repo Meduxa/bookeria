@@ -105,7 +105,7 @@ After the push, GitHub runs the automatic checks (typecheck, lint, unit tests) o
 3. **Site configuration → Build & deploy → Functions → Region**: **EU Central (Frankfurt)** if your
    plan offers the choice (the server then sits next to the database).
 4. **Deploys → Trigger deploy**. When it is green, open the site.
-5. The two scheduled jobs (`netlify/functions/cron-sms.ts` every minute, `cron-daily.ts` at 03:30
+5. The two scheduled jobs (`netlify/functions/cron-sms.ts` every 5 minutes, `cron-daily.ts` at 03:30
    Tbilisi) start by themselves; **Logs → Functions** shows them answering `200`.
 
 ## 5. Your admin account
