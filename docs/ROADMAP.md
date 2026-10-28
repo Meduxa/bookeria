@@ -108,6 +108,10 @@ Split into 6a (in the app) and 6b (production) with a report in between (Levan, 
 - [ ] Production: Supabase production project, Sentry, Netlify — **deferred until the pilot** (Levan, 2026-10-26: the free plan allows only 2 active projects and both are in use; plan: Supabase Pro at pilot time, which also brings backups). Follow `docs/go-live.md` from step 2 then.
 - [ ] Later: domain + Resend (needed for real sign-ups), SMS company, Turnstile, plan prices, Supabase Pro
 
+## Before the pilot
+- [ ] Short salon addresses `name.bookeria.ge` (e.g. `teka.bookeria.ge`) leading to the booking page; the current `/book/[slug]` link keeps working (Levan, 2026-10-27, after looking at mysalon.ge). Needs: the bookeria.ge domain registered, wildcard DNS on the host (check what the Netlify plan allows), slug rules (reserved words like `www`, `app`, `admin`).
+- [ ] A small, beautiful website for every business at that short address, where clients book online (Levan, 2026-10-28): cover photo, logo, about text, services with prices, team, photo gallery, map, hours, phone/Instagram links, a clear "Book" button; "by service / by specialist" tabs at the first step; phone-first, fast, ka/en/ru; a few colour themes the owner picks in settings (no hand-made design per salon)
+
 ## 🚀 Pilot with 2–3 salons + 1 dental clinic (2–4 weeks of real use, fix feedback)
 
 ## Go-to-market (from IDEAS.docx)

@@ -1,6 +1,6 @@
 # Bookeria — Product Specification (v1)
 
-Status: draft for build · Owner: Levan · Working name: Bookeria (final name TBD)
+Status: draft for build · Owner: Levan · Name: Bookeria (final, 2026-10-28) · Domain: bookeria.ge
 
 ---
 

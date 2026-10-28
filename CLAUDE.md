@@ -1,6 +1,6 @@
 # Bookeria — Project Rules for Claude Code
 
-> Working name: **Bookeria** (final name TBD — keep the name in ONE config constant, `APP_NAME`, so it can be renamed in minutes).
+> Name: **Bookeria** (final, Levan 2026-10-28), domain **bookeria.ge** — the name stays in ONE config constant, `APP_NAME`.
 > Bookeria is a multi-tenant SaaS for **beauty salons and small dental clinics in Georgia**: services & prices, bookings, calendar, staff schedules, client base, SMS reminders, marketing email, and (later) online payments.
 
 Read this file at the start of every session. The full product specification is in `docs/SPEC.md`. The build order is in `docs/ROADMAP.md`. Never start a module without reading its section in the spec.

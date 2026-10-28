@@ -143,7 +143,7 @@ daily, but check it during quiet test weeks.
 
 ## 8. Later, before inviting real salons
 
-- **Domain** (e.g. `bookeria.ge`): Netlify → Domain management; then update `NEXT_PUBLIC_APP_URL`
+- **Domain** (`bookeria.ge`): Netlify → Domain management; then update `NEXT_PUBLIC_APP_URL`
   and Supabase's Site URL.
 - **Email (Resend)**: resend.com → add and verify your domain (EU region) → API key → Netlify:
   `EMAIL_PROVIDER=resend`, `EMAIL_API_KEY` (secret), `EMAIL_FROM=Bookeria <no-reply@your-domain>`.
