@@ -1,4 +1,4 @@
-// One-off: app icons for the installable app (PWA) from the logo's clock mark
+// One-off: app icons for the installable app (PWA) from the logo's calendar mark
 // (src/app/icon.svg). Re-run if the logo changes:  node scripts/make-icons.mts
 import { mkdirSync, readFileSync } from "node:fs";
 import sharp from "sharp";
