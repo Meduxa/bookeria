@@ -1815,6 +1815,44 @@ export type Database = {
           },
         ]
       }
+      support_grants: {
+        Row: {
+          created_at: string
+          expires_at: string
+          granted_by: string | null
+          id: string
+          revoked_at: string | null
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          granted_by?: string | null
+          id?: string
+          revoked_at?: string | null
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          granted_by?: string | null
+          id?: string
+          revoked_at?: string | null
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_grants_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tenant_settings: {
         Row: {
           admins_see_revenue: boolean
@@ -2291,6 +2329,10 @@ export type Database = {
         }[]
       }
       grant_monthly_sms: { Args: never; Returns: number }
+      grant_support_access: {
+        Args: { p_hours: number; p_tenant: string }
+        Returns: string
+      }
       has_role: {
         Args: { p_roles: string[]; p_tenant: string }
         Returns: boolean
@@ -2415,6 +2457,7 @@ export type Database = {
         Returns: string
       }
       revoke_invitation: { Args: { p_invitation: string }; Returns: undefined }
+      revoke_support_access: { Args: { p_tenant: string }; Returns: undefined }
       set_booking_note: {
         Args: { p_booking: string; p_note: string }
         Returns: undefined
@@ -2538,6 +2581,8 @@ export type Database = {
         Args: { p_client: string; p_tenant: string }
         Returns: boolean
       }
+      start_support_view: { Args: { p_tenant: string }; Returns: string }
+      support_view: { Args: { p_tenant: string }; Returns: boolean }
       user_tenant_ids: { Args: never; Returns: string[] }
       valid_i18n: { Args: { p: Json; p_required?: boolean }; Returns: boolean }
       valid_staff_color: { Args: { p: string }; Returns: boolean }
