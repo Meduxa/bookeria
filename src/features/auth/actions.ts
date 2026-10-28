@@ -5,6 +5,7 @@ import { getLocale } from "next-intl/server";
 import { fail, type ActionResult } from "@/lib/action-result";
 import { publicEnv } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
+import { getMyTenants } from "@/lib/tenant";
 import { safeNext, signInSchema, signUpSchema, type SignInInput, type SignUpInput } from "./schema";
 
 export async function signIn(input: SignInInput, next?: string): Promise<ActionResult> {
@@ -53,6 +54,22 @@ export async function signUp(
 export async function signOut() {
   const supabase = await createClient();
   await supabase.auth.signOut();
+  const locale = await getLocale();
+  redirect(`/${locale}/login`);
+}
+
+// Ends every session of this account (lost phone, shared computer) — SPEC 4.14.
+// Recorded in the audit log of each business the user belongs to.
+export async function signOutEverywhere() {
+  const supabase = await createClient();
+  for (const t of await getMyTenants()) {
+    await supabase.rpc("log_audit", {
+      p_tenant: t.tenantId,
+      p_action: "auth.signed_out_everywhere",
+      p_entity: "user",
+    });
+  }
+  await supabase.auth.signOut({ scope: "global" });
   const locale = await getLocale();
   redirect(`/${locale}/login`);
 }

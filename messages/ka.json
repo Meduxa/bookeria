@@ -27,7 +27,10 @@
     "moveUp": "ზემოთ",
     "moveDown": "ქვემოთ",
     "all": "ყველა",
-    "confirm": "დარწმუნებული ხართ?"
+    "confirm": "დარწმუნებული ხართ?",
+    "signOutEverywhere": "ყველა მოწყობილობიდან გასვლა",
+    "signOutEverywhereHint": "გამოხვალთ ყველა ტელეფონიდან და კომპიუტერიდან, ამის ჩათვლით. გამოიყენეთ, თუ მოწყობილობა დაკარგეთ ან თქვენი ანგარიშით სხვა სარგებლობდა.",
+    "signOutEverywhereConfirm": "ყველგან გასვლა"
   },
   "languages": {
     "ka": "ქართული",
@@ -1194,6 +1197,7 @@
       "platform": "Bookeria"
     },
     "actions": {
+      "auth_signed_out_everywhere": "ყველა მოწყობილობიდან გასვლა",
       "booking_paid": "გადახდა მიღებულია",
       "bookings_imported": "ჯავშნები შემოტანილია",
       "client_anonymized": "კლიენტის მონაცემები წაიშალა",
@@ -1210,8 +1214,8 @@
       "membership_updated": "გუნდის წევრის როლი შეიცვალა",
       "platform_sms_topup": "Bookeria-მ SMS დაამატა",
       "platform_tenant_updated": "Bookeria-მ შეცვალა პაკეტი ან სტატუსი",
-      "services_imported": "ფასების სია შემოტანილია",
       "service_deleted": "სერვისი წაიშალა",
+      "services_imported": "ფასების სია შემოტანილია",
       "settings_rules_updated": "ჯავშნის წესები შეიცვალა",
       "settings_updated": "ბიზნესის მონაცემები შეიცვალა",
       "staff_deleted": "სპეციალისტი წაიშალა",

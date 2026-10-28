@@ -27,7 +27,10 @@
     "moveUp": "Move up",
     "moveDown": "Move down",
     "all": "All",
-    "confirm": "Are you sure?"
+    "confirm": "Are you sure?",
+    "signOutEverywhere": "Sign out of all devices",
+    "signOutEverywhereHint": "You will be signed out on every phone and computer, including this one. Use it if a device was lost or someone else used your account.",
+    "signOutEverywhereConfirm": "Sign out everywhere"
   },
   "languages": {
     "ka": "ქართული",
@@ -1194,6 +1197,7 @@
       "platform": "Bookeria"
     },
     "actions": {
+      "auth_signed_out_everywhere": "Signed out of all devices",
       "booking_paid": "Payment taken",
       "bookings_imported": "Bookings imported",
       "client_anonymized": "Client's data deleted",
@@ -1210,8 +1214,8 @@
       "membership_updated": "Team member's role changed",
       "platform_sms_topup": "SMS credits added by Bookeria",
       "platform_tenant_updated": "Plan or status changed by Bookeria",
-      "services_imported": "Price list imported",
       "service_deleted": "Service deleted",
+      "services_imported": "Price list imported",
       "settings_rules_updated": "Booking rules changed",
       "settings_updated": "Business details changed",
       "staff_deleted": "Staff member deleted",

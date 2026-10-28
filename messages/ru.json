@@ -27,7 +27,10 @@
     "moveUp": "Выше",
     "moveDown": "Ниже",
     "all": "Все",
-    "confirm": "Вы уверены?"
+    "confirm": "Вы уверены?",
+    "signOutEverywhere": "Выйти на всех устройствах",
+    "signOutEverywhereHint": "Вы выйдете на всех телефонах и компьютерах, включая этот. Используйте, если устройство потеряно или вашим аккаунтом пользовался кто-то другой.",
+    "signOutEverywhereConfirm": "Выйти везде"
   },
   "languages": {
     "ka": "ქართული",
@@ -1194,6 +1197,7 @@
       "platform": "Bookeria"
     },
     "actions": {
+      "auth_signed_out_everywhere": "Выход на всех устройствах",
       "booking_paid": "Оплата принята",
       "bookings_imported": "Записи импортированы",
       "client_anonymized": "Данные клиента удалены",
@@ -1210,8 +1214,8 @@
       "membership_updated": "Роль участника изменена",
       "platform_sms_topup": "Bookeria добавила SMS",
       "platform_tenant_updated": "Bookeria изменила тариф или статус",
-      "services_imported": "Прайс-лист импортирован",
       "service_deleted": "Услуга удалена",
+      "services_imported": "Прайс-лист импортирован",
       "settings_rules_updated": "Правила записи изменены",
       "settings_updated": "Данные бизнеса изменены",
       "staff_deleted": "Специалист удалён",
