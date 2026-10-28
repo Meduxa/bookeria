@@ -14,6 +14,11 @@ test("visitors land on the Georgian landing page; it leads to sign-up and sign-i
   await expect(page).toHaveURL(/\/ka$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "ka");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("კლიენტები ონლაინ იწერებიან");
+  for (const width of [320, 852]) {
+    await page.setViewportSize({ width, height: 800 });
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+    expect(overflow, `no sideways scroll at ${width}px`).toBeLessThanOrEqual(0);
+  }
   await page.getByRole("link", { name: "დაიწყეთ უფასოდ — 14 დღე" }).first().click();
   await expect(page).toHaveURL(/\/ka\/signup$/);
   await page.goto("/ka");

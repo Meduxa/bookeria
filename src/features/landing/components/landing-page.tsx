@@ -58,11 +58,13 @@ export async function LandingPage({
         <div className="mx-auto flex max-w-6xl items-center gap-2 px-4 py-3">
           <Link
             href="/"
-            className="mr-auto rounded-lg focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+            className="mr-auto shrink-0 rounded-lg focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
           >
-            <BrandLogo className="h-8" />
+            {/* narrow phones: just the "b." mark, so the bar never pushes the page wider */}
+            <BrandLogo variant="mark" className="h-8 sm:hidden" />
+            <BrandLogo className="hidden h-8 sm:block" />
           </Link>
-          <nav aria-label={t("navLabel")} className="hidden items-center gap-1 md:flex">
+          <nav aria-label={t("navLabel")} className="hidden items-center gap-1 lg:flex">
             {(["features", "pricing", "faq"] as const).map((id) => (
               <a
                 key={id}
@@ -124,7 +126,7 @@ export async function LandingPage({
               alt={t("shots.booking")}
               width={390}
               height={844}
-              className="absolute right-[-2%] bottom-0 w-[30%] rounded-2xl border-4 border-card shadow-xl lg:bottom-[-12%]"
+              className="absolute right-0 bottom-0 w-[30%] rounded-2xl border-4 border-card shadow-xl lg:bottom-[-12%]"
             />
           </div>
         </section>
