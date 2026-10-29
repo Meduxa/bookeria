@@ -64,7 +64,7 @@ Four stages. Each stage ends with a **go / no-go** check; we move on only when i
 
 ### How to report a problem (all stages)
 
-One line per problem in a shared sheet (Google Sheets), columns:
+Use the ready-made tracker **`docs/pilot/bookeria-pilot-tracker.xlsx`** (upload it to Google Drive and open it with Google Sheets to share it). Its Problems tab has one line per problem, with these columns:
 
 | Date | Who | Device + browser | Language | Page (copy the address) | What I did | What I expected | What happened | Screenshot | Severity |
 |---|---|---|---|---|---|---|---|---|---|
