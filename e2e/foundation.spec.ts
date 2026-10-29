@@ -33,6 +33,18 @@ test("visitors land on the Georgian landing page; it leads to sign-up and sign-i
   }
 });
 
+test("prices: the period switch gives the discount; choosing a plan opens sign-up", async ({ page }) => {
+  await page.goto("/ka");
+  const pricing = page.locator("#pricing");
+  const starter = pricing.getByRole("listitem").filter({ hasText: "Starter" }).first();
+  await expect(starter.getByText("39 ₾", { exact: true })).toBeVisible();
+  await pricing.getByText("12 თვე").click();
+  await expect(starter.getByText("31 ₾", { exact: true })).toBeVisible();
+  await expect(starter.getByText("დაზოგეთ 20%")).toBeVisible();
+  await pricing.getByRole("link", { name: "პაკეტის არჩევა" }).nth(1).click();
+  await expect(page).toHaveURL(/\/ka\/signup$/);
+});
+
 test("signed-in people skip the landing page", async ({ page }) => {
   await signIn(page, "salon.owner@demo.test");
   await page.goto("/ka");

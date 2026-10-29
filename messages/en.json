@@ -1571,12 +1571,38 @@
       "title": "Simple prices",
       "subtitle": "Start with 14 days free with everything included. No card needed.",
       "perMonth": "/ month",
-      "staff": "{count, plural, one {up to # specialist} other {up to # specialists}}",
       "staffUnlimited": "Any number of specialists",
       "sms": "{count} SMS a month included",
-      "everything": "Every feature included",
       "trialTitle": "14 days free, everything included",
-      "soon": "Prices will be announced soon. Start your free trial now — we'll tell you before anything changes."
+      "soon": "Prices will be announced soon. Start your free trial now — we'll tell you before anything changes.",
+      "periodLabel": "Choose a period and get a discount",
+      "months": "{count, plural, one {# month} other {# months}}",
+      "popular": "Most popular",
+      "save": "Save {percent}%",
+      "total": "{total} for {months} months",
+      "staffExactly": "{count, plural, one {# specialist} other {# specialists}}",
+      "staffRange": "{from} to {to} specialists",
+      "choose": "Choose plan",
+      "features": {
+        "online": "Online bookings 24/7",
+        "website": "A website with your business name",
+        "management": "Calendar, clients and checkout",
+        "reports": "Reports and analytics",
+        "marketingSms": "Promotional SMS to clients",
+        "app": "App on the phone (iPhone and Android)"
+      },
+      "premium": {
+        "name": "Premium",
+        "price": "Custom",
+        "for": "For chains and large clinics",
+        "features": {
+          "staff": "Any number of specialists",
+          "everything": "Everything in Standard",
+          "sms": "SMS amount by agreement",
+          "onboarding": "Personal setup and team training",
+          "support": "Priority support"
+        }
+      }
     },
     "faq": {
       "title": "Questions",

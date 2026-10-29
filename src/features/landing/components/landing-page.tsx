@@ -17,8 +17,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
 import { APP_NAME } from "@/lib/app";
-import { formatMoney } from "@/lib/money";
 import type { LandingPlan } from "../queries";
+import { PricingSection } from "./pricing-section";
 
 const FEATURES = [
   { key: "website", icon: Globe },
@@ -190,46 +190,16 @@ export async function LandingPage({
               <p className="text-muted-foreground">{t("pricing.subtitle")}</p>
             </div>
             {plans.length > 0 ? (
-              <ul className="grid gap-4 md:grid-cols-3">
-                {plans.map((p) => (
-                  <li key={p.code}>
-                    <Card className="h-full gap-3 p-6">
-                      <h3 className="text-lg font-semibold">{p.name}</h3>
-                      <p>
-                        <span className="text-3xl font-semibold tabular-nums">
-                          {formatMoney(p.priceMinor, `${locale}-GE`)}
-                        </span>{" "}
-                        <span className="text-sm text-muted-foreground">{t("pricing.perMonth")}</span>
-                      </p>
-                      <ul className="flex flex-col gap-1.5 text-sm">
-                        <li className="flex items-center gap-2">
-                          <Check className="size-4 text-primary" aria-hidden />
-                          {p.maxStaff
-                            ? t("pricing.staff", { count: p.maxStaff })
-                            : t("pricing.staffUnlimited")}
-                        </li>
-                        {p.smsPerMonth > 0 && (
-                          <li className="flex items-center gap-2">
-                            <Check className="size-4 text-primary" aria-hidden />
-                            {t("pricing.sms", { count: p.smsPerMonth })}
-                          </li>
-                        )}
-                        <li className="flex items-center gap-2">
-                          <Check className="size-4 text-primary" aria-hidden />
-                          {t("pricing.everything")}
-                        </li>
-                      </ul>
-                    </Card>
-                  </li>
-                ))}
-              </ul>
+              <PricingSection plans={plans} />
             ) : (
-              <Card className="max-w-2xl gap-3 p-6">
-                <h3 className="text-lg font-semibold">{t("pricing.trialTitle")}</h3>
-                <p className="text-muted-foreground">{t("pricing.soon")}</p>
-              </Card>
+              <>
+                <Card className="max-w-2xl gap-3 p-6">
+                  <h3 className="text-lg font-semibold">{t("pricing.trialTitle")}</h3>
+                  <p className="text-muted-foreground">{t("pricing.soon")}</p>
+                </Card>
+                <div>{start}</div>
+              </>
             )}
-            <div>{start}</div>
           </div>
         </section>
 

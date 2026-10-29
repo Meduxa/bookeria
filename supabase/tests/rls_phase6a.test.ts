@@ -55,31 +55,32 @@ describe("platform admin", () => {
 
   it("plans: everyone signed in reads them, only platform admins edit", async () => {
     expect((await A.owner.db.from("plans").select("code")).data!.length).toBeGreaterThanOrEqual(4);
+    const price = async () =>
+      (await server().from("plans").select("price_minor").eq("code", "start").single()).data!.price_minor;
+    const before = await price(); // Levan's real price — put back at the end
     await A.owner.db.from("plans").update({ price_minor: 1 }).eq("code", "start");
-    expect(
-      (await server().from("plans").select("price_minor").eq("code", "start").single()).data!.price_minor,
-    ).toBe(0);
-    expect(
-      (await platform.db.from("plans").update({ price_minor: 4900 }).eq("code", "start")).error,
-    ).toBeNull();
-    expect(
-      (await server().from("plans").select("price_minor").eq("code", "start").single()).data!.price_minor,
-    ).toBe(4900);
-    await server().from("plans").update({ price_minor: 0 }).eq("code", "start");
+    expect(await price()).toBe(before);
+    try {
+      expect(
+        (await platform.db.from("plans").update({ price_minor: before + 100 }).eq("code", "start")).error,
+      ).toBeNull();
+      expect(await price()).toBe(before + 100);
+    } finally {
+      await server().from("plans").update({ price_minor: before }).eq("code", "start");
+    }
   });
 });
 
 describe("plan limits", () => {
-  it("the Start plan allows 2 active staff; deactivated ones do not count", async () => {
+  it("the Starter plan allows 1 active staff; deactivated ones do not count", async () => {
     await server().from("tenants").update({ plan: "start" }).eq("id", B.id);
     const add = (name: string) =>
       B.owner.db.from("staff").insert({ tenant_id: B.id, display_name: name }).select("id").single();
     const s1 = await add("One");
     expect(s1.error).toBeNull();
-    expect((await add("Two")).error).toBeNull();
-    expect((await add("Three")).error?.code).toBe("P0006");
+    expect((await add("Two")).error?.code).toBe("P0006");
     await B.owner.db.from("staff").update({ active: false }).eq("id", s1.data!.id);
-    expect((await add("Three")).error).toBeNull();
+    expect((await add("Two")).error).toBeNull();
     expect((await B.owner.db.from("staff").update({ active: true }).eq("id", s1.data!.id)).error?.code).toBe(
       "P0006",
     );
