@@ -62,7 +62,12 @@ describe("platform admin", () => {
     expect(await price()).toBe(before);
     try {
       expect(
-        (await platform.db.from("plans").update({ price_minor: before + 100 }).eq("code", "start")).error,
+        (
+          await platform.db
+            .from("plans")
+            .update({ price_minor: before + 100 })
+            .eq("code", "start")
+        ).error,
       ).toBeNull();
       expect(await price()).toBe(before + 100);
     } finally {
